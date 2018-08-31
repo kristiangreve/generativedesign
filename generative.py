@@ -59,7 +59,6 @@ def rankRoutes(population):
     fitnessResults = {}
     for i in range(0,len(population)):
         fitnessResults[i] = fitness(population[i]).routeFitness()
-    print(fitnessResults)
     return sorted(fitnessResults.items(),key = operator.itemgetter(1), reverse = True)
 
 def selection(popRanked, eliteSize):
@@ -67,7 +66,6 @@ def selection(popRanked, eliteSize):
     df = pd.DataFrame(np.array(popRanked), columns=["index","fitness"])
     df['cum_sum'] = df.fitness.cumsum()
     df['cum_perc'] = 100*df.cum_sum/df.fitness.sum()
-
     for i in range(0, eliteSize):
         selectionResults.append(popRanked[i][0])
     for i in range(0, len(popRanked) - eliteSize):
@@ -76,13 +74,13 @@ def selection(popRanked, eliteSize):
             if pick <= df.iat[i,3]:
                 selectionResults.append(popRanked[i][0])
                 break
+
     return selectionResults
 
 def matingPool(population,selectionResults):
     matingpool = []
-    for i in range(0, len(selectionResults)):
-        index = selectionResults[i]
-        matingpool.append(population[index])
+    for i in selectionResults:
+        matingpool.append(population[i])
     return matingpool
 
 def breed(parent1, parent2):
@@ -102,6 +100,8 @@ def breed(parent1, parent2):
     childP2 = [item for item in parent2 if item not in childP1]
 
     child = childP1 + childP2
+
+
 
     return child
 
@@ -179,4 +179,4 @@ def geneticAlgorithmPlot(population, popSize, eliteSize, mutationRate, generatio
     plt.xlabel('Generation')
     plt.show()
 
-geneticAlgorithmPlot(population=cityList, popSize = 5, eliteSize = 2, mutationRate = 0.01,generations=1)
+geneticAlgorithmPlot(population=cityList, popSize = 20, eliteSize = 2, mutationRate = 0.01,generations=1)
