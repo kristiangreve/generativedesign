@@ -20,40 +20,73 @@
 
 import random
 import numpy as np
+from random import random
+from random import randint
+
 
 
 # class for design objects
-class designObject:
-    __slots__ = ('inputs','scoring','domination_count','domination_vector','rank')
-    def __init__(self, attributes):
+# scoring should be vector of length n_objective
+class solution(object):
+    """
+    Object to contain solutions and their attributes.
+    Attributes:
+        parameters: parameters of the solution. may be binary, discrete or continous
+
+    """
+
+    __slots__ = ('parameters','scoring','domination_count','domination_vector','rank','parents','generation')
+    def __init__(self, parameters, scoring=[], domination_count=0, domination_vector=[], rank=0, parents=[], generation=0):
 
         # essential data for GA
-        self.inputs = inputs
+        self.parameters = parameters
         self.scoring = scoring
         self.domination_count = domination_count
         self.domination_vector = domination_vector
         self.rank = rank
 
         # metadata
-        self.parents = [None, None]
+        self.parents = parents
         self.generation = generation
 
+# cost functions
 
-# needs to be able to handle ranges on individual attributes
-
-def initiate_population(size, inputs):
-    population = [designObject(np.random.rand(1,inputs)) for genome in range(size)]
-    return population
-
-population = initiate_population(10,4)
-
-for genome in population:
-    print(genome.inputs)
+# area to be minimized
+def cost_function_1(solution):
+    d_1,d_2,h=solution.parameters
+    a_1 = h*np.pi*d_1
+    a_2 = h*np.pi*d_2
+    a_3 = np.pi*(d_1/2)**2 - np.pi*(d_2/2)**2
+    return a_1+a_2+2*a_3
 
 # volume to be maximized
-def cost_function_1(genome):
+def cost_function_2(solution):
+    d_1,d_2,h=solution.parameters
+    v_1 = h*np.pi*(d_1/2)**2
+    v_2 = h*np.pi*(d_2/2)**2
+    return v_1 - v_2
 
-    return h*np.pi
+### initiate population
+def init_population(size, n_dim):
+    # create an empty population and fill it with random solutions
+    pop = []
+    for n in range(size):
+        attributes = [randint(0,100) for i in range(n_dim)]
+        pop.append(solution(attributes))
+    return pop
+
+
+### evaluate designs
+
+cost_functions=[cost_function_1,cost_function_2]
+
+
+"""
+def evaluate(population):
+    # assign score to each design
+    for design in population:
+        design.scoring = [
+"""
 
 
 def rank_designs(population):
@@ -62,18 +95,11 @@ def rank_designs(population):
             genome.scoring
 
 
+population = init_population(10,3)
 
-#def introduce_mutation(population):
+for solution in population:
+    print(solution.parameters)
 
-
-# """
-# 1. Initiate population
-# input: size of population, number of attributes
-# output: populaion of size n,m
-
-# 2. Evaluate  designs
-
-# 3. Rank designs
-
-# 4. Perform selection
-"""
+print(solution.parameters)
+print(solution.scoring)
+solution = solution([1,4,3])

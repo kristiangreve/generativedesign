@@ -59,7 +59,7 @@ def rankRoutes(population):
     fitnessResults = {}
     for i in range(0,len(population)):
         fitnessResults[i] = fitness(population[i]).routeFitness()
-    print(fitnessResults)
+    # print(fitnessResults)
     return sorted(fitnessResults.items(),key = operator.itemgetter(1), reverse = True)
 
 def selection(popRanked, eliteSize):
@@ -96,14 +96,37 @@ def breed(parent1, parent2):
     startGene = min(geneA,geneB)
     endGene = max(geneA,geneB)
 
-    for i in range(startGene,endGene):
+    child=[]
+
+    for i in range(len(parent1)):
+        if i < startGene:
+            child.append(parent1[i])
+        elif i >= startGene and i <= endGene:
+            child.append(parent2[i])
+        elif i > endGene:
+            child.append(parent1[i])
+    return child
+
+# original one:
+def breedy(parent1, parent2):
+    child = []
+    childP1 = []
+    childP2 = []
+
+    geneA = int(random.random() * len(parent1))
+    geneB = int(random.random() * len(parent1))
+
+    startGene = min(geneA, geneB)
+    endGene = max(geneA, geneB)
+
+    for i in range(startGene, endGene):
         childP1.append(parent1[i])
 
     childP2 = [item for item in parent2 if item not in childP1]
 
     child = childP1 + childP2
-
     return child
+
 
 def breedPopulation(matingpool,eliteSize):
     children = []
@@ -179,4 +202,4 @@ def geneticAlgorithmPlot(population, popSize, eliteSize, mutationRate, generatio
     plt.xlabel('Generation')
     plt.show()
 
-geneticAlgorithmPlot(population=cityList, popSize = 5, eliteSize = 2, mutationRate = 0.01,generations=1)
+geneticAlgorithmPlot(population=cityList, popSize = 60, eliteSize = 2, mutationRate = 0.01,generations=30)
