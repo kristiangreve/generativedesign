@@ -49,9 +49,18 @@ def cost_area(r1,r2,h):
     return (area_top + area_side)
 
 
-def rank(population):
+def add_scores(population):
     for i in population:
         i.scores.append(cost_volume(i.parameters))
         i.scores.append(cost_area(i.parameters))
-    dominates_these = []
-    for 
+
+def rank(population):
+    for i in range(len(population)): #Loops through all individuals of population
+        for j in range(i+1,len(population)): #Loops through all the remaining indiduals
+            if population[i].scores[0] >= population[j].scores[0]:
+                if population[i].scores[1] >= population[j].scores[1]:
+                    population[i].dominates_these.append(population[j])
+                    population[j].dominated_by.append(population[i])
+            elif population[j].scores[1] >= population[i].scores[1]:
+                population[j].dominates_these.append(population[i])
+                population[i].dominated_by.append(population[j])
