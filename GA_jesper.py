@@ -5,13 +5,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class individual:
-    def __init__(self,parameters,scores = [], rank = None,dominated_by = [], dominated_count = 0, dominates_these = []):
+    def __init__(self,parameters):
         self.parameters = parameters
-        self.rank = rank
-        self.dominated_count = dominated_count
-        self.scores = scores
-        self.dominated_by = dominated_by
-        self.dominates_these = dominates_these
+        self.rank = None
+        self.dominated_count = 0
+        self.scores = []
+        self.dominates_these = []
 
 """
 init_population:
@@ -24,9 +23,9 @@ def init_population(size,dim):
     population = []
     for n in range(size):
         parameters = []
-        parameters.append(random.randrange(1,10))
+        parameters.append(random.randrange(1,5))
         parameters.append(random.randrange(0,parameters[0]))
-        parameters.append(random.randrange(0,10))
+        parameters.append(random.randrange(0,3))
         population.append(individual(parameters))
     return population
 
@@ -58,47 +57,79 @@ def cost_area(parameters):
 
 def add_scores(population):
     for i in population:
-        i.scores = [cost_volume(i.parameters)]
+        i.scores.append(cost_volume(i.parameters))
         i.scores.append(cost_area(i.parameters))
 
 
-def rank(population):
-    for i in range(len(population)):
-        print('i :', i)
-        print('Individual', population[i])
-        if len(population[i].dominates_these) == 0:
-             population[i].dominates_these = []
-        if len(population[i].dominated_by) == 0:
-            population[i].dominated_by = []
-            #Loops through all individuals of population
+def dominance(population):
+    for i in range(len(population)):      #Loops through all individuals of population
         for j in range(i+1,len(population)): #Loops through all the remaining indiduals
             if population[i].scores[0] <= population[j].scores[0]:
                 if population[i].scores[1] <= population[j].scores[1]:
-                    print(population[i].scores , " Dominates: ",population[j].scores)
-                    print(' Dominates list START:', population[i].dominates_these)
                     population[i].dominates_these.append(population[j])
-                    population[j].dominated_by.append(population[i])
                     population[j].dominated_count += 1
-                    print(' Dominates list:', population[i].dominates_these)
-
             elif population[j].scores[1] <= population[i].scores[1]:
-                print(' Dominates list START2:', population[i].dominates_these)
-                print(population[j].scores , " Dominates: ",population[i].scores)
                 population[j].dominates_these.append(population[i])
-                population[i].dominated_by.append(population[j])
                 population[i].dominated_count += 1
-                print(' Dominates list:', population[j].dominates_these)
 
-pop = init_population(5,3)
+def rank(population):
+    rank_counter = 1
+    next_front = []
+    cur_front = []
+
+    for i in population: #This loop defines the initial pareto front
+        if i.dominated_count == 0:
+            i.rank = rank_counter
+            cur_front.append(i)
+            #print('Object: ', i)
+            #print('Rank': , i.rank)
+
+
+    while(len(cur_front) != 0): #this loop identifies the following fronts
+        for i in cur_front:
+            for n in i.dominates_these:
+                 n.dominated_count -=1
+                 if n.dominated_count == 0:
+                     n.rank = rank_counter+1
+                     next_front.append(n)
+        cur_front = next_front
+        next_front = []
+        rank_counter +=1
+
+
+
+
+
+
+    #sorted_pop = sorted(population, key=lambda x: x.dominated_count, reverse=False)
+
+
+pop = init_population(10,3)
 add_scores(pop)
+dominance(pop)
 rank(pop)
 
 for i in pop:
-    print('Individual: ', i)
     print('Scores: ', i.scores)
     print('Dominated count ', i.dominated_count)
-    for n in i.dominates_these:
-        print('Dominates these: ', n.scores)
+    print('Rank: ', i.rank)
 
-plt.scatter([x.scores[0] for x in pop], [y.scores[1] for y in pop])
+#plt.scatter([x.scores[0] for x in pop], [y.scores[1] for y in pop])
+#plt.show()
+
+x = []
+y = []
+n = []
+
+for d in pop:
+    x.append(d.scores[0])
+    y.append(d.scores[1])
+    n.append(d.rank)
+
+fig, ax = plt.subplots()
+ax.scatter(x, y)
+
+for i, txt in enumerate(n):
+    ax.annotate(txt, (x[i]+1, y[i]+1))
+
 plt.show()
