@@ -3,14 +3,17 @@ import random
 import math
 import numpy as np
 import matplotlib.pyplot as plt
+from collections import defaultdict
 
 class individual:
     def __init__(self,parameters):
         self.parameters = parameters
-        self.rank = None
+        self.pareto = None
         self.dominated_count = 0
         self.scores = []
         self.dominates_these = []
+        self.rank = 0
+        self.dist = 0
 
 """
 init_population:
@@ -23,11 +26,13 @@ def init_population(size,dim):
     population = []
     for n in range(size):
         parameters = []
-        parameters.append(random.randrange(1,5))
-        parameters.append(random.randrange(0,parameters[0]))
-        parameters.append(random.randrange(0,3))
+        parameters.append(float(random.uniform(0,10)))
+        parameters.append(float(random.uniform(0,10)))
+        parameters.append(float(random.uniform(0,10)))
         population.append(individual(parameters))
     return population
+
+
 
 """
 cost_volume: Function to calculate the total volume
@@ -39,7 +44,7 @@ output: volume of cylinder
 
 def cost_volume(parameters):
     volume = math.pi*parameters[0]*parameters[0]*parameters[2] - math.pi*parameters[1]*parameters[1]*parameters[2]
-    return volume
+    return abs(volume)
 
 """
 cost_area: Function to calculate the total area
@@ -51,8 +56,8 @@ output: area of cylinder
 
 def cost_area(parameters):
     area_top = math.pi*parameters[0]*parameters[0] - math.pi*parameters[1]*parameters[1]
-    area_side = math.pi*2**parameters[0]*parameters[2] + math.pi*2*parameters[1]*parameters[2]
-    return (area_top + area_side)
+    area_side = math.pi*2*parameters[0]*parameters[2] + math.pi*2*parameters[1]*parameters[2]
+    return abs((2*area_top + area_side))
 
 
 def add_scores(population):
@@ -72,64 +77,117 @@ def dominance(population):
                 population[j].dominates_these.append(population[i])
                 population[i].dominated_count += 1
 
-def rank(population):
-    rank_counter = 1
+def pareto(population):
+    pareto_counter = 1
     next_front = []
     cur_front = []
 
     for i in population: #This loop defines the initial pareto front
         if i.dominated_count == 0:
-            i.rank = rank_counter
+            i.pareto = pareto_counter
             cur_front.append(i)
-            #print('Object: ', i)
-            #print('Rank': , i.rank)
-
 
     while(len(cur_front) != 0): #this loop identifies the following fronts
         for i in cur_front:
             for n in i.dominates_these:
                  n.dominated_count -=1
                  if n.dominated_count == 0:
-                     n.rank = rank_counter+1
+                     n.pareto = pareto_counter+1
                      next_front.append(n)
         cur_front = next_front
         next_front = []
-        rank_counter +=1
+        pareto_counter +=1
 
+def crowding(population):
+    pareto_dict = defaultdict(list)
+    for i in population:
+        pareto_dict[i.pareto].append(i)
 
+    sorted_list = []
+    for pareto_list in pareto_dict.values():
+        for score in range(len(pareto_list[0].scores)): #iterate over the # of objectives
+            sorted_list = sorted(pareto_list, key=lambda x: x.scores[score], reverse=False)
+            max_value = sorted_list[-1].scores[score]
+            sorted_list[-1].dist += 1
+            min_value = sorted_list[0].scores[score]
 
+            if(len(sorted_list)>1):
+                sorted_list[0].dist += 1
 
+            span = max_value - min_value
+            for n in range(1,len(sorted_list)-1):
+                distance = abs((sorted_list[n-1].scores[score]-sorted_list[n+1].scores[score]) / span)
+                sorted_list[n].dist += distance
 
+def comparison(obj1,obj2):
+    if obj1.pareto == obj2.pareto: #if equal rank, look at distance
+        if obj1.dist>obj2.dist:
+            return obj1
+        else: #if equal, return nr 2 object parsed..
+            return obj2
+    elif obj1.pareto > obj2.pareto:
+        return obj1
+    else:
+        return obj2
 
-    #sorted_pop = sorted(population, key=lambda x: x.dominated_count, reverse=False)
+def binary_tournament(population):
+    Obj1 = random.choice(population)
+    Obj2 = random.choice(population)
+    return comparison(Obj1,Obj2)
 
+def crossover(obj1,obj2):
 
-pop = init_population(10,3)
+    child1_parameters = [obj1.parameters[:1]]
+    child1_parameters.append(obj2.parameters[1:])
+    child1 = individual(child1_parameters)
+
+    child2_parameters = [obj2.parameters[:1]]
+    child2_parameters.append(obj1.parameters[1:])
+    child2 = individual(child2_parameters)
+
+    return child1,child2
+
+def breeding(population):
+    children = []
+    while len(children) < len(population):
+        parent1 = binary_tournament(population)
+        parent2 = binary_tournament(population)
+        child1,child2 = crossover(parent1,parent2)
+        children.append(child1)
+        children.append(child2)
+    return children
+
+pop = init_population(20,3)
 add_scores(pop)
 dominance(pop)
-rank(pop)
+pareto(pop)
+crowding(pop)
+Qt = breeding(pop)
 
-for i in pop:
-    print('Scores: ', i.scores)
-    print('Dominated count ', i.dominated_count)
-    print('Rank: ', i.rank)
+print(len(pop))
+print(pop)
+print(len(Qt))
+print(Qt)
 
-#plt.scatter([x.scores[0] for x in pop], [y.scores[1] for y in pop])
-#plt.show()
 
 x = []
 y = []
 n = []
+f = []
 
 for d in pop:
     x.append(d.scores[0])
     y.append(d.scores[1])
-    n.append(d.rank)
+    n.append(d.pareto)
+    f.append(d.dist)
 
 fig, ax = plt.subplots()
 ax.scatter(x, y)
 
 for i, txt in enumerate(n):
     ax.annotate(txt, (x[i]+1, y[i]+1))
+
+for i, txt in enumerate(f):
+    ax.annotate(txt, (x[i]+10, y[i]+1))
 
 plt.show()
