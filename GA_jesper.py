@@ -14,6 +14,7 @@ class individual:
         self.dominates_these = []
         self.rank = 0
         self.dist = 0
+        self.generation = 0
 
 """
 init_population:
@@ -26,9 +27,9 @@ def init_population(size,dim):
     population = []
     for n in range(size):
         parameters = []
-        parameters.append(float(random.uniform(0,10)))
-        parameters.append(float(random.uniform(0,10)))
-        parameters.append(float(random.uniform(0,10)))
+        parameters.append(random.uniform(0,10))
+        parameters.append(random.uniform(0,10))
+        parameters.append(random.uniform(0,10))
         population.append(individual(parameters))
     return population
 
@@ -136,14 +137,8 @@ def binary_tournament(population):
     return comparison(Obj1,Obj2)
 
 def crossover(obj1,obj2):
-
-    child1_parameters = [obj1.parameters[:1]]
-    child1_parameters.append(obj2.parameters[1:])
-    child1 = individual(child1_parameters)
-
-    child2_parameters = [obj2.parameters[:1]]
-    child2_parameters.append(obj1.parameters[1:])
-    child2 = individual(child2_parameters)
+    child1 = individual((obj1.parameters[:1]+obj2.parameters[1:]))
+    child2 = individual((obj2.parameters[:1]+obj1.parameters[1:]))
 
     return child1,child2
 
@@ -157,37 +152,61 @@ def breeding(population):
         children.append(child2)
     return children
 
-pop = init_population(20,3)
-add_scores(pop)
-dominance(pop)
-pareto(pop)
-crowding(pop)
-Qt = breeding(pop)
 
-print(len(pop))
-print(pop)
-print(len(Qt))
-print(Qt)
+def selection(pop_size, population):
+    pareto_dict = defaultdict(list) #creates a dict for all pop and arranges according to pareto front
+    for i in population:
+        pareto_dict[i.pareto].append(i)
+    new_gen = []
 
+    for pareto_counter in range(1,len(population)):
+        if (len(new_gen)+len(pareto_dict[pareto_counter])) < pop_size:
+            for obj in pareto_dict[pareto_counter]:
+                new_gen.append(obj)
+        else:
+            sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: x.dist, reverse=False)
+            for obj in sorted_pareto:
+                while len(new_gen) < pop_size:
+                    new_gen.append(obj)
+    return new_gen
 
-x = []
-y = []
-n = []
-f = []
+def NSGA2(pop_size,generations):
+    Pt = init_population(pop_size,3)
+    add_scores(Pt)
+    dominance(Pt)
+    pareto(Pt)
+    crowding(Pt)
+    gen_counter = 1
 
-for d in pop:
-    x.append(d.scores[0])
-    y.append(d.scores[1])
-    n.append(d.pareto)
-    f.append(d.dist)
+    plt.figure()
+    while gen_counter < generations:
+        print('Pt: ', Pt)
+        print('Len of gen: ', len(Pt))
+        for i in Pt:
+            print('Parameters: ', i.parameters)
+        x=[]
+        y=[]
+        n=[]
+        gen= gen_counter
+        for solution in Pt:
+            solution.generation = gen
+            x.append(solution.scores[0])
+            y.append(solution.scores[1])
+            n.append(solution.generation)
 
-fig, ax = plt.subplots()
-ax.scatter(x, y)
+        plt.scatter(x, y)
+        for i, txt in enumerate(n):
+            plt.annotate(txt, (x[i], y[i]))
 
-for i, txt in enumerate(n):
-    ax.annotate(txt, (x[i]+1, y[i]+1))
+        Qt = breeding(Pt)
+        add_scores(Qt)
+        Rt = Pt + Qt
+        dominance(Rt)
+        pareto(Rt)
+        crowding(Rt)
+        Pt = selection(pop_size,Rt)
 
-for i, txt in enumerate(f):
-    ax.annotate(txt, (x[i]+10, y[i]+1))
+        gen_counter += 1
+    plt.show()
 
-plt.show()
+NSGA2(10,10)
