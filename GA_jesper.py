@@ -45,7 +45,7 @@ output: volume of cylinder
 
 def cost_volume(parameters):
     volume = math.pi*parameters[0]*parameters[0]*parameters[2] - math.pi*parameters[1]*parameters[1]*parameters[2]
-    return abs(volume)
+    return - abs(volume)
 
 """
 cost_area: Function to calculate the total area
@@ -115,7 +115,8 @@ def crowding(population):
             if(len(sorted_list)>1):
                 sorted_list[0].dist += 1
 
-            span = max_value - min_value
+            span = abs(max_value - min_value)
+
             for n in range(1,len(sorted_list)-1):
                 distance = abs((sorted_list[n-1].scores[score]-sorted_list[n+1].scores[score]) / span)
                 sorted_list[n].dist += distance
@@ -179,11 +180,8 @@ def NSGA2(pop_size,generations):
     gen_counter = 1
 
     plt.figure()
-    while gen_counter < generations:
-        print('Pt: ', Pt)
-        print('Len of gen: ', len(Pt))
-        for i in Pt:
-            print('Parameters: ', i.parameters)
+    while gen_counter <= generations:
+
         x=[]
         y=[]
         n=[]
@@ -198,6 +196,12 @@ def NSGA2(pop_size,generations):
         for i, txt in enumerate(n):
             plt.annotate(txt, (x[i], y[i]))
 
+        print('Gen #:', gen_counter)
+        for i in Pt:
+            print('Parameters: ', i.parameters)
+            print('Scores: ', i.scores)
+            print('Sol gen#: ', i.generation)
+
         Qt = breeding(Pt)
         add_scores(Qt)
         Rt = Pt + Qt
@@ -209,4 +213,4 @@ def NSGA2(pop_size,generations):
         gen_counter += 1
     plt.show()
 
-NSGA2(10,10)
+NSGA2(10,2)
