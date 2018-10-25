@@ -1,5 +1,7 @@
 import json, random
 from space_planning import get_layout
+import matplotlib.pyplot as plt
+
 
 json_path = "room_data.json"
 with open(json_path, 'rb') as f:
@@ -21,9 +23,17 @@ print("split direction:", dir_list)
 print("room order:", room_order)
 
 edges_out, adjacency_score, aspect_score = get_layout(room_def, split_list, dir_list, room_order, min_opening)
+print('Edges out: ', edges_out)
 
-print("\nOUTPUTS:")
-# print edges_out
-print("adjacency score:", adjacency_score)
-print("aspect score:", round(aspect_score, 2))
-print("edges out:", edges_out)
+
+max_lines = 3
+lines = 0
+
+for pair in edges_out:
+    print('Coord 1:', pair[0], "Coord 2:", pair[1])
+    plt.plot(pair[0],pair[1])
+    lines += 1
+    if lines > max_lines:
+        break
+#plt.plot([x1,x2],[y1,y2])
+plt.show()
