@@ -97,7 +97,7 @@ def pareto_score(population):
                  if n.dominated_count == 0:
                      n.pareto = pareto_counter
                      next_front.append(n)
-        cur_front = list(next_front)
+        cur_front = next_front
 
 def hamming_distance(individual1, individual2):
     hamming = 0
@@ -156,7 +156,6 @@ def binary_tournament(population):
     Obj2 = random.choice(population)
     return comparison(Obj1,Obj2)
 
-
 def crossover(obj1,obj2):
     child1_p1 = obj1.room_order[:round(num_rooms/2)]
     child1_p2 = [item for item in obj2.room_order if item not in child1_p1]
@@ -167,10 +166,6 @@ def crossover(obj1,obj2):
     mid = round(num_rooms/2) #mid-point (rounded) of individual
     child1 = individual(definition, room_def,(obj1.split_list[:(mid-1)]+obj2.split_list[(mid-1):]),(obj1.dir_list[:mid]+obj2.dir_list[mid:]),(child1_p1+child1_p2),min_opening)
     child2 = individual(definition, room_def,(obj2.split_list[:(mid-1)]+obj1.split_list[(mid-1):]),(obj2.dir_list[:mid]+obj1.dir_list[mid:]),(child2_p1+child2_p2),min_opening)
-
-    if (child1 or child2) == (obj1 or obj2): #troubleshooting
-        print('Child equal to parent!')
-        print(child1,child2,obj1,obj2)
     return child1,child2
 
 def breeding(population):
@@ -234,14 +229,4 @@ def generate(pop_size, generations):
         print('Pt size: ', len(Pt))
         gen_counter += 1
 
-
-generate(40,10)
-
-"""
-print("\nINPUTS:")
-print("split list:", [round(s, 2) for s in split_list])
-print("split direction:", dir_list)
-print("room order:", room_order)
-
-edges_out, adjacency_score, aspect_score = get_layout(room_def, split_list, dir_list, room_order, min_opening)
-"""
+generate(80,10)
