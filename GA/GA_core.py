@@ -189,9 +189,10 @@ def selection(pop_size, population):
             worst_pareto = i.pareto
 
     new_gen = []
-    for pareto_counter in range(1,worst_pareto):
+    for pareto_counter in range(1,worst_pareto+1):
         if pareto_counter == 1: #to see if adjacancy gets better in time
             print('Pareto 1, adjacency score: ', pareto_dict[pareto_counter][0].adjacency_score)
+
         if (len(new_gen)+len(pareto_dict[pareto_counter])) < pop_size:
             for obj in pareto_dict[pareto_counter]:
                 new_gen.append(obj)
@@ -229,4 +230,4 @@ def generate(pop_size, generations):
         print('Pt size: ', len(Pt))
         gen_counter += 1
 
-generate(80,10)
+generate(80,20)
