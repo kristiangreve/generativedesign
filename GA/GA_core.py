@@ -90,20 +90,75 @@ def pareto_score(population):
             cur_front.append(i)
 
     while(len(cur_front) != 0): #this loop identifies the following fronts
+        pareto_counter +=1
+        next_front = []
         for i in cur_front:
             for n in i.dominates_these:
                  n.dominated_count -=1
                  if n.dominated_count == 0:
-                     n.pareto = pareto_counter+1
+                     n.pareto = pareto_counter
                      next_front.append(n)
         cur_front = next_front
-        next_front = []
-        pareto_counter +=1
 
+    """
+    print('-------')
+    no_pareto = []
     for obj in population:
         if obj.pareto == None:
-            print(obj , 'does not have a pareto. # Dominated count/dominates: ', obj.dominated_count, len(obj.dominates_these))
-            print(obj.dominated_count)
+            no_pareto.append(obj)
+            print(obj , 'no pareto. # Dominated count/dominates: ', obj.dominated_count, len(obj.dominates_these))
+            print('pareto front: ', obj.pareto)
+    for index, obj in enumerate(no_pareto):
+        for index2 in range(index+1,len(no_pareto)):
+            if obj.dir_list == no_pareto[index2].dir_list:
+                print('Similar dir list!')
+                print(obj, obj.dir_list)
+                print(no_pareto[index2], no_pareto[index2].dir_list)
+    """
+    
+def pareto_score_greve(population): #greve version
+    pareto_counter = 1
+    next_front = []
+    cur_front = []
+    cur_population = []
+
+    for i in population: #This loop defines the initial pareto front
+        if i.dominated_count == 0:
+            i.pareto = pareto_counter
+            cur_front.append(i)
+        else:
+            cur_population.append(i)
+
+    identified = 0
+    while identified<len(population): #this loop identifies the following fronts
+        pareto_counter +=1
+        for i in cur_front:
+            for n in i.dominates_these:
+                n.dominated_count -=1
+                if n.dominated_count == 0:
+                    n.pareto = pareto_counter
+                    next_front.append(n)
+        identified += len(cur_front)
+        cur_front = next_front.copy()
+        next_front = []
+
+        if len(cur_front)>0:
+            print('Cur pareto front: ', cur_front[0].pareto)
+
+
+    print('-------')
+    no_pareto = []
+    for obj in population:
+        if obj.pareto == None:
+            no_pareto.append(obj)
+            print(obj , 'no pareto. # Dominated count/dominates: ', obj.dominated_count, len(obj.dominates_these))
+            print('pareto front: ', obj.pareto)
+    for index, obj in enumerate(no_pareto):
+        for index2 in range(index+1,len(no_pareto)):
+            if obj.dir_list == no_pareto[index2].dir_list:
+                print('Similar dir list!')
+                print(obj, obj.dir_list)
+                print(no_pareto[index2], no_pareto[index2].dir_list)
 
 def hamming_distance(individual1, individual2):
     hamming = 0
@@ -123,13 +178,6 @@ def dir_score(pareto_front):
                         if hamming_list[-1] > max_value:
                             max_value = hamming_list[-1]
                 hamming_list = sorted(hamming_list)
-
-                if len(hamming_list)<2:
-                    print('Error about to occur!')
-                    print('Len of pareto: ', len(pareto_front))
-                    print('Objects in pareto: ')
-                    for obj in pareto_front:
-                        print(obj)
 
                 individual.dir_score = (hamming_list[0]+hamming_list[1]) / 2
                 #print('Hamming list: ', hamming_list)
@@ -220,8 +268,8 @@ def selection(pop_size, population):
 
     new_gen = []
     for pareto_counter in range(1,worst_pareto):
-        #if pareto_counter == 1: #to see if adjacancy gets better in time
-            #print('Pareto 1, adjacency score: ', pareto_dict[pareto_counter][0].adjacency_score)
+        if pareto_counter == 1: #to see if adjacancy gets better in time
+            print('Pareto 1, adjacency score: ', pareto_dict[pareto_counter][0].adjacency_score)
         if (len(new_gen)+len(pareto_dict[pareto_counter])) < pop_size:
             for obj in pareto_dict[pareto_counter]:
                 new_gen.append(obj)
@@ -242,22 +290,12 @@ def generate(pop_size, generations):
 
     print('Generation 0')
     similar_counter = 0
-    for index,obj in enumerate(Pt):
-        if index+1 < len(Pt):
-            if obj == Pt[index+1]:
-                print('Similar Pt:')
-                print(obj)
-                print(Pt[index+1])
-    print('# of Similar objects: ', similar_counter)
 
     gen_counter = 1
     while gen_counter <= generations:
         print('Generation: ', gen_counter)
         Qt = breeding(Pt)
         evaluate_pop(Qt)
-        for child in Qt:
-            if child in Pt:
-                print('Child equal to parent pop!')
         Rt = Pt + Qt
         dominance(Rt)
         pareto_score(Rt)
@@ -265,35 +303,13 @@ def generate(pop_size, generations):
         #for obj in Rt:
         #    print('obj :', obj)
         dir_crowding(Rt)
-
-        print('Before selection: ')
-        similar2_counter = 0
-        for index,obj in enumerate(Rt):
-            if index+1 < len(Rt):
-                if obj == Rt[index+1]:
-                    if similar2_counter == 0:
-                        similar2_counter = 2
-                    else:
-                        similar2_counter +=1
-        print('# of Similar objects, before selection: ', similar2_counter)
-
-
+        print('Rt size: ', len(Rt))
         Pt = selection(pop_size,Rt)
-
-        similar_counter = 0
-        for index,obj in enumerate(Pt):
-            if index+1 < len(Pt):
-                if obj == Pt[index+1]:
-                    if similar_counter == 0:
-                        similar_counter = 2
-                    else:
-                        similar_counter +=1
-        print('# of Similar objects, after selection: ', similar_counter)
-
+        print('Pt size: ', len(Pt))
         gen_counter += 1
 
 
-generate(40,8)
+generate(40,20)
 
 """
 print("\nINPUTS:")
