@@ -3,6 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from collections import defaultdict
 from space_planning import get_layout
+from timeit import default_timer as timer
+
+
 
 class individual:
     def __init__(self,definition,room_def, split_list, dir_list, room_order, min_opening):
@@ -87,7 +90,6 @@ def pareto_score(population):
         if i.dominated_count == 0:
             i.pareto = pareto_counter
             cur_front.append(i)
-
     while(len(cur_front) != 0): #this loop identifies the following fronts
         pareto_counter +=1
         next_front = []
@@ -133,10 +135,16 @@ def dir_score(pareto_front):
     #        print(comparison.dir_list)
     #        print('Hamming: ', spatial.distance.hamming(individual.dir_list,comparison.dir_list))
 
+def reset_atributes(obj):
+    obj.dominated_count = 0
+    obj.dominated_these = []
+
+
 def dir_crowding(population):
     pareto_dict = defaultdict(list)
-    for i in population:
-        pareto_dict[i.pareto].append(i)
+    for individual in population:
+        pareto_dict[individual.pareto].append(individual)
+        reset_atributes(individual)
     for pareto_list in pareto_dict.values():
         dir_score(pareto_list)
 
@@ -168,7 +176,7 @@ def crossover(obj1,obj2):
     child2 = individual(definition, room_def,(obj2.split_list[:(mid-1)]+obj1.split_list[(mid-1):]),(obj2.dir_list[:mid]+obj1.dir_list[mid:]),(child2_p1+child2_p2),min_opening)
     return child1,child2
 
-def breeding(population):
+def breeding(population, mutation_rate):
     children = []
     while len(children) < len(population):
         parent1 = binary_tournament(population)
@@ -176,6 +184,8 @@ def breeding(population):
 
         if parent1 != parent2: #to avoid breeding the same parent
             child1,child2 = crossover(parent1,parent2) #
+            mutate(child1, mutation_rate)
+            mutate(child2, mutation_rate)
             children.append(child1)
             children.append(child2)
     return children
@@ -192,7 +202,7 @@ def selection(pop_size, population):
     for pareto_counter in range(1,worst_pareto+1):
         if pareto_counter == 1: #to see if adjacancy gets better in time
             print('Pareto 1, adjacency score: ', pareto_dict[pareto_counter][0].adjacency_score)
-
+            progress.append(pareto_dict[pareto_counter][0].adjacency_score)
         if (len(new_gen)+len(pareto_dict[pareto_counter])) < pop_size:
             for obj in pareto_dict[pareto_counter]:
                 new_gen.append(obj)
@@ -203,31 +213,72 @@ def selection(pop_size, population):
                     new_gen.append(obj)
     return new_gen
 
+def mutate(obj1, mutation_rate):
+        parameter_list = [obj1.split_list, obj1.dir_list,obj1.room_order]
+        for parameter in parameter_list:
+             if random.random() < (1.0/(len(parameter)*mutation_rate)):
+                random_gene = random.randint(0,len(parameter)-1)
+                if len(parameter) == num_rooms: #room order has this specific length
+                    random_gene2 = random.randint(0,len(parameter)-1)
+                    while random_gene == random_gene2: #in case random gene2 becomes same as random_gene
+                        random_gene2 = random.randint(0,len(parameter)-1)
+                    parameter[random_gene], parameter[random_gene2] = parameter[random_gene2], parameter[random_gene]
+                elif len(parameter) == (num_rooms-1): #dir list has this specific length
+                    parameter[random_gene] = random.randint(0,1)
+                elif len(parameter) == (num_rooms-2): #split list has this specific length
+                    parameter[random_gene] = random.random()
+
+
+progress = []
+
+
+# ...
+
+
 def generate(pop_size, generations):
+    start = timer()
     Pt = init_population(pop_size);
     evaluate_pop(Pt)
     dominance(Pt)
     pareto_score(Pt)
     dir_crowding(Pt)
 
+    progress.append(Pt[0].adjacency_score) #random score
     print('Generation 0')
+
     similar_counter = 0
+    mutation_ratio = 0.1 #used as 1/dimensionality*mutation_ratio
+
 
     gen_counter = 1
-    while gen_counter <= generations:
+    plt.figure()
+    while (gen_counter <= generations) and (progress[-1] > 0):
         print('Generation: ', gen_counter)
-        Qt = breeding(Pt)
+
+        Qt = breeding(Pt, mutation_ratio)
         evaluate_pop(Qt)
         Rt = Pt + Qt
-        for obj in Rt:
-            obj.dominated_count = 0
-            obj.dominated_these = []
+        #for obj in Rt: #resets saved atributes from last generation, include in some function
+        #    obj.dominated_count = 0
+        #    obj.dominated_these = []
         dominance(Rt)
         pareto_score(Rt)
         dir_crowding(Rt)
-        print('Rt size: ', len(Rt))
         Pt = selection(pop_size,Rt)
-        print('Pt size: ', len(Pt))
         gen_counter += 1
 
-generate(80,20)
+    plt.plot(progress[1:])
+    plt.ylabel('Adjacency Score')
+    plt.xlabel('Generation')
+    plt.ylim(bottom=0)
+
+    end = timer()
+    elapsed_time = end - start
+
+    figtext = 'Pop Size: '+ str(pop_size) + ', Mutation rate: '+ str(1/mutation_ratio)+ ' , Time to run: '+str(round(elapsed_time,2))+' s , Code vers 0.2 (13:36, 29/10/18) / optimized reset'
+    #print(Fixtext)
+
+    plt.figtext(0.02,0.02,figtext, fontsize=16)
+    plt.show()
+
+generate(60,250)
