@@ -21,6 +21,7 @@ class individual:
         self.adjacency_score = None
         self.split_score = None
         self.dir_score = None
+        self.interactive_score = 1
 
         self.edges_out = []
         self.dominates_these = []
@@ -101,7 +102,7 @@ def pareto_score(population):
                      next_front.append(n)
         cur_front = next_front
 
-def hamming_distance(individual1, individual2):
+def hamming_distance(individual1, individual2): #calculates binary hamming distance
     hamming = 0
     for index, dir in enumerate(individual1.dir_list):
         if dir != individual2.dir_list[index]:
@@ -109,23 +110,26 @@ def hamming_distance(individual1, individual2):
     return hamming
 
 def dir_score(pareto_front):
-        max_value = 0
+    max_value = 0
+    if len(pareto_front)>2: #If there's at least 3 solutions in the pareto front (calc. dist. to 2 nearest)
         for individual in pareto_front:
-            if len(pareto_front)>2:
-                hamming_list = []
-                for comparison in pareto_front:
-                    if individual != comparison:
-                        hamming_list.append(hamming_distance(individual,comparison))
-                        if hamming_list[-1] > max_value:
-                            max_value = hamming_list[-1]
-                hamming_list = sorted(hamming_list)
-                individual.dir_score = (hamming_list[0]+hamming_list[1]) / 2
-            else:
-                individual.dir_score = 1
-        if len(pareto_front)>2:
-            for individual in pareto_front:
-                if max_value != 0:
-                    individual.dir_score =  individual.dir_score / max_value
+            hamming_list = [] #creates a hamming list unique to each individual
+            for comparison in pareto_front:
+                if individual != comparison:
+                    hamming_list.append(hamming_distance(individual,comparison)) #calculates hamming distance between two solutions
+                    if hamming_list[-1] > max_value:
+                        max_value = hamming_list[-1]
+            hamming_list = sorted(hamming_list)
+            individual.dir_score = (hamming_list[0]+hamming_list[1]) / 2
+    else:
+        for individual in pareto_front:
+            individual.dir_score = 1
+    if len(pareto_front)>2:
+        for individual in pareto_front:
+            if max_value != 0:
+                individual.dir_score =  individual.dir_score / max_value
+                print('Dir score: ', individual.dir_score)
+
 
     #for index, individual in enumerate(pareto_front): #more efficient but requires storing relations
     #    max_value = 0
@@ -202,7 +206,7 @@ def selection(pop_size, population):
     for pareto_counter in range(1,worst_pareto+1):
         if pareto_counter == 1: #to see if adjacancy gets better in time
             print('Pareto 1, adjacency score: ', pareto_dict[pareto_counter][0].adjacency_score)
-            progress.append(pareto_dict[pareto_counter][0].adjacency_score)
+            adjacency_plot.append(pareto_dict[pareto_counter][0].adjacency_score)
         if (len(new_gen)+len(pareto_dict[pareto_counter])) < pop_size:
             for obj in pareto_dict[pareto_counter]:
                 new_gen.append(obj)
@@ -229,10 +233,7 @@ def mutate(obj1, mutation_rate):
                     parameter[random_gene] = random.random()
 
 
-progress = []
-
-
-# ...
+adjacency_plot = [] #global list to store the best adjacency score from each generation
 
 
 def generate(pop_size, generations):
@@ -243,7 +244,7 @@ def generate(pop_size, generations):
     pareto_score(Pt)
     dir_crowding(Pt)
 
-    progress.append(Pt[0].adjacency_score) #random score
+    adjacency_plot.append(Pt[0].adjacency_score) #random score
     print('Generation 0')
 
     similar_counter = 0
@@ -252,22 +253,19 @@ def generate(pop_size, generations):
 
     gen_counter = 1
     plt.figure()
-    while (gen_counter <= generations) and (progress[-1] > 0):
+    while (gen_counter <= generations) and (adjacency_plot[-1] > 0):
         print('Generation: ', gen_counter)
 
         Qt = breeding(Pt, mutation_ratio)
         evaluate_pop(Qt)
         Rt = Pt + Qt
-        #for obj in Rt: #resets saved atributes from last generation, include in some function
-        #    obj.dominated_count = 0
-        #    obj.dominated_these = []
         dominance(Rt)
         pareto_score(Rt)
         dir_crowding(Rt)
         Pt = selection(pop_size,Rt)
         gen_counter += 1
 
-    plt.plot(progress[1:])
+    plt.plot(adjacency_plot[1:])
     plt.ylabel('Adjacency Score')
     plt.xlabel('Generation')
     plt.ylim(bottom=0)
@@ -281,4 +279,4 @@ def generate(pop_size, generations):
     plt.figtext(0.02,0.02,figtext, fontsize=16)
     plt.show()
 
-generate(60,250)
+generate(60,1)
