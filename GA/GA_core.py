@@ -90,10 +90,16 @@ def dominance(population):
      for i in range(len(population)):      #Loops through all individuals of population
         for j in range(i+1,len(population)): #Loops through all the remaining indiduals
             #What if adjacency and interactive score are similar? Then i gets favored while in fact solutions are equally good.
-            if (population[i].adjacency_score <= population[j].adjacency_score) and (population[i].interactive_score <= population[j].interactive_score):
+            #if (population[i].adjacency_score <= population[j].adjacency_score) and (population[i].interactive_score <= population[j].interactive_score):
+            #    population[i].dominates_these.append(population[j])
+            #    population[j].dominated_count += 1
+            #elif (population[i].adjacency_score >= population[j].adjacency_score) and (population[i].interactive_score >= population[j].interactive_score):
+            #    population[j].dominates_these.append(population[i])
+            #    population[i].dominated_count += 1
+            if (population[i].adjacency_score < population[j].adjacency_score):
                 population[i].dominates_these.append(population[j])
                 population[j].dominated_count += 1
-            elif (population[i].adjacency_score >= population[j].adjacency_score) and (population[i].interactive_score >= population[j].interactive_score):
+            elif (population[i].adjacency_score > population[j].adjacency_score):
                 population[j].dominates_these.append(population[i])
                 population[i].dominated_count += 1
 
@@ -207,8 +213,8 @@ def breeding(population, mutation_rate):
 
         if parent1 != parent2: #to avoid breeding the same parent
             child1,child2 = crossover(parent1,parent2) #
-            mutate(child1, mutation_rate)
-            mutate(child2, mutation_rate)
+            #mutate(child1, mutation_rate)
+            #mutate(child2, mutation_rate)
             children.append(child1)
             children.append(child2)
     return children
@@ -223,9 +229,12 @@ def selection(pop_size, population):
 
     new_gen = []
     for pareto_counter in range(1,worst_pareto+1):
+        ####### START: FOR TESTING #######
         if pareto_counter == 1: #to see if adjacancy gets better in time
             print('Pareto 1, adjacency score: ', pareto_dict[pareto_counter][0].adjacency_score)
+            fake_user_input(pareto_dict[pareto_counter][0])
             adjacency_plot.append(pareto_dict[pareto_counter][0].adjacency_score)
+        ####### END: FOR TESTING #######
         if (len(new_gen)+len(pareto_dict[pareto_counter])) < pop_size:
             for obj in pareto_dict[pareto_counter]:
                 new_gen.append(obj)
@@ -251,8 +260,40 @@ def mutate(obj1, mutation_rate):
                 elif len(parameter) == (num_rooms-2): #split list has this specific length
                     parameter[random_gene] = random.random()
 
+def mutate2(population, mutation_rate):
+    atribute_list = ['split_list', 'dir_list','room_order']
+    for atribute in atribute_list:
+        mutate_objects = []
+        while len(mutate_objects) <= int(mutation_rate*len(population)):
+            mutate_objects.append(random.randint(0,len(population)-1))
+        for index in mutate_objects:
+            if atribute == 'room_order':
+                random_gene = random.randint(0,len(population[index].room_order)-1)
+                random_gene2 = random.randint(0,len(population[index].room_order)-1)
+                while random_gene == random_gene2: #in case random gene2 becomes same as random_gene
+                    random_gene2 = random.randint(0,len(population[index].room_order)-1)
+                population[index].room_order[random_gene], population[index].room_order[random_gene2] = population[index].room_order[random_gene2], population[index].room_order[random_gene]
+            elif atribute == 'dir_list':
+                random_gene = random.randint(0,len(population[index].dir_list)-1)
+                population[index].dir_list[random_gene] = random.randint(0,1)
+            elif atribute == 'split_list':
+                random_gene = random.randint(0,len(population[index].split_list)-1)
+                population[index].split_list[random_gene] = random.random()
+            #parameter = population[index] #Why can't we just do like this!
+
+
+fake_user = []
+fake_user_counter = 0
+
+def fake_user_input(obj1):
+    global fake_user_counter
+    fake_user_counter += 1
+    if fake_user_counter > 9:
+        fake_user.append(obj1)
+        fake_user_counter = 0
 
 adjacency_plot = [] #global list to store the best adjacency score from each generation
+
 
 def user_input_generate():
         split_list = [random.random() for i in range(num_rooms-2)]
@@ -261,11 +302,13 @@ def user_input_generate():
         random.shuffle(room_order)
         return(individual(definition, room_def,split_list,dir_list,room_order,min_opening))
 
+
+
 def generate(pop_size, generations):
     user_selection = [] #list of user input objects
     start = timer()
     Pt = init_population(pop_size);
-    evaluate_pop(Pt, user_selection)
+    evaluate_pop(Pt, fake_user)
     dominance(Pt)
     pareto_score(Pt)
     dir_crowding(Pt)
@@ -276,7 +319,7 @@ def generate(pop_size, generations):
     print('Generation 0')
 
     similar_counter = 0
-    mutation_ratio = 0.1 #used as 1/dimensionality*mutation_ratio
+    mutation_ratio = 1 #used as 1/dimensionality*mutation_ratio
 
 
     gen_counter = 1
@@ -284,11 +327,11 @@ def generate(pop_size, generations):
     while (gen_counter <= generations) and (adjacency_plot[-1] > 0):
         print('Generation: ', gen_counter)
 
-        if gen_counter == 10 or gen_counter == 20 or gen_counter == 30:
-            user_selection.append(user_input_generate())
+
 
         Qt = breeding(Pt, mutation_ratio)
-        evaluate_pop(Qt,user_selection)
+        mutate2(Qt, mutation_ratio)
+        evaluate_pop(Qt,fake_user)
         Rt = Pt + Qt
         dominance(Rt)
         pareto_score(Rt)
@@ -312,4 +355,4 @@ def generate(pop_size, generations):
     plt.figtext(0.02,0.02,figtext, fontsize=16)
     plt.show()
 
-generate(60,40)
+generate(60,50)
