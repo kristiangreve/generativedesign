@@ -57,3 +57,4 @@ ValueError: invalid literal for int() with base 10: ''
 2018-11-01 20:29:34,085 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
 2018-11-01 20:31:12,504 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
 2018-11-01 20:36:51,616 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+2018-11-02 09:14:59,383 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
