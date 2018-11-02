@@ -44,24 +44,6 @@ Input: size, int which defines the size of the init_population
 Output: A list of len(size) of individual objects eachw with (dim) variables
 """
 
-#json_path = "room_data.json"
-#with open(json_path, 'rb') as f:
-#    definition = json.loads(f.read())
-#    room_def = definition["rooms"]
-#
-#num_rooms = len(room_def)
-#min_opening = 3
-#
-#def init_population(size):
-#    population = []
-#    for n in range(size):
-#        split_list = [random.random() for i in range(num_rooms-2)]
-#        dir_list = [int(round(random.random())) for i in range(num_rooms-1)]
-#        room_order = list(range(num_rooms))
-#        random.shuffle(room_order)
-#        population.append(individual(definition, room_def,split_list,dir_list,room_order,min_opening))
-#    return population
-
 def evaluate_layout(individual):
     dir_pop = list(individual.dir_list) # copy the dir list because the passed parameter gets consumed in the get_layout function (pop)
     max_sizes, departments, edges_out, adjacency_score, aspect_score = \
@@ -85,12 +67,14 @@ def evaluate_pop(generation, user_input):
                 individual.interactive_dir.append(hamming_distance(individual.dir_list, user_input_i.dir_list))
                 individual.interactive_split.append(num_difference_score(individual.split_list,user_input_i.split_list))
                 individual.interactive_room.append(hamming_distance(individual.room_order,user_input_i.room_order))
+                # for later normalization of distances, record max distance
                 if individual.interactive_dir[index] > max_dir_hamming[index]:
                     max_dir_hamming[index] = individual.interactive_dir[index]
                 if individual.interactive_split[index] > max_split_num[index]:
                     max_split_num[index] = individual.interactive_split[index]
                 if individual.interactive_room[index] > max_room_hamming[index]:
                     max_room_hamming[index] = individual.interactive_room[index]
+
     if len(user_input)>0:
         for individual in generation:
             for i in range(len(user_input)):
@@ -104,15 +88,15 @@ def evaluate_pop(generation, user_input):
             individual.interactive_room = []
 
 
-def dominance(population):
+def dominance(population,selections):
      for i in range(len(population)):      #Loops through all individuals of population
         for j in range(i+1,len(population)): #Loops through all the remaining indiduals
             #What if adjacency and interactive score are similar? Then i gets favored while in fact solutions are equally good.
-            if len(fake_user)>0:
-                if (population[i].adjacency_score < population[j].adjacency_score):# and (population[i].interactive_score < population[j].interactive_score):
+            if len(selections)>0:
+                if (population[i].adjacency_score <= population[j].adjacency_score) and (population[i].interactive_score < population[j].interactive_score):
                     population[i].dominates_these.append(population[j])
                     population[j].dominated_count += 1
-                elif (population[i].adjacency_score > population[j].adjacency_score):# and (population[i].interactive_score > population[j].interactive_score):
+                elif (population[i].adjacency_score >= population[j].adjacency_score) and (population[i].interactive_score > population[j].interactive_score):
                     population[j].dominates_these.append(population[i])
                     population[i].dominated_count += 1
             else:
@@ -157,64 +141,56 @@ def num_difference_score(num_list1, num_list2):
         num_difference += abs(num1-num2)
     return num_difference
 
-def dir_score(pareto_front):
-    max_dir_hamming = 0
-    max_room_hamming = 0
-    max_split_num = 0
-    if len(pareto_front)>2: #If there's at least 3 solutions in the pareto front (calc. dist. to 2 nearest)
-        for individual in pareto_front:
-            hamming_dir_list = [] #creates a hamming list unique to each individual
-            hamming_room_list = [] #creates a hamming list unique to each individual
-            num_split_list = [] #creates a hamming list unique to each individual
-            for comparison in pareto_front:
-                if individual != comparison:
-                    hamming_dir_list.append(hamming_distance(individual.dir_list,comparison.dir_list)) #calculates hamming distance between two solutions
-                    hamming_room_list.append(hamming_distance(individual.room_order,comparison.room_order))
-                    num_split_list.append(num_difference_score(individual.split_list,comparison.split_list))
-                    if hamming_dir_list[-1] > max_dir_hamming:
-                        max_dir_hamming = hamming_dir_list[-1]
-                    if hamming_room_list[-1] > max_room_hamming:
-                        max_room_hamming = hamming_room_list[-1]
-                    if num_split_list[-1] > max_split_num:
-                        max_split_num = num_split_list[-1]
-            hamming_dir_list = sorted(hamming_dir_list)
-            hamming_room_list = sorted(hamming_room_list)
-            num_split_list = sorted(num_split_list)
-            individual.crowding_dir = (hamming_dir_list[0]+hamming_dir_list[1]) / 2 #takes 2 closest objects
-            individual.crowding_room = (hamming_room_list[0]+hamming_room_list[1]) / 2
-            individual.crowding_split =  (num_split_list[0]+num_split_list[1]) / 2
-    else:
-        for individual in pareto_front:
-            individual.crowding_score = 1
-    if len(pareto_front)>2:
-        for individual in pareto_front:
-            if max_dir_hamming != 0:
-                individual.crowding_dir =  individual.crowding_dir / max_dir_hamming
-            if max_room_hamming != 0:
-                individual.crowding_room =  individual.crowding_room / max_room_hamming
-            if max_split_num != 0:
-                individual.crowding_split =  individual.crowding_split / max_split_num
-            individual.crowding_score = individual.crowding_dir +individual.crowding_room +individual.crowding_split
-
-    #for index, individual in enumerate(pareto_front): #more efficient but requires storing relations
-    #    max_value = 0
-    #    min_value = 0
-    #    for comparison in pareto_front[(index+1):]:
-    #        print(individual.dir_list)
-    #        print(comparison.dir_list)
-    #        print('Hamming: ', spatial.distance.hamming(individual.dir_list,comparison.dir_list))
-
 def reset_atributes(obj):
     obj.dominated_count = 0
     obj.dominated_these = []
 
-def dir_crowding(population):
+def crowding(population):
     pareto_dict = defaultdict(list)
     for individual in population:
         pareto_dict[individual.pareto].append(individual)
         reset_atributes(individual)
-    for pareto_list in pareto_dict.values():
-        dir_score(pareto_list)
+    for pareto_front in pareto_dict.values():
+        max_dir_hamming = 0
+        max_room_hamming = 0
+        max_split_num = 0
+        if len(pareto_front)>2: #If there's at least 3 solutions in the pareto front (calc. dist. to 2 nearest)
+            for individual in pareto_front:
+                hamming_dir_list = [] #creates a hamming list unique to each individual
+                hamming_room_list = [] #creates a hamming list unique to each individual
+                num_split_list = [] #creates a hamming list unique to each individual
+                for comparison in pareto_front:
+                    if individual != comparison:
+                        hamming_dir_list.append(hamming_distance(individual.dir_list,comparison.dir_list)) #calculates hamming distance between two solutions
+                        hamming_room_list.append(hamming_distance(individual.room_order,comparison.room_order))
+                        num_split_list.append(num_difference_score(individual.split_list,comparison.split_list))
+                        if hamming_dir_list[-1] > max_dir_hamming:
+                            max_dir_hamming = hamming_dir_list[-1]
+                        if hamming_room_list[-1] > max_room_hamming:
+                            max_room_hamming = hamming_room_list[-1]
+                        if num_split_list[-1] > max_split_num:
+                            max_split_num = num_split_list[-1]
+                hamming_dir_list = sorted(hamming_dir_list)
+                hamming_room_list = sorted(hamming_room_list)
+                num_split_list = sorted(num_split_list)
+                individual.crowding_dir = (hamming_dir_list[0]+hamming_dir_list[1]) / 2 #takes 2 closest objects
+                individual.crowding_room = (hamming_room_list[0]+hamming_room_list[1]) / 2
+                individual.crowding_split =  (num_split_list[0]+num_split_list[1]) / 2
+        else:
+            for individual in pareto_front:
+                individual.crowding_score = 3
+
+        #normalizes the scores
+        if len(pareto_front)>2:
+            for individual in pareto_front:
+                if max_dir_hamming != 0:
+                    individual.crowding_dir =  individual.crowding_dir / max_dir_hamming
+                if max_room_hamming != 0:
+                    individual.crowding_room =  individual.crowding_room / max_room_hamming
+                if max_split_num != 0:
+                    individual.crowding_split =  individual.crowding_split / max_split_num
+                individual.crowding_score = individual.crowding_dir+individual.crowding_room +individual.crowding_split
+
 
 def comparison(obj1,obj2): # Compares 2 individuals on pareto front, followed by crowding
     if obj1.pareto == obj2.pareto: #if equal rank, look at distance
@@ -234,15 +210,27 @@ def binary_tournament(population):
 
 def crossover(obj1,obj2):
     num_rooms = len(obj1.room_def)
-    child1_p1 = obj1.room_order[:round(num_rooms/2)]
+    room_crossover_point = random.randint(0,num_rooms)
+    dir_crossover_point = random.randint(0,num_rooms-1)
+    split_crossover_point = random.randint(0,num_rooms-2)
+
+    child1_p1 = obj1.room_order[:room_crossover_point]
     child1_p2 = [item for item in obj2.room_order if item not in child1_p1]
 
-    child2_p1 = obj2.room_order[:round(num_rooms/2)]
+    child2_p1 = obj2.room_order[:room_crossover_point]
     child2_p2 = [item for item in obj1.room_order if item not in child2_p1]
 
     mid = round(num_rooms/2) #mid-point (rounded) of individual
-    child1 = individual(obj1.definition, obj1.room_def,(obj1.split_list[:(mid-1)]+obj2.split_list[(mid-1):]),(obj1.dir_list[:mid]+obj2.dir_list[mid:]),(child1_p1+child1_p2),obj1.min_opening)
-    child2 = individual(obj1.definition, obj1.room_def,(obj2.split_list[:(mid-1)]+obj1.split_list[(mid-1):]),(obj2.dir_list[:mid]+obj1.dir_list[mid:]),(child2_p1+child2_p2),obj1.min_opening)
+    child1 = individual(obj1.definition, obj1.room_def,\
+    (obj1.split_list[:split_crossover_point]+obj2.split_list[split_crossover_point:]), \
+    (obj1.dir_list[:dir_crossover_point]+obj2.dir_list[dir_crossover_point:]), \
+    (child1_p1+child1_p2),obj1.min_opening)
+
+    child2 = individual(obj1.definition, obj1.room_def,\
+    (obj2.split_list[:split_crossover_point]+obj1.split_list[split_crossover_point:]), \
+    (obj2.dir_list[:dir_crossover_point]+obj1.dir_list[dir_crossover_point:]), \
+    (child2_p1+child2_p2),obj1.min_opening)
+
     return child1,child2
 
 def breeding(population, mutation_rate):
@@ -266,17 +254,6 @@ def selection(pop_size, population):
 
     new_gen = []
     for pareto_counter in range(1,worst_pareto+1):
-        ####### START: FOR TESTING #######
-        if pareto_counter == 1: #to see if adjacancy gets better in time
-            #print('Pareto 1, adjacency score: ', pareto_dict[pareto_counter][0].adjacency_score)
-            fake_user_input(random.choice(pareto_dict[pareto_counter]))
-            adjacency_plot.append(pareto_dict[pareto_counter][0].adjacency_score)
-            interactive_average  = 0
-            for obj in pareto_dict[pareto_counter]:
-                interactive_average += obj.interactive_score
-            interactive_average = interactive_average / len(pareto_dict[pareto_counter])
-            #print('Interactive average of pareto1: ', interactive_average)
-        ####### END: FOR TESTING #######
         if (len(new_gen)+len(pareto_dict[pareto_counter])) < pop_size:
             for obj in pareto_dict[pareto_counter]:
                 new_gen.append(obj)
@@ -308,22 +285,6 @@ def mutate(population, mutation_rate):
                 population[index].split_list[random_gene] = random.random()
             #parameter = population[index] #Why can't we just do like this!
 
-
-fake_user = []
-fake_user_counter = 0
-
-def fake_user_input(obj1):
-    global fake_user_counter
-    fake_user_counter += 1
-    if fake_user_counter > 9:
-        fake_user.append(obj1)
-        fake_user_counter = 0
-        for obj in fake_user:
-            continue
-            #print('Adjancency scores: ', obj.adjacency_score)
-            #print('Interactive score: ', obj.interactive_score)
-
-
 adjacency_plot = [] #global list to store the best adjacency score from each generation
 
 def find_user_selection_object(generation,rank_of_favourite):
@@ -341,30 +302,30 @@ def find_user_selection_object(generation,rank_of_favourite):
     return floor_plan
 
 # crates a new population
-def init_population(pop_size,generations):
+def init_population(selections,pop_size,generations):
     # delete all existing instances from database
     db.session.query(Plan).delete()
     db.session.commit()
     init_population_in_database(pop_size)
     Pt = get_population_from_database(0)
-    evaluate_pop(Pt, fake_user)
-    dominance(Pt)
+    evaluate_pop(Pt,selections)
+    dominance(Pt,selections)
     pareto_score(Pt)
-    dir_crowding(Pt)
+    crowding(Pt)
     mutation_ratio = 1
     for n in range(generations):
         #print('Generation: {}'.format(n))
         Qt = breeding(Pt, mutation_ratio)
         mutate(Qt, mutation_ratio)
-        evaluate_pop(Qt,fake_user)
+        evaluate_pop(Qt,selections)
         Rt = Pt + Qt
-        dominance(Rt)
+        dominance(Rt,selections)
         pareto_score(Rt)
-        dir_crowding(Rt)
+        crowding(Rt)
         Pt = selection(pop_size,Rt)
     save_population_to_database(Pt,generations)
 
-def generate(user_selections,generations):
+def generate(selections,generations):
     # query for max generation value in database
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
     print("current generation: {}".format(current_generation))
@@ -372,20 +333,20 @@ def generate(user_selections,generations):
     # load latest generation from database into objects
     Pt = get_population_from_database(current_generation)
     pop_size=len(Pt)
-    evaluate_pop(Pt, user_selections)
-    dominance(Pt)
+    evaluate_pop(Pt,selections)
+    dominance(Pt,selections)
     pareto_score(Pt)
-    dir_crowding(Pt)
+    crowding(Pt)
     mutation_ratio = 1
     for n in range(generations):
         #print('Generation: {}'.format(n))
         Qt = breeding(Pt, mutation_ratio)
         mutate(Qt, mutation_ratio)
-        evaluate_pop(Qt,user_selections)
+        evaluate_pop(Qt,selections)
         Rt = Pt + Qt
-        dominance(Rt)
+        dominance(Rt,selections)
         pareto_score(Rt)
-        dir_crowding(Rt)
+        crowding(Rt)
         Pt = selection(pop_size,Rt)
     save_population_to_database(Pt,generations+current_generation)
     return current_generation
@@ -454,11 +415,10 @@ def save_population_to_database(population,generation):
 def get_from_generation(generation,generation_rank):
     print("generation: {} rank: {}".format(generation,generation_rank))
     # get a single object from the database with a given generation and rank
-    plan = db.session.query(Plan).filter_by(generation=generation)\
-    .order_by(Plan.pareto,Plan.crowding_score.desc()).all()
-    print("len of plan: {} ".format(len(plan)))
 
-    plan=plan[generation_rank]
+    # muligvis har elementer den samme crowding, men er mååååske forskellige
+    plan = db.session.query(Plan).filter_by(generation=generation)\
+    .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[generation_rank]
 
     definition = json.loads(plan.definition)
     room_def = json.loads(plan.room_def)

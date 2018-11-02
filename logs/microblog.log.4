@@ -1,4 +1,22 @@
-2018-11-01 15:34:28,275 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+2018-11-01 19:36:42,819 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 52, in generate_new_floorplans
+    generation_of_favourite = int(request.form['generation'])
+ValueError: invalid literal for int() with base 10: 'null'
+2018-11-01 19:36:49,895 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+2018-11-01 19:36:54,573 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -15,7 +33,7 @@ Traceback (most recent call last):
   File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 42, in generate_lines
     generation = int(request.form['generation'])
 ValueError: invalid literal for int() with base 10: ''
-2018-11-01 15:34:28,307 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+2018-11-01 19:36:54,575 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -32,7 +50,7 @@ Traceback (most recent call last):
   File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 42, in generate_lines
     generation = int(request.form['generation'])
 ValueError: invalid literal for int() with base 10: ''
-2018-11-01 15:34:28,319 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+2018-11-01 19:36:54,578 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -49,7 +67,8 @@ Traceback (most recent call last):
   File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 42, in generate_lines
     generation = int(request.form['generation'])
 ValueError: invalid literal for int() with base 10: ''
-2018-11-01 15:36:09,367 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+2018-11-01 19:40:09,412 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+2018-11-01 19:41:17,587 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -63,10 +82,10 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 52, in generate_new_floorplans
-    generation_of_favourite = int(request.form['generation'])
-ValueError: invalid literal for int() with base 10: 'null'
-2018-11-01 15:36:10,066 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 42, in generate_lines
+    generation = int(request.form['generation'])
+ValueError: invalid literal for int() with base 10: ''
+2018-11-01 19:41:17,597 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -80,10 +99,10 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 52, in generate_new_floorplans
-    generation_of_favourite = int(request.form['generation'])
-ValueError: invalid literal for int() with base 10: 'null'
-2018-11-01 15:36:10,482 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 42, in generate_lines
+    generation = int(request.form['generation'])
+ValueError: invalid literal for int() with base 10: ''
+2018-11-01 19:41:17,607 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -97,23 +116,7 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 52, in generate_new_floorplans
-    generation_of_favourite = int(request.form['generation'])
-ValueError: invalid literal for int() with base 10: 'null'
-2018-11-01 19:36:42,285 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
-Traceback (most recent call last):
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
-    reraise(exc_type, exc_value, tb)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
-    raise value
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
-    return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 52, in generate_new_floorplans
-    generation_of_favourite = int(request.form['generation'])
-ValueError: invalid literal for int() with base 10: 'null'
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 42, in generate_lines
+    generation = int(request.form['generation'])
+ValueError: invalid literal for int() with base 10: ''
+2018-11-01 19:46:58,258 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]

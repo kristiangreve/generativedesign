@@ -1,4 +1,4 @@
-2018-11-01 20:11:38,039 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+2018-11-02 13:10:35,253 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -12,10 +12,18 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 42, in generate_lines
-    generation = int(request.form['generation']) # det er her fejlen er!!
-ValueError: invalid literal for int() with base 10: ''
-2018-11-01 20:11:38,046 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 35, in generate_floorplans
+    init_population(pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 360, in init_population
+    Qt = breeding(Pt, mutation_ratio)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 257, in breeding
+    child1,child2 = crossover(parent1,parent2) #
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 228, in crossover
+    room_crossover_point = random.randint(0,num_rooms)
+NameError: name 'num_rooms' is not defined
+2018-11-02 13:12:59,051 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-02 13:50:42,170 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-02 13:50:54,949 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -29,10 +37,15 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 42, in generate_lines
-    generation = int(request.form['generation']) # det er her fejlen er!!
-ValueError: invalid literal for int() with base 10: ''
-2018-11-01 20:11:38,049 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 35, in generate_floorplans
+    init_population(user_selections,pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 323, in init_population
+    dominance(Pt)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 95, in dominance
+    if len(user_input)>0:
+NameError: name 'user_input' is not defined
+2018-11-02 13:53:03,283 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-02 13:53:27,014 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -46,25 +59,12 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 42, in generate_lines
-    generation = int(request.form['generation']) # det er her fejlen er!!
-ValueError: invalid literal for int() with base 10: ''
-2018-11-01 20:13:42,230 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 20:22:15,099 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 20:24:28,028 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 20:25:26,443 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 20:28:58,593 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 20:29:34,085 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 20:31:12,504 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 20:36:51,616 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-02 09:14:59,383 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-02 09:25:48,076 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-02 09:54:40,371 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-02 09:59:41,435 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-02 10:00:34,678 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-02 10:04:57,401 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-02 10:33:27,995 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-02 10:35:45,820 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-02 10:36:28,825 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-02 10:37:48,917 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-02 10:45:49,398 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 35, in generate_floorplans
+    init_population(user_selections,pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 336, in init_population
+    Pt = selection(pop_size,Rt)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 260, in selection
+    fake_user_input(random.choice(pareto_dict[pareto_counter]))
+NameError: name 'fake_user_input' is not defined
+2018-11-02 13:54:11,026 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-02 14:01:05,649 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]

@@ -1,4 +1,4 @@
-2018-11-01 14:27:21,778 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+2018-11-01 14:46:23,479 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -12,13 +12,13 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 49, in generate_new_floorplans
-    add_to_user_selections(generation_of_favourite,rank_of_favourite)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 405, in add_to_user_selections
-    individual = individual(definition=definition,room_def= room_def,\
-UnboundLocalError: local variable 'individual' referenced before assignment
-2018-11-01 14:28:19,029 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 14:28:29,394 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 52, in generate_new_floorplans
+    generate(user_selections,generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 348, in generate
+    Pt = selection(pop_size,Rt)
+NameError: name 'pop_size' is not defined
+2018-11-01 14:47:09,800 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+2018-11-01 14:47:14,659 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -32,14 +32,20 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 49, in generate_new_floorplans
-    add_to_user_selections(generation_of_favourite,rank_of_favourite)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 409, in add_to_user_selections
-    if user_selections:
-UnboundLocalError: local variable 'user_selections' referenced before assignment
-2018-11-01 14:30:06,357 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 14:32:21,961 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 14:32:27,193 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 52, in generate_new_floorplans
+    generate(user_selections,generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 350, in generate
+    save_population_to_database(Pt,current_generation+generations)
+TypeError: unsupported operand type(s) for +: 'BaseQuery' and 'int'
+2018-11-01 14:47:48,487 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+2018-11-01 14:49:34,718 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+2018-11-01 14:53:35,906 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+2018-11-01 14:54:07,704 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+2018-11-01 14:55:51,592 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+2018-11-01 14:56:12,937 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+2018-11-01 15:00:54,573 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+2018-11-01 15:01:42,336 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+2018-11-01 15:02:15,817 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -53,13 +59,12 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 49, in generate_new_floorplans
-    user_selections = add_to_user_selections(user_selections, generation_of_favourite,rank_of_favourite)
-UnboundLocalError: local variable 'user_selections' referenced before assignment
-2018-11-01 14:34:42,649 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 14:34:53,160 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 14:35:08,945 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 14:35:19,191 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 43, in generate_lines
+    return jsonify(get_from_generation(generation,generation_rank))
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 503, in get_from_generation
+    .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[generation_rank]
+IndexError: list index out of range
+2018-11-01 15:02:15,818 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -73,13 +78,12 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 49, in generate_new_floorplans
-    find_user_selection_object(generation_of_favourite,rank_of_favourite)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 395, in find_user_selection_object
-    print(population)
-NameError: name 'population' is not defined
-2018-11-01 14:36:10,973 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 14:36:17,242 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 43, in generate_lines
+    return jsonify(get_from_generation(generation,generation_rank))
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 503, in get_from_generation
+    .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[generation_rank]
+IndexError: list index out of range
+2018-11-01 15:02:15,827 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -93,14 +97,28 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 49, in generate_new_floorplans
-    find_user_selection_object(generation_of_favourite,rank_of_favourite)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 395, in find_user_selection_object
-    print(Pt)
-NameError: name 'Pt' is not defined
-2018-11-01 14:37:14,239 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 14:37:48,128 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 14:38:25,038 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 14:39:15,418 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 14:44:46,519 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 14:46:12,486 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 43, in generate_lines
+    return jsonify(get_from_generation(generation,generation_rank))
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 503, in get_from_generation
+    .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[generation_rank]
+IndexError: list index out of range
+2018-11-01 15:05:49,001 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+2018-11-01 15:05:54,714 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 43, in generate_lines
+    return jsonify(get_from_generation(generation,generation_rank))
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 503, in get_from_generation
+    .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[generation_rank]
+IndexError: list index out of range

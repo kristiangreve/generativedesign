@@ -32,7 +32,7 @@ def floor_plan():
 def generate_floorplans():
     pop_size = int(request.form['pop_size'])
     generations = int(request.form['generations'])
-    init_population(pop_size, generations)
+    init_population(user_selections,pop_size, generations)
     return jsonify({"generations": generations})
 
 # function to return rendered plan elements
@@ -46,6 +46,7 @@ def generate_lines():
 def generate_new_floorplans():
     generation_of_favourite = int(request.form['generation'])
     rank_of_favourite = int(request.form['generation_rank'])
+
     user_selections.append(find_user_selection_object(generation_of_favourite,rank_of_favourite))
     generations = 10
     current_generation = generate(user_selections,generations)
@@ -63,6 +64,8 @@ def index():
         return redirect(url_for('departments'))
     return render_template('index.html', title='Home', form=form)
 
+
+
 @app.route('/departments', methods=['GET', 'POST'])
 @login_required
 def departments():
@@ -76,6 +79,8 @@ def departments():
         db.session.commit()
         return redirect(url_for('departments'))
     return render_template('departments.html', title='Add departments', form=form, departments=departments, space = space_left)
+
+
 
 @app.route('/delete_department/<department>', methods=['GET'])
 @login_required
@@ -94,6 +99,8 @@ def delete_department(department):
     db.session.commit()
     return redirect(url_for('departments'))
 
+
+
 @app.route('/edit_department/<department>', methods=['GET', 'POST'])
 @login_required
 def edit_department(department):
@@ -111,6 +118,8 @@ def edit_department(department):
         form.name.data = department.name.capitalize()
         form.employees.data = department.employees
     return render_template('edit_department.html', title='Edit department', form=form, departments=departments)
+
+
 
 @app.route('/adjacency', methods=['GET', 'POST'])
 @login_required
@@ -152,7 +161,6 @@ def utility_processor():
             except:
                 return False
     return dict(check_adj=check_adj)
-
 
 @app.route('/add_adjacency/<department1>/<department2>', methods=['GET'])
 @login_required
@@ -197,6 +205,16 @@ def del_adjacency(department1,department2):
 
     db.session.commit()
     return redirect(url_for('adjacency'))
+
+
+
+
+
+
+
+
+
+
 
 
 @app.route('/explore')
