@@ -1,0 +1,116 @@
+2018-11-01 15:05:54,716 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 43, in generate_lines
+    return jsonify(get_from_generation(generation,generation_rank))
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 503, in get_from_generation
+    .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[generation_rank]
+IndexError: list index out of range
+2018-11-01 15:05:54,716 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 43, in generate_lines
+    return jsonify(get_from_generation(generation,generation_rank))
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 503, in get_from_generation
+    .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[generation_rank]
+IndexError: list index out of range
+2018-11-01 15:06:49,573 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+2018-11-01 15:06:57,394 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 43, in generate_lines
+    return jsonify(get_from_generation(generation,generation_rank))
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 504, in get_from_generation
+    .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[generation_rank]
+IndexError: list index out of range
+2018-11-01 15:06:57,405 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 43, in generate_lines
+    return jsonify(get_from_generation(generation,generation_rank))
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 504, in get_from_generation
+    .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[generation_rank]
+IndexError: list index out of range
+2018-11-01 15:06:57,410 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 43, in generate_lines
+    return jsonify(get_from_generation(generation,generation_rank))
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 504, in get_from_generation
+    .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[generation_rank]
+IndexError: list index out of range
+2018-11-01 15:08:46,541 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+2018-11-01 15:08:51,103 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 44, in generate_lines
+    return jsonify(get_from_generation(generation,generation_rank))
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 506, in get_from_generation
+    plan=plan[generation_rank]
+IndexError: list index out of range

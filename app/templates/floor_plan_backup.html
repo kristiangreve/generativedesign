@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+
+<script type="text/paperscript" canvas='canvas_x'>
+function parse_dim(float) {
+	return parseFloat(Math.round(float * 100) / 100).toFixed(2);
+}
+
+function plotPlan(plotCanvas,plan_number) {
+	$.post('/generate_lines/',{
+		plan_number:plan_number
+	}).done(function(response) {
+		console.log(response)
+		var scope = new paper.PaperScope();
+		var canvas = document.getElementById(plotCanvas.id);
+		scope.setup(canvas);
+		scope.activate();
+
+		var departments = response.departments;
+		var max_size = response.max_sizes;
+
+		// factors for scaling the rectangles and draw outside rectangle
+		var factor_x = view.viewSize.width/max_size[1]
+		var factor_y = view.viewSize.height/max_size[0]
+
+		// outline for the floor plan
+		var base = new Point(0,0)
+		var dims = new Size(view.viewSize.width,view.viewSize.height)
+		var outline = new Rectangle(base,dims);
+		var path = new Path.Rectangle(outline);
+		path.strokeColor = 'black';
+		path.strokeWidth = 5;
+
+		departments.forEach(function(element) {
+			var base = new Point(element.base[0]*factor_x,element.base[1]*factor_y);
+			var dims = new Size(element.dims[1]*factor_x,element.dims[0]*factor_y);
+			var name = element.name;
+
+			var department = new Rectangle(base,dims);
+			var path = new Path.Rectangle(department);
+			path.strokeColor = 'black';
+			path.strokeWidth = 1;
+
+			// for plotting dimensions
+			var w = parse_dim(element.dims[1]);
+			var h = parse_dim(element.dims[0]);
+
+			var text_name = new PointText(department.center);
+			text_name.fillColor = 'black';
+			text_name.fontSize = 10;
+			text_name.justification = 'center';
+			text_name.fontWeight = 'bold';
+			text_name.content = name;
+
+			var top_center = new Point(department.topCenter.x, department.topCenter.y+10)
+			var text_width = new PointText(top_center);
+
+			text_width.fillColor = 'black';
+			text_width.fontSize = 8;
+			text_width.justification = 'center';
+			text_width.content = w;
+
+			var line_to = new Path.Line(new Point(department.topLeft.x+4,department.topLeft.y+8), new Point(department.topCenter.x-2*w.length,department.topLeft.y+8));
+			var line_from = new Path.Line(new Point(department.topCenter.x+2*w.length,department.topRight.y+8), new Point(department.topRight.x-4,department.topRight.y+8));
+
+			line_to.strokeColor = 'grey';
+			line_from.strokeColor = 'grey';
+
+		});
+	});
+}
+
+// access every canvas element and plot a floor plan to them
+var canvases = $(".floorcanvas")
+// make an array of the query
+var canvas_arr = jQuery.makeArray(canvases);
+// console.log(canvas_arr)
+var canvas_plan = 0
+
+canvas_arr.forEach(function(entry) {
+	console.log(entry);
+	console.log(canvas_plan)
+	plotPlan(entry,canvas_plan);
+	canvas_plan++;
+});
+
+
+// script for handling user clicks, picking favourite
+$(document).ready(function() {
+	$('.floorcanvas').click(function(event) {
+		$.post('/update_favourites/',{
+			canvas_id:event.target.id
+		}).done(function(response) {
+			console.log(response)
+		});
+	});
+});
+
+</script>
+
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<canvas class="floorcanvas" id="canvas_3" resize="true"></canvas>
+		</div> <!-- /col-md-4 -->
+	</div> <!-- /row -->
+	<p></p>
+
+
+	<!-- empty canvas element to attach paperscript to -->
+	<div class="row">
+		<div class="col-md-12">
+			<canvas id="canvas_x" resize="true"></canvas>
+		</div> <!-- /col-md-4 -->
+	</div> <!-- /row -->
+</div>
+
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block title %}
+{% if title %}{{ title }} - Generative{% else %}Generative{% endif %}
+{% endblock %}
+
+{% block navbar %}
+
+
+<div class="container">
+  {% set url = request.url_rule %}
+<ul class="nav nav-tabs">
+  <li class="nav-item">
+    {% if request.url_rule|string == url_for('index')|string %}
+    <a class="nav-link active" href="{{ url_for('index') }}">Home</a>
+    {% else %}
+    <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+    {% endif %}
+  </li>
+  <li class="nav-item">
+    {% if request.url_rule|string == url_for('departments')|string %}
+    <a class="nav-link active" href="{{ url_for('departments') }}">Departments</a>
+    {% else %}
+    <a class="nav-link" href="{{ url_for('departments') }}">Departments</a>
+    {% endif %}
+  </li>
+  <li class="nav-item">
+    {% if request.url_rule|string == url_for('adjacency')|string %}
+    <a class="nav-link active" href="{{ url_for('adjacency') }}">Adjacency</a>
+    {% else %}
+    <a class="nav-link" href="{{ url_for('adjacency') }}">Adjacency</a>
+    {% endif %}
+  </li>
+  <li class="nav-item">
+    {% if request.url_rule|string == url_for('floor_plan')|string %}
+    <a class="nav-link active" href="{{ url_for('floor_plan') }}">Floor plan</a>
+    {% else %}
+    <a class="nav-link" href="{{ url_for('floor_plan') }}">Floor plan</a>
+    {% endif %}
+  </li>
+  <li class="nav-item">
+    {% if request.url_rule == url_for('floor_plan') %}
+    <a class="nav-link active" href="{{ url_for('floor_plan') }}">Export</a>
+    {% else %}
+    <a class="nav-link" href="{{ url_for('floor_plan') }}">Export</a>
+    {% endif %}
+  </li>
+  {% if current_user.is_anonymous %}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+  </li>
+  {% else %}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+  </li>
+  {% endif %}
+</ul>
+</div>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  {% for message in messages %}
+  <div class="alert alert-info" role="alert">{{ message }}</div>
+  {% endfor %}
+  {% endif %}
+  {% endwith %}
+
+  {# application content needs to be provided in the app_content block #}
+  {% block app_content %}{% endblock %}
+</div>
+{% endblock %}
