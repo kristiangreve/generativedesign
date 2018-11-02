@@ -1,9 +1,0 @@
-(user_id,   definition,                                                                                                                                room_def,                                                                                                          split_list, dir_list,   room_order,   min_opening,  generation,   pareto,   dominated_count,  adjacency_score,  split_score,  dir_score,  edges_out,  dominates_these,  dist)
-(1,         {'rooms': [{'adjacency': ['World'], 'name': 'Hello', 'area': 10}, {'adjacency': ['Hello'], 'name': 'World', 'area': 10}], 'aspect': 2.0}, '[{"adjacency": ["World"], "name": "Hello", "area": 10}, {"adjacency": ["Hello"], "name": "World", "area": 10}]',   '[]',       '[0]',      '[1, 0]',     1,            0,            0,        0,                0,                0,            0,          None,       None,             0)
-
-(user_id, 
-definition, room_def, split_list, dir_list, room_order, min_opening, generation, pareto, dominated_count, adjacency_score, split_score, dir_score, edges_out, dominates_these, dist)
-(1,
-
-
-{'rooms': [{'name': 'Hello', 'area': 10, 'adjacency': ['World', 'New', 'Toilet']}, {'name': 'World', 'area': 10, 'adjacency': ['Hello']}, {'name': 'New', 'area': 20, 'adjacency': ['Hello']}, {'name': 'Toilet', 'area': 40, 'adjacency': ['Hello']}], 'aspect': 2.0}, '[{"name": "Hello", "area": 10, "adjacency": ["World", "New", "Toilet"]}, {"name": "World", "area": 10, "adjacency": ["Hello"]}, {"name": "New", "area": 20, "adjacency": ["Hello"]}, {"name": "Toilet", "area": 40, "adjacency": ["Hello"]}]', '[0.20387995360192046, 0.10222401724671382]', '[1, 1, 1]', '[2, 3, 0, 1]', 1, 0, 0, 0, 0, 0, 0, '[]', '[]', 0)

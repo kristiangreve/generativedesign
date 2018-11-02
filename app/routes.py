@@ -32,34 +32,23 @@ def floor_plan():
 def generate_floorplans():
     pop_size = int(request.form['pop_size'])
     generations = int(request.form['generations'])
-
     init_population(pop_size, generations)
-    
     return jsonify({"generations": generations})
 
 # function to return rendered plan elements
 @app.route('/generate_lines/', methods = ['POST'])
 def generate_lines():
-
     generation = int(request.form['generation'])
     generation_rank = int(request.form['generation_rank'])
-    print("generation of favourite: {}, rank of fav: {}".format(generation,generation_rank))
-    print(user_selections)
     return jsonify(get_from_generation(generation,generation_rank))
 
 @app.route('/generate_new_floorplans/', methods = ['POST'])
 def generate_new_floorplans():
-    # read incoming data
     generation_of_favourite = int(request.form['generation'])
     rank_of_favourite = int(request.form['generation_rank'])
-    # add the favourite design to the floor plan list of user selcetions
     user_selections.append(find_user_selection_object(generation_of_favourite,rank_of_favourite))
-    #print(user_selections)
-    # generations between each user intersection
     generations = 10
-    # new floor plans are generated and we return the current generation
     current_generation = generate(user_selections,generations)
-
     return jsonify({"generations": current_generation})
 
 @app.route('/', methods=['GET', 'POST'])
@@ -92,11 +81,9 @@ def departments():
 @login_required
 def delete_department(department):
     department = Department.query.filter_by(name = department).first()
-    # remove the adjacencies from other entries
     try:
         adjacents = json.loads(department.adjacency)
         for adj in adjacents:
-            # fetch department in database
             dep = Department.query.filter_by(name = adj).first()
             dep_adjacents = json.loads(dep.adjacency)
             dep_adjacents.remove(department.name)
@@ -152,7 +139,6 @@ def json_to_list(json_obj):
 @app.context_processor
 def utility_processor():
     def check_adj(department_row,department_col):
-            # get data from function
             # retrieve departments from database
             department1 = Department.query.filter_by(name = department_row).first_or_404()
             department2 = Department.query.filter_by(name = department_col).first_or_404()
@@ -174,8 +160,6 @@ def add_adjacency(department1,department2):
     # fetch departments from database
     department1 = Department.query.filter_by(name = department1).first_or_404()
     department2 = Department.query.filter_by(name = department2).first_or_404()
-
-    # convert from json
     try:
         adj_1 = json.loads(department1.adjacency)
         adj_2 = json.loads(department2.adjacency)
@@ -186,11 +170,9 @@ def add_adjacency(department1,department2):
     except:
         adj_1 = [department2.name]
         adj_2 = [department1.name]
-
     # convert to json and commit
     department1.adjacency = json.dumps(adj_1)
     department2.adjacency = json.dumps(adj_2)
-
 
     db.session.commit()
     return redirect(url_for('adjacency'))
@@ -201,7 +183,6 @@ def del_adjacency(department1,department2):
     # fetch departments from database
     department1 = Department.query.filter_by(name = department1).first_or_404()
     department2 = Department.query.filter_by(name = department2).first_or_404()
-
     # convert from json
     try:
         adj_1 = json.loads(department1.adjacency)

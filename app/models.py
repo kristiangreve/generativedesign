@@ -7,7 +7,6 @@ import jwt
 from app import app, db, login
 from sqlalchemy.types import ARRAY
 
-
 followers = db.Table(
     'followers',
     db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
