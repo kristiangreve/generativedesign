@@ -46,7 +46,6 @@ def generate_lines():
 def generate_new_floorplans():
     generation_of_favourite = int(request.form['generation'])
     rank_of_favourite = int(request.form['generation_rank'])
-
     user_selections.append(find_user_selection_object(generation_of_favourite,rank_of_favourite))
     generations = 10
     current_generation = generate(user_selections,generations)

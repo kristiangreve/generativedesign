@@ -436,10 +436,26 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
     base = [face.get_base_point() for face in layout.faces][1:]
     departments = [element for element in zip(base,dims,room_names)]
 
+    # Checks whether the  minimum dimensions of any room is lower than the minimum legal width
+    # If any dimension is smaller than allowed, add one to the dims (dimensions) score. Lower score = better
+    min_dimension = 1.5 #min room dimension
+    dims_score = 0
+    for dim_xy in dims:
+        for dim in dim_xy:
+            if dim < min_dimension:
+                dims_score += 1
+
+    #Dictionary mapping every room with its aspect ratio
+    aspect_room_dict = {}
+    for index, face in enumerate(layout.faces[1:]):
+        aspect_room_dict[room_names[index]] = face.get_aspect()
+
+    #######################
+
     departments = []
 
     for base,dim,name in zip(base,dims,room_names):
         department_dict = {"base": base, "dims": dim, "name": name }
         departments.append(department_dict)
 
-    return max_sizes, departments, edges_out, adjacency_score, aspect_score
+    return max_sizes, dims_score, aspect_room_dict, departments, edges_out, adjacency_score, aspect_score

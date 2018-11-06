@@ -1,120 +1,114 @@
-2018-11-01 15:32:31,351 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+2018-11-05 17:01:53,302 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-05 17:06:12,081 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-05 17:14:23,953 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-05 17:20:11,220 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-05 17:21:02,520 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-05 17:21:51,286 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-05 17:22:17,314 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-05 17:27:52,493 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-05 19:18:45,817 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-05 19:19:16,329 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-05 19:19:24,279 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
     rv = self.handle_user_exception(e)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
     reraise(exc_type, exc_value, tb)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
     raise value
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
     rv = self.dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 42, in generate_lines
-    generation = int(request.form['generation'])
-ValueError: invalid literal for int() with base 10: ''
-2018-11-01 15:32:31,358 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 52, in generate_new_floorplans
+    current_generation = generate(user_selections,generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 356, in generate
+    evaluate_pop(Pt,selections)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 74, in evaluate_pop
+    evaluate_user_aspect(individual,user_input_i)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 101, in evaluate_user_aspect
+    dimensions = [dict['dims'] for dims in dict if room in dict]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 101, in <listcomp>
+    dimensions = [dict['dims'] for dims in dict if room in dict]
+TypeError: 'in <string>' requires string as left operand, not dict
+2018-11-05 19:19:58,949 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-05 19:20:06,165 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
     rv = self.handle_user_exception(e)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
     reraise(exc_type, exc_value, tb)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
     raise value
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
     rv = self.dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 42, in generate_lines
-    generation = int(request.form['generation'])
-ValueError: invalid literal for int() with base 10: ''
-2018-11-01 15:32:31,477 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 52, in generate_new_floorplans
+    current_generation = generate(user_selections,generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 356, in generate
+    evaluate_pop(Pt,selections)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 74, in evaluate_pop
+    evaluate_user_aspect(individual,user_input_i)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 101, in evaluate_user_aspect
+    dimensions = [dict['dims'] for dims in dict if room in dict.keys()]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 101, in <listcomp>
+    dimensions = [dict['dims'] for dims in dict if room in dict.keys()]
+AttributeError: 'str' object has no attribute 'keys'
+2018-11-05 19:20:55,590 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-05 19:21:03,539 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
     rv = self.handle_user_exception(e)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
     reraise(exc_type, exc_value, tb)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
     raise value
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
     rv = self.dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 52, in generate_new_floorplans
-    generation_of_favourite = int(request.form['generation'])
-ValueError: invalid literal for int() with base 10: 'null'
-2018-11-01 15:33:38,071 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 52, in generate_new_floorplans
+    current_generation = generate(user_selections,generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 358, in generate
+    evaluate_pop(Pt,selections)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 74, in evaluate_pop
+    evaluate_user_aspect(individual,user_input_i)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 103, in evaluate_user_aspect
+    dimensions = [dict['dims'] for dims in dict if room in dict.keys()]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 103, in <listcomp>
+    dimensions = [dict['dims'] for dims in dict if room in dict.keys()]
+AttributeError: 'str' object has no attribute 'keys'
+2018-11-05 19:21:56,931 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-05 19:22:02,788 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
     rv = self.handle_user_exception(e)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
     reraise(exc_type, exc_value, tb)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
     raise value
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
     rv = self.dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 52, in generate_new_floorplans
-    generation_of_favourite = int(request.form['generation'])
-ValueError: invalid literal for int() with base 10: 'null'
-2018-11-01 15:33:48,374 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
-Traceback (most recent call last):
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
-    reraise(exc_type, exc_value, tb)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
-    raise value
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
-    return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 42, in generate_lines
-    generation = int(request.form['generation'])
-ValueError: invalid literal for int() with base 10: ''
-2018-11-01 15:33:48,397 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
-Traceback (most recent call last):
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
-    reraise(exc_type, exc_value, tb)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
-    raise value
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
-    return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 42, in generate_lines
-    generation = int(request.form['generation'])
-ValueError: invalid literal for int() with base 10: ''
-2018-11-01 15:33:48,434 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
-Traceback (most recent call last):
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
-    reraise(exc_type, exc_value, tb)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
-    raise value
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
-    return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 42, in generate_lines
-    generation = int(request.form['generation'])
-ValueError: invalid literal for int() with base 10: ''
-2018-11-01 15:34:12,984 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 52, in generate_new_floorplans
+    current_generation = generate(user_selections,generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 358, in generate
+    evaluate_pop(Pt,selections)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 74, in evaluate_pop
+    evaluate_user_aspect(individual,user_input_i)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 103, in evaluate_user_aspect
+    dimensions = [dict['dims'] for dims in dict if room in dict.keys()]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 103, in <listcomp>
+    dimensions = [dict['dims'] for dims in dict if room in dict.keys()]
+TypeError: unhashable type: 'dict'
+2018-11-05 19:24:27,669 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]

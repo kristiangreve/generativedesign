@@ -17,6 +17,10 @@ class individual:
         self.dir_list = dir_list
         self.room_order = room_order
         self.min_opening = min_opening
+        self.dims_score = None
+        self.departments = []
+        self.aspect_ratios = {}
+        self.aspect_score = None
 
         self.pareto = None
         self.dominated_count = 0
@@ -37,6 +41,15 @@ class individual:
         self.dist = 0
         self.generation = 0
 
+    def evaluate_user_aspect(self, user_input):
+        aspect_score = 0
+        #for user_input_i in user_input:
+        #    print('room def: ', user_input_i.room_def)
+        #    print('departments: ', user_input_i.departments)
+        #    for room in user_input_i.room_def['name']:
+        #        aspect_score += abs(self.aspect_ratios[room]-user_input_i.aspect_ratios[room])
+        #    self.aspect_score = aspect_score
+
 """
 init_population:
 Input: size, int which defines the size of the init_population
@@ -46,24 +59,30 @@ Output: A list of len(size) of individual objects eachw with (dim) variables
 
 def evaluate_layout(individual):
     dir_pop = list(individual.dir_list) # copy the dir list because the passed parameter gets consumed in the get_layout function (pop)
-    max_sizes, departments, edges_out, adjacency_score, aspect_score = \
+    max_sizes, dims_score, aspect_ratios, departments, edges_out, adjacency_score, aspect_score = \
     get_layout(individual.definition,individual.room_def, individual.split_list, dir_pop, individual.room_order, individual.min_opening)
     individual.adjacency_score = adjacency_score
     individual.aspect_score = aspect_score
     individual.edges_out = edges_out
+    individual.departments = departments
+    individual.dims_score = dims_score
+    individual.aspect_ratios = aspect_ratios
+
 
 def evaluate_pop(generation, user_input):
     max_dir_hamming = [0,0,0]
     max_room_hamming = [0,0,0]
     max_split_num = [0,0,0]
-
     for individual in generation:
         if individual.adjacency_score == None: #only call layout if the given object hasn't been evaluated yet
+        #hmm but what if the object has been mutated, it still has adjacency score but it might be wrong now? OK we only mutate new objects currently, np so far.
             evaluate_layout(individual)
         if len(user_input)>0: # if user input exists
             if len(user_input)>2: #if more than 3 user inputs, only take into account last 3 selections
                 user_input = user_input[-3:] #slice any elements before last 3 off
-            for index, user_input_i, in enumerate(user_input): #loops through every user input
+            #individual.evaluate_user_aspect(user_input)
+
+            for index, user_input_i, in enumerate(user_input): #loops through every user inpu
                 individual.interactive_dir.append(hamming_distance(individual.dir_list, user_input_i.dir_list))
                 individual.interactive_split.append(num_difference_score(individual.split_list,user_input_i.split_list))
                 individual.interactive_room.append(hamming_distance(individual.room_order,user_input_i.room_order))
@@ -93,17 +112,23 @@ def dominance(population,selections):
         for j in range(i+1,len(population)): #Loops through all the remaining indiduals
             #What if adjacency and interactive score are similar? Then i gets favored while in fact solutions are equally good.
             if len(selections)>0:
-                if (population[i].adjacency_score <= population[j].adjacency_score) and (population[i].interactive_score < population[j].interactive_score):
+                if (population[i].adjacency_score <= population[j].adjacency_score) \
+                and (population[i].interactive_score < population[j].interactive_score)\
+                and (population[i].dims_score <= population[j].dims_score):
                     population[i].dominates_these.append(population[j])
                     population[j].dominated_count += 1
-                elif (population[i].adjacency_score >= population[j].adjacency_score) and (population[i].interactive_score > population[j].interactive_score):
+                elif (population[i].adjacency_score >= population[j].adjacency_score) \
+                and (population[i].interactive_score > population[j].interactive_score) \
+                and (population[i].dims_score >= population[j].dims_score):
                     population[j].dominates_these.append(population[i])
                     population[i].dominated_count += 1
             else:
-                if (population[i].adjacency_score < population[j].adjacency_score):
+                if (population[i].adjacency_score < population[j].adjacency_score)\
+                and (population[i].dims_score <= population[j].dims_score):
                     population[i].dominates_these.append(population[j])
                     population[j].dominated_count += 1
-                elif (population[i].adjacency_score > population[j].adjacency_score):
+                elif (population[i].adjacency_score > population[j].adjacency_score)\
+                and (population[i].dims_score >= population[j].dims_score):
                     population[j].dominates_these.append(population[i])
                     population[i].dominated_count += 1
 
@@ -296,9 +321,16 @@ def find_user_selection_object(generation,rank_of_favourite):
     dir_list = json.loads(plan.dir_list)
     room_order = json.loads(plan.room_order)
     min_opening = plan.min_opening
+
+    max_sizes, dims_score, aspect_ratios, departments, edges_out, adjacency_score, aspect_score = \
+    get_layout(definition,room_def, split_list, dir_list, room_order, min_opening)
+
+
+
     floor_plan = individual(definition=definition,room_def= room_def,\
     split_list = split_list, dir_list = dir_list, room_order=room_order,\
     min_opening=min_opening)
+    floor_plan.departments=departments
     return floor_plan
 
 # crates a new population
@@ -427,7 +459,7 @@ def get_from_generation(generation,generation_rank):
     room_order = json.loads(plan.room_order)
     min_opening = plan.min_opening
 
-    max_sizes, departments, edges_out, adjacency_score, aspect_score = \
+    max_sizes, dims_score, aspect_ratios, departments, edges_out, adjacency_score, aspect_score = \
     get_layout(definition, room_def, split_list, dir_list, room_order, min_opening)
 
     return {"max_sizes": max_sizes,"departments":departments,"adjacency_score":adjacency_score}

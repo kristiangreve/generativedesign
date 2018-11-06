@@ -1,4 +1,4 @@
-2018-11-01 14:46:23,479 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+2018-11-01 19:54:49,984 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -12,13 +12,11 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 52, in generate_new_floorplans
-    generate(user_selections,generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 348, in generate
-    Pt = selection(pop_size,Rt)
-NameError: name 'pop_size' is not defined
-2018-11-01 14:47:09,800 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 14:47:14,659 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 53, in generate_new_floorplans
+    generation_of_favourite = int(request.form['generation'])
+ValueError: invalid literal for int() with base 10: 'null'
+2018-11-01 19:56:22,557 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+2018-11-01 19:56:29,688 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -32,20 +30,10 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 52, in generate_new_floorplans
-    generate(user_selections,generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 350, in generate
-    save_population_to_database(Pt,current_generation+generations)
-TypeError: unsupported operand type(s) for +: 'BaseQuery' and 'int'
-2018-11-01 14:47:48,487 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 14:49:34,718 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 14:53:35,906 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 14:54:07,704 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 14:55:51,592 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 14:56:12,937 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 15:00:54,573 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 15:01:42,336 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 15:02:15,817 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 42, in generate_lines
+    generation = int(request.form['generation']) # det er her fejlen er!!
+ValueError: invalid literal for int() with base 10: ''
+2018-11-01 19:56:29,690 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -59,12 +47,10 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 43, in generate_lines
-    return jsonify(get_from_generation(generation,generation_rank))
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 503, in get_from_generation
-    .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[generation_rank]
-IndexError: list index out of range
-2018-11-01 15:02:15,818 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 42, in generate_lines
+    generation = int(request.form['generation']) # det er her fejlen er!!
+ValueError: invalid literal for int() with base 10: ''
+2018-11-01 19:56:29,694 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -78,12 +64,13 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 43, in generate_lines
-    return jsonify(get_from_generation(generation,generation_rank))
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 503, in get_from_generation
-    .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[generation_rank]
-IndexError: list index out of range
-2018-11-01 15:02:15,827 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 42, in generate_lines
+    generation = int(request.form['generation']) # det er her fejlen er!!
+ValueError: invalid literal for int() with base 10: ''
+2018-11-01 19:58:06,089 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+2018-11-01 19:59:09,942 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+2018-11-01 20:10:44,294 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
+2018-11-01 20:11:00,504 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -97,13 +84,10 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 43, in generate_lines
-    return jsonify(get_from_generation(generation,generation_rank))
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 503, in get_from_generation
-    .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[generation_rank]
-IndexError: list index out of range
-2018-11-01 15:05:49,001 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
-2018-11-01 15:05:54,714 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 42, in generate_lines
+    generation = int(request.form['generation']) # det er her fejlen er!!
+ValueError: invalid literal for int() with base 10: ''
+2018-11-01 20:11:00,512 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -117,8 +101,24 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 43, in generate_lines
-    return jsonify(get_from_generation(generation,generation_rank))
-  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/generative.py", line 503, in get_from_generation
-    .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[generation_rank]
-IndexError: list index out of range
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 42, in generate_lines
+    generation = int(request.form['generation']) # det er her fejlen er!!
+ValueError: invalid literal for int() with base 10: ''
+2018-11-01 20:11:00,517 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/Kristian/Documents/DTU/Thesis/microblog/app/routes.py", line 42, in generate_lines
+    generation = int(request.form['generation']) # det er her fejlen er!!
+ValueError: invalid literal for int() with base 10: ''
+2018-11-01 20:11:21,650 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/microblog/app/__init__.py:46]
