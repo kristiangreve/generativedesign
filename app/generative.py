@@ -59,8 +59,12 @@ Output: A list of len(size) of individual objects eachw with (dim) variables
 
 def evaluate_layout(individual):
     dir_pop = list(individual.dir_list) # copy the dir list because the passed parameter gets consumed in the get_layout function (pop)
+
     max_sizes, dims_score, aspect_ratios, departments, edges_out, adjacency_score, aspect_score = \
     get_layout(individual.definition,individual.room_def, individual.split_list, dir_pop, individual.room_order, individual.min_opening)
+
+
+
     individual.adjacency_score = adjacency_score
     individual.aspect_score = aspect_score
     individual.edges_out = edges_out
@@ -73,20 +77,21 @@ def evaluate_pop(generation, user_input):
     max_dir_hamming = [0,0,0]
     max_room_hamming = [0,0,0]
     max_split_num = [0,0,0]
+
     for individual in generation:
         if individual.adjacency_score == None: #only call layout if the given object hasn't been evaluated yet
-        #hmm but what if the object has been mutated, it still has adjacency score but it might be wrong now? OK we only mutate new objects currently, np so far.
             evaluate_layout(individual)
         if len(user_input)>0: # if user input exists
             if len(user_input)>2: #if more than 3 user inputs, only take into account last 3 selections
                 user_input = user_input[-3:] #slice any elements before last 3 off
-            #individual.evaluate_user_aspect(user_input)
-
-            for index, user_input_i, in enumerate(user_input): #loops through every user inpu
+            for index, user_input_i, in enumerate(user_input): #loops through every user input
                 individual.interactive_dir.append(hamming_distance(individual.dir_list, user_input_i.dir_list))
                 individual.interactive_split.append(num_difference_score(individual.split_list,user_input_i.split_list))
                 individual.interactive_room.append(hamming_distance(individual.room_order,user_input_i.room_order))
                 # for later normalization of distances, record max distance
+
+
+
                 if individual.interactive_dir[index] > max_dir_hamming[index]:
                     max_dir_hamming[index] = individual.interactive_dir[index]
                 if individual.interactive_split[index] > max_split_num[index]:
@@ -105,6 +110,7 @@ def evaluate_pop(generation, user_input):
             individual.interactive_dir = []
             individual.interactive_split = []
             individual.interactive_room = []
+
 
 
 def dominance(population,selections):
@@ -315,6 +321,7 @@ adjacency_plot = [] #global list to store the best adjacency score from each gen
 def find_user_selection_object(generation,rank_of_favourite):
     plan = db.session.query(Plan).filter_by(generation=generation)\
     .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[rank_of_favourite]
+
     definition = json.loads(plan.definition)
     room_def = json.loads(plan.room_def)
     split_list = json.loads(plan.split_list)
@@ -322,15 +329,16 @@ def find_user_selection_object(generation,rank_of_favourite):
     room_order = json.loads(plan.room_order)
     min_opening = plan.min_opening
 
-    max_sizes, dims_score, aspect_ratios, departments, edges_out, adjacency_score, aspect_score = \
-    get_layout(definition,room_def, split_list, dir_list, room_order, min_opening)
-
-
+    # max_sizes, dims_score, aspect_ratios, departments, edges_out, adjacency_score, aspect_score = \
+    # get_layout(definition,room_def, split_list, dir_list, room_order, min_opening)
 
     floor_plan = individual(definition=definition,room_def= room_def,\
     split_list = split_list, dir_list = dir_list, room_order=room_order,\
     min_opening=min_opening)
+
     floor_plan.departments=departments
+
+
     return floor_plan
 
 # crates a new population
@@ -360,7 +368,7 @@ def init_population(selections,pop_size,generations):
 def generate(selections,generations):
     # query for max generation value in database
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
-    print("current generation: {}".format(current_generation))
+    #print("current generation: {}".format(current_generation))
 
     # load latest generation from database into objects
     Pt = get_population_from_database(current_generation)
@@ -445,7 +453,6 @@ def save_population_to_database(population,generation):
 
 # get a single object from the database with a given generation and rank
 def get_from_generation(generation,generation_rank):
-    print("generation: {} rank: {}".format(generation,generation_rank))
     # get a single object from the database with a given generation and rank
 
     # muligvis har elementer den samme crowding, men er mååååske forskellige
