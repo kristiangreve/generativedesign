@@ -10,7 +10,7 @@ from flask_login import current_user
 from sqlalchemy import func
 
 class individual:
-    def __init__(self,definition,room_def, split_list, dir_list, room_order, min_opening):
+    def __init__(self, definition, room_def, split_list, dir_list, room_order, min_opening):
         self.definition = definition
         self.room_def = room_def
         self.split_list = split_list
@@ -41,14 +41,18 @@ class individual:
         self.dist = 0
         self.generation = 0
 
+    def get_room_list(self):
+        room_list = []
+        for dep in self.definition['rooms']:
+            room_list.append(dep['name'])
+        return room_list
+
     def evaluate_user_aspect(self, user_input):
         aspect_score = 0
-        #for user_input_i in user_input:
-        #    print('room def: ', user_input_i.room_def)
-        #    print('departments: ', user_input_i.departments)
-        #    for room in user_input_i.room_def['name']:
-        #        aspect_score += abs(self.aspect_ratios[room]-user_input_i.aspect_ratios[room])
-        #    self.aspect_score = aspect_score
+        for user_input_i in user_input:
+            for room in self.aspect_ratios.keys():
+                aspect_score += abs(self.aspect_ratios[room]-user_input_i.aspect_ratios[room])
+        self.aspect_score = aspect_score
 
 """
 init_population:
@@ -59,11 +63,8 @@ Output: A list of len(size) of individual objects eachw with (dim) variables
 
 def evaluate_layout(individual):
     dir_pop = list(individual.dir_list) # copy the dir list because the passed parameter gets consumed in the get_layout function (pop)
-
     max_sizes, dims_score, aspect_ratios, departments, edges_out, adjacency_score, aspect_score = \
-    get_layout(individual.definition,individual.room_def, individual.split_list, dir_pop, individual.room_order, individual.min_opening)
-
-
+    get_layout(individual.definition, individual.room_def, individual.split_list, dir_pop, individual.room_order, individual.min_opening)
 
     individual.adjacency_score = adjacency_score
     individual.aspect_score = aspect_score
@@ -71,6 +72,7 @@ def evaluate_layout(individual):
     individual.departments = departments
     individual.dims_score = dims_score
     individual.aspect_ratios = aspect_ratios
+
 
 
 def evaluate_pop(generation, user_input):
@@ -81,16 +83,19 @@ def evaluate_pop(generation, user_input):
     for individual in generation:
         if individual.adjacency_score == None: #only call layout if the given object hasn't been evaluated yet
             evaluate_layout(individual)
+
         if len(user_input)>0: # if user input exists
             if len(user_input)>2: #if more than 3 user inputs, only take into account last 3 selections
                 user_input = user_input[-3:] #slice any elements before last 3 off
+
+            #Sets aspect score of each object based on proximity to user inputs
+            individual.evaluate_user_aspect(user_input)
+
             for index, user_input_i, in enumerate(user_input): #loops through every user input
                 individual.interactive_dir.append(hamming_distance(individual.dir_list, user_input_i.dir_list))
                 individual.interactive_split.append(num_difference_score(individual.split_list,user_input_i.split_list))
                 individual.interactive_room.append(hamming_distance(individual.room_order,user_input_i.room_order))
                 # for later normalization of distances, record max distance
-
-
 
                 if individual.interactive_dir[index] > max_dir_hamming[index]:
                     max_dir_hamming[index] = individual.interactive_dir[index]
@@ -110,8 +115,6 @@ def evaluate_pop(generation, user_input):
             individual.interactive_dir = []
             individual.interactive_split = []
             individual.interactive_room = []
-
-
 
 def dominance(population,selections):
      for i in range(len(population)):      #Loops through all individuals of population
@@ -240,6 +243,8 @@ def binary_tournament(population):
     return comparison(Obj1,Obj2)
 
 def crossover(obj1,obj2):
+    # get the current plan_id
+
     num_rooms = len(obj1.room_def)
     room_crossover_point = random.randint(0,num_rooms)
     dir_crossover_point = random.randint(0,num_rooms-1)
@@ -265,12 +270,22 @@ def crossover(obj1,obj2):
     return child1,child2
 
 def breeding(population, mutation_rate):
+    # get highest id from database
+
+    id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
+
+    print(id)
     children = []
     while len(children) < len(population):
         parent1 = binary_tournament(population)
         parent2 = binary_tournament(population)
         if parent1 != parent2: #to avoid breeding the same parent
             child1,child2 = crossover(parent1,parent2) #
+            id+=1
+            child1.plan_id = id
+            id+=1
+            child2.plan_id = id
+
             children.append(child1)
             children.append(child2)
     return children
@@ -318,35 +333,30 @@ def mutate(population, mutation_rate):
 
 adjacency_plot = [] #global list to store the best adjacency score from each generation
 
-def find_user_selection_object(generation,rank_of_favourite):
-    plan = db.session.query(Plan).filter_by(generation=generation)\
-    .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[rank_of_favourite]
+# crates a new population and iterates a couple of times
 
-    definition = json.loads(plan.definition)
-    room_def = json.loads(plan.room_def)
-    split_list = json.loads(plan.split_list)
-    dir_list = json.loads(plan.dir_list)
-    room_order = json.loads(plan.room_order)
-    min_opening = plan.min_opening
+def init_population(size):
+    definition = json_departments_from_db()
+    population = []
+    id = 0
+    for n in range(size):
+        id+=1
+        room_def, split_list, dir_list, room_order, min_opening = random_design(definition)
+        element = individual(definition = definition, room_def = room_def,\
+        split_list = split_list, dir_list = dir_list, room_order = room_order,\
+        min_opening = min_opening)
+        element.plan_id = id
+        print(element.room_def)
+        population.append(element)
+    return population
 
-    # max_sizes, dims_score, aspect_ratios, departments, edges_out, adjacency_score, aspect_score = \
-    # get_layout(definition,room_def, split_list, dir_list, room_order, min_opening)
-
-    floor_plan = individual(definition=definition,room_def= room_def,\
-    split_list = split_list, dir_list = dir_list, room_order=room_order,\
-    min_opening=min_opening)
-
-    floor_plan.departments=departments
-
-
-    return floor_plan
-
-# crates a new population
-def init_population(selections,pop_size,generations):
+def initial_generate(selections,pop_size,generations):
     # delete all existing instances from database
     db.session.query(Plan).delete()
     db.session.commit()
-    init_population_in_database(pop_size)
+    print("database cleared")
+    Pt = init_population(pop_size)
+    save_population_to_database(Pt,0)
     Pt = get_population_from_database(0)
     evaluate_pop(Pt,selections)
     dominance(Pt,selections)
@@ -354,7 +364,7 @@ def init_population(selections,pop_size,generations):
     crowding(Pt)
     mutation_ratio = 1
     for n in range(generations):
-        #print('Generation: {}'.format(n))
+        print('Generation: {}'.format(n))
         Qt = breeding(Pt, mutation_ratio)
         mutate(Qt, mutation_ratio)
         evaluate_pop(Qt,selections)
@@ -368,8 +378,6 @@ def init_population(selections,pop_size,generations):
 def generate(selections,generations):
     # query for max generation value in database
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
-    #print("current generation: {}".format(current_generation))
-
     # load latest generation from database into objects
     Pt = get_population_from_database(current_generation)
     pop_size=len(Pt)
@@ -409,81 +417,41 @@ def json_departments_from_db():
 def random_design(definition):
     # takes a room definition as input and returns it all as json dumped strings
     room_def = definition["rooms"]
+    print("room definiton: ",room_def)
     num_rooms = len(room_def)
     split_list = [random.random() for i in range(num_rooms-2)]
     dir_list = [int(round(random.random())) for i in range(num_rooms-1)]
     room_order = list(range(num_rooms))
     random.shuffle(room_order)
     min_opening = 1
-    return json.dumps(room_def), json.dumps(split_list), json.dumps(dir_list), \
-    json.dumps(room_order), min_opening
+    return room_def, split_list, dir_list, room_order, min_opening
 
-def init_population_in_database(size):
-    definition = json_departments_from_db()
-    #print(definition)
-    definition_json = json.dumps(definition)
-    for n in range(size):
-        room_def, split_list, dir_list, room_order, min_opening = random_design(definition)
-        #print(split_list)
-        db.session.add(Plan(definition = definition_json, room_def=room_def, \
-        split_list = split_list, dir_list = dir_list, room_order = room_order, \
-        min_opening = min_opening, generation = 0, owner = current_user))
-    db.session.commit()
-    return
-
-def save_population_to_database(population,generation):
-    for plan in population:
-        definition = json.dumps(plan.definition)
-        room_def = json.dumps(plan.room_def)
-        split_list = json.dumps(plan.split_list)
-        dir_list = json.dumps(plan.dir_list)
-        room_order = json.dumps(plan.room_order)
-        min_opening = plan.min_opening
-        adjacency_score = plan.adjacency_score
-        pareto = plan.pareto
-        crowding_score = plan.crowding_score
-
-        (Plan(definition = definition, room_def=room_def, \
-        split_list=split_list, dir_list=dir_list, room_order=room_order, \
-        min_opening = min_opening, generation = generation, \
-        adjacency_score = adjacency_score, owner = current_user, \
-        pareto = pareto, crowding_score = plan.crowding_score))
-    db.session.commit()
-    return
-
-# get a single object from the database with a given generation and rank
-def get_from_generation(generation,generation_rank):
-    # get a single object from the database with a given generation and rank
-
-    # muligvis har elementer den samme crowding, men er mååååske forskellige
-    plan = db.session.query(Plan).filter_by(generation=generation)\
-    .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[generation_rank]
-
-    definition = json.loads(plan.definition)
-    room_def = json.loads(plan.room_def)
-    split_list = json.loads(plan.split_list)
-    dir_list = json.loads(plan.dir_list)
-    room_order = json.loads(plan.room_order)
-    min_opening = plan.min_opening
-
-    max_sizes, dims_score, aspect_ratios, departments, edges_out, adjacency_score, aspect_score = \
-    get_layout(definition, room_def, split_list, dir_list, room_order, min_opening)
-
-    return {"max_sizes": max_sizes,"departments":departments,"adjacency_score":adjacency_score}
-
+def object_to_visuals(population,id):
+    plan = [plan for plan in population if plan.plan_id = id][0]
+    max_sizes, dims_score, aspect_ratios, departments, \
+    edges_out, adjacency_score, aspect_score = \
+    get_layout(plan.definition, plan.room_def, plan.split_list, \
+    plan.dir_list, plan.room_order, plan.min_opening)
+    return {"max_sizes": max_sizes,"departments":departments,"adjacency_score":adjacency_score,"id":plan.plan_id}
 
 def get_population_from_database(generation):
-    # query population of a specific generation from the db
     query = db.session.query(Plan).filter_by(generation=generation).all()
     population = []
     for plan in query:
-        definition = json.loads(plan.definition)
-        room_def = json.loads(plan.room_def)
-        split_list = json.loads(plan.split_list)
-        dir_list = json.loads(plan.dir_list)
-        room_order = json.loads(plan.room_order)
-        min_opening = plan.min_opening
-        population.append(individual(definition=definition,room_def= room_def,\
-        split_list = split_list, dir_list = dir_list, room_order=room_order,\
-        min_opening=min_opening))
+        element = individual(definition=json.loads(plan.definition), \
+        room_def = plan.room_def, split_list = plan.split_list, \
+        dir_list = plan.dir_list, room_order = plan.room_order, \
+        min_opening=plan.min_opening)
+        element.plan_id=plan.plan_id
+        population.append(element)
     return population
+
+def save_population_to_database(population,generation):
+    for plan in population:
+        db.session.add(Plan(definition = json.dumps(plan.definition), \
+        room_def = plan.room_def, split_list = plan.split_list, \
+        dir_list = plan.dir_list, room_order = plan.room_order, \
+        min_opening = plan.min_opening, plan_id=plan.plan_id, \
+        generation = plan.generation, owner = current_user))
+    db.session.commit()
+    return

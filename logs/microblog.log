@@ -1,4 +1,4 @@
-2018-11-06 17:09:35,616 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+2018-11-07 13:35:35,497 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -12,12 +12,12 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 43, in generate_lines
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 45, in generate_lines
     return jsonify(get_from_generation(generation,generation_rank))
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 472, in get_from_generation
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 434, in get_from_generation
     .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[generation_rank]
-IndexError: list index out of range
-2018-11-06 17:09:35,619 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+AttributeError: type object 'Plan' has no attribute 'pareto'
+2018-11-07 13:35:35,500 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -31,12 +31,12 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 43, in generate_lines
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 45, in generate_lines
     return jsonify(get_from_generation(generation,generation_rank))
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 472, in get_from_generation
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 434, in get_from_generation
     .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[generation_rank]
-IndexError: list index out of range
-2018-11-06 17:09:35,624 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+AttributeError: type object 'Plan' has no attribute 'pareto'
+2018-11-07 13:35:35,505 ERROR: Exception on /generate_lines/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -50,8 +50,8 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 43, in generate_lines
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 45, in generate_lines
     return jsonify(get_from_generation(generation,generation_rank))
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 472, in get_from_generation
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 434, in get_from_generation
     .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[generation_rank]
-IndexError: list index out of range
+AttributeError: type object 'Plan' has no attribute 'pareto'

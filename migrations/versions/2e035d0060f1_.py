@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 584a99fd4f94
+Revision ID: 2e035d0060f1
 Revises: 
-Create Date: 2018-11-01 13:40:13.201618
+Create Date: 2018-11-07 12:41:33.515338
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '584a99fd4f94'
+revision = '2e035d0060f1'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -50,21 +50,14 @@ def upgrade():
     op.create_table('plan',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
-    sa.Column('definition', sa.String(), nullable=True),
-    sa.Column('room_def', sa.String(), nullable=True),
-    sa.Column('split_list', sa.String(), nullable=True),
-    sa.Column('dir_list', sa.String(), nullable=True),
-    sa.Column('room_order', sa.String(), nullable=True),
-    sa.Column('min_opening', sa.Integer(), nullable=True),
+    sa.Column('plan_id', sa.Integer(), nullable=True),
     sa.Column('generation', sa.Integer(), nullable=True),
-    sa.Column('pareto', sa.Integer(), nullable=True),
-    sa.Column('crowding_score', sa.Integer(), nullable=True),
-    sa.Column('dominated_count', sa.Integer(), nullable=True),
-    sa.Column('adjacency_score', sa.Integer(), nullable=True),
-    sa.Column('split_score', sa.Integer(), nullable=True),
-    sa.Column('edges_out', sa.String(), nullable=True),
-    sa.Column('dominates_these', sa.String(), nullable=True),
-    sa.Column('dist', sa.Integer(), nullable=True),
+    sa.Column('definition', sa.String(), nullable=True),
+    sa.Column('_room_def', sa.String(), nullable=True),
+    sa.Column('_split_list', sa.String(), nullable=True),
+    sa.Column('_dir_list', sa.String(), nullable=True),
+    sa.Column('_room_order', sa.String(), nullable=True),
+    sa.Column('min_opening', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

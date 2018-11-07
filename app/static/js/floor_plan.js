@@ -1,13 +1,10 @@
+
 // handler for button to generate new population from 0
-$("#generate_button").click(generate_first_floorplans);
-
-
-function generate_first_floorplans() {
-	$.post('/generate_floorplans/',{
-		pop_size:50,
-		generations:30
+$("#generate_button").click(function(){
+	$.post('/generate_first_floorplans/',{
+		pop_size:0,
 	}).done(function(response) {
-		render_floorplans(response.generations);
+		render_floorplans();
 	});
 };
 
@@ -27,53 +24,27 @@ $(".floorcanvas").click(function(){
 	});
 });
 
-
-function render_floorplans(generation) {
-	var render_array= [0,1,2]
+function render_floorplans(graphics_array) {
 	canvases = jQuery.makeArray($(".floorcanvas"));
-	var render_index = 0
-
-	canvases.forEach(function(element) {
-		console.log(element)
-		console.log(generation)
-		plotPlan(element,generation,render_array[render_index]);
-		element.setAttribute('generation', generation);
-		element.setAttribute('generation_rank',render_array[render_index]);
-		render_index++;
-	});
+	for(i = 0; i <= graphics_array.length; i ++){
+		plotPlan(canvases[i],graphics_array[i]);
+		canvases[i].setAttribute('id', graphics_array.id);
+	}
 };
 
 // function to shorten floats to two decimals
 function parse_dim(float) {
 	return parseFloat(Math.round(float * 100) / 100).toFixed(2);
-}
+};
 
-// function to make ajax call to server and plot the returning floor plan in
-// a specific canvas.
-
-function plotPlan(plotCanvas,generation,generation_rank) {
-
-	// generation bliver null på et tidspunkt??
-
-	console.log("gen data");
-	console.log(generation);
-	console.log(generation_rank);
-
-	$.post('/generate_lines/',{
-		generation: generation,
-		generation_rank: generation_rank
-	}).done(function(response) {
-		console.log("rank and score of rendered floor plan")
-		console.log(generation_rank)
-		console.log(response)
+// function to plot graphics to a given canvas
+function plotPlan(plotCanvas,graphics) {
 		var scope = new paper.PaperScope();
 		var canvas = document.getElementById(plotCanvas.id);
 		scope.setup(canvas);
 		scope.activate();
-
-		var departments = response.departments;
-		var max_size = response.max_sizes;
-
+		var departments = graphics.departments;
+		var max_size = graphics.max_sizes;
 		// factors for scaling the rectangles and draw outside rectangle
 		var factor_x = view.viewSize.width/max_size[1]
 		var factor_y = view.viewSize.height/max_size[0]
@@ -120,7 +91,5 @@ function plotPlan(plotCanvas,generation,generation_rank) {
 
 			line_to.strokeColor = 'grey';
 			line_from.strokeColor = 'grey';
-
-		});
-	});
-};
+		};
+	};

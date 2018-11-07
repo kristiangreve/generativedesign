@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 from app import app, db, login
 from sqlalchemy.types import ARRAY
+import json
 
 followers = db.Table(
     'followers',
@@ -96,33 +97,47 @@ class Department(db.Model):
     def __repr__(self):
         return '<Department {}>'.format(self.name)
 
+
 class Plan(db.Model):
     # database metadata:
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    plan_id = db.Column(db.Integer)
+    generation = db.Column(db.Integer)
 
     # genotype data:
     definition = db.Column(db.String())
-
-    room_def = db.Column(db.String())
-    split_list = db.Column(db.String())
-    dir_list = db.Column(db.String())
-    room_order = db.Column(db.String())
-
+    _room_def = db.Column(db.String(), default = "")
+    _split_list = db.Column(db.String(), default = "")
+    _dir_list = db.Column(db.String(), default = "")
+    _room_order = db.Column(db.String(), default = "")
     min_opening = db.Column(db.Integer)
-    generation = db.Column(db.Integer)
 
-    # scoring:
-    pareto = db.Column(db.Integer, default = 0)
-    crowding_score = db.Column(db.Integer, default = 0)
-    dominated_count = db.Column(db.Integer, default = 0)
-    adjacency_score = db.Column(db.Integer, default = 0)
-    split_score = db.Column(db.Integer, default = 0)
-
-    # geometry:
-    edges_out = db.Column(db.String(), default="[]")
-    dominates_these = db.Column(db.String(), default="[]")
-    dist = db.Column(db.Integer, default = 0)
+    # class properties
+    @property
+    def room_def(self):
+        return json.loads(self._room_def)
+    @room_def.setter
+    def room_def(self, value):
+        self._room_def = json.dumps(value)
+    @property
+    def split_list(self):
+        return json.loads(self._split_list)
+    @split_list.setter
+    def split_list(self, value):
+        self._split_list = json.dumps(value)
+    @property
+    def dir_list(self):
+        return json.loads(self._dir_list)
+    @dir_list.setter
+    def dir_list(self, value):
+        self._dir_list = json.dumps(value)
+    @property
+    def room_order(self):
+        return json.loads(self._room_order)
+    @room_order.setter
+    def room_order(self, value):
+        self._room_order = json.dumps(value)
 
     def __repr__(self):
         return '<Floor plan {} of genereation {}.>'.format(self.id,self.generation)

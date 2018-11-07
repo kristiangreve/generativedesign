@@ -10,10 +10,12 @@ from app.email import send_password_reset_email
 import json
 from operator import itemgetter
 from app.generative import json_departments_from_db, random_design, generate, \
-get_from_generation, init_population, find_user_selection_object
+get_from_generation, initial_generate, find_user_selection_object
 from app.space_planning import get_layout
 
 user_selections = []
+# get first element of query to find the current max id
+# plan_id = db.session.query(Plan).order_by(Plan.plan_id.desc()).all()[0]
 
 @app.before_request
 def before_request():
@@ -30,9 +32,9 @@ def floor_plan():
 # AJAX functions
 @app.route('/generate_floorplans/', methods = ['POST'])
 def generate_floorplans():
-    pop_size = int(request.form['pop_size'])
-    generations = int(request.form['generations'])
-    init_population(user_selections,pop_size, generations)
+    pop_size = 50
+    generations = 20
+    initial_generate(user_selections,pop_size, generations)
     return jsonify({"generations": generations})
 
 # function to return rendered plan elements
