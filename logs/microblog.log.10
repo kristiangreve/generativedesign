@@ -1,4 +1,8 @@
-2018-11-07 10:15:47,762 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+<<<<<<< HEAD
+2018-11-07 12:48:19,292 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+=======
+2018-11-06 14:46:09,016 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+>>>>>>> master
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -12,15 +16,25 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 35, in generate_floorplans
-    init_population(user_selections,pop_size, generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 387, in init_population
-    pareto_score(Pt)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 148, in pareto_score
-    for n in i.dominates_these:
-AttributeError: 'int' object has no attribute 'dominates_these'
-2018-11-07 10:16:52,086 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 10:16:57,751 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+<<<<<<< HEAD
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 37, in generate_floorplans
+    initial_generate(user_selections,pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 346, in initial_generate
+    Pt = init_population(pop_size)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 339, in init_population
+    min_opening = min_opening, plan_id = plan_id))
+TypeError: __init__() got an unexpected keyword argument 'plan_id'
+2018-11-07 12:49:25,428 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 12:49:30,158 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+=======
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 49, in generate_new_floorplans
+    user_selections.append(find_user_selection_object(generation_of_favourite,rank_of_favourite))
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 330, in find_user_selection_object
+    get_layout(individual.definition,individual.room_def, individual.split_list, dir_pop, individual.room_order, individual.min_opening)
+AttributeError: type object 'individual' has no attribute 'definition'
+2018-11-06 14:49:41,639 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-06 14:49:57,084 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+>>>>>>> master
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -34,15 +48,25 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 35, in generate_floorplans
-    init_population(user_selections,pop_size, generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 388, in init_population
-    pareto_score(Pt)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 149, in pareto_score
-    for n in i.dominates_these:
-AttributeError: 'int' object has no attribute 'dominates_these'
-2018-11-07 10:18:31,341 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 10:18:36,789 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+<<<<<<< HEAD
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 37, in generate_floorplans
+    initial_generate(user_selections,pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 348, in initial_generate
+    Pt = init_population(pop_size)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 337, in init_population
+    individual = individual(definition=definition,room_def = room_def,\
+UnboundLocalError: local variable 'individual' referenced before assignment
+2018-11-07 12:50:05,328 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 12:50:11,635 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+=======
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 49, in generate_new_floorplans
+    user_selections.append(find_user_selection_object(generation_of_favourite,rank_of_favourite))
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 329, in find_user_selection_object
+    get_layout(individual.definition,individual.room_def, individual.split_list, dir_pop, individual.room_order, individual.min_opening)
+AttributeError: type object 'individual' has no attribute 'definition'
+2018-11-06 15:30:53,188 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-06 15:31:18,192 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+>>>>>>> master
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -56,15 +80,25 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 35, in generate_floorplans
-    init_population(user_selections,pop_size, generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 390, in init_population
-    pareto_score(Pt)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 151, in pareto_score
-    for n in i.dominates_these:
-AttributeError: 'int' object has no attribute 'dominates_these'
-2018-11-07 10:20:37,882 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 10:20:48,614 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+<<<<<<< HEAD
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 37, in generate_floorplans
+    initial_generate(user_selections,pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 349, in initial_generate
+    evaluate_pop(Pt,selections)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 84, in evaluate_pop
+    if individual.adjacency_score == None: #only call layout if the given object hasn't been evaluated yet
+AttributeError: type object 'individual' has no attribute 'adjacency_score'
+2018-11-07 12:52:54,202 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 12:52:59,741 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+=======
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 49, in generate_new_floorplans
+    user_selections.append(find_user_selection_object(generation_of_favourite,rank_of_favourite))
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 329, in find_user_selection_object
+    get_layout(definition,room_def, split_list, dir_pop, room_order, min_opening)
+NameError: name 'dir_pop' is not defined
+2018-11-06 15:32:59,648 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-06 15:33:13,302 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+>>>>>>> master
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -78,15 +112,49 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 35, in generate_floorplans
-    init_population(user_selections,pop_size, generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 403, in init_population
-    dominance(Rt,selections)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 119, in dominance
-    if (population[i].adjacency_score < population[j].adjacency_score) and (population[i].dims_score <= population[j].dims_score):
-TypeError: unorderable types: int() < NoneType()
-2018-11-07 10:22:04,230 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 10:22:07,864 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+<<<<<<< HEAD
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 37, in generate_floorplans
+    initial_generate(user_selections,pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 347, in initial_generate
+    evaluate_pop(Pt,selections)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 85, in evaluate_pop
+    if individual.adjacency_score == 0: #only call layout if the given object hasn't been evaluated yet
+AttributeError: type object 'individual' has no attribute 'adjacency_score'
+2018-11-07 12:56:42,653 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 12:56:45,537 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+=======
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 49, in generate_new_floorplans
+    user_selections.append(find_user_selection_object(generation_of_favourite,rank_of_favourite))
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 335, in find_user_selection_object
+    min_opening=min_opening)
+TypeError: __init__() got an unexpected keyword argument 'departments'
+2018-11-06 15:35:23,291 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-06 15:35:26,333 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+Traceback (most recent call last):
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
+    raise value
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 51, in generate_new_floorplans
+    current_generation = generate(user_selections,generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 371, in generate
+    evaluate_pop(Pt,selections)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 83, in evaluate_pop
+    individual.evaluate_user_aspect(user_input)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 49, in evaluate_user_aspect
+    for room in user_input_i.room_def['name']:
+TypeError: list indices must be integers or slices, not str
+2018-11-06 15:35:57,847 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-06 15:36:05,989 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+>>>>>>> master
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -100,11 +168,22 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 35, in generate_floorplans
-    init_population(user_selections,pop_size, generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 390, in init_population
-    pareto_score(Pt)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 151, in pareto_score
-    plan.dominated_count -=1
-AttributeError: 'NoneType' object has no attribute 'dominated_count'
-2018-11-07 10:22:17,304 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+<<<<<<< HEAD
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 37, in generate_floorplans
+    initial_generate(user_selections,pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 348, in initial_generate
+    evaluate_pop(Pt,selections)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 86, in evaluate_pop
+    if individual.adjacency_score == None: #only call layout if the given object hasn't been evaluated yet
+AttributeError: type object 'individual' has no attribute 'adjacency_score'
+2018-11-07 12:57:24,143 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+=======
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 51, in generate_new_floorplans
+    current_generation = generate(user_selections,generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 371, in generate
+    evaluate_pop(Pt,selections)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 86, in evaluate_pop
+    evaluate_user_aspect(individual,user_input_i)
+NameError: name 'evaluate_user_aspect' is not defined
+2018-11-06 15:36:49,133 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+>>>>>>> master

@@ -97,7 +97,6 @@ class Department(db.Model):
     def __repr__(self):
         return '<Department {}>'.format(self.name)
 
-
 class Plan(db.Model):
     # database metadata:
     id = db.Column(db.Integer, primary_key=True)

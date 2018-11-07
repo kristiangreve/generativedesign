@@ -1,4 +1,4 @@
-2018-11-07 13:08:54,627 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+2018-11-07 14:47:44,732 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -12,21 +12,15 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 37, in generate_floorplans
-    initial_generate(user_selections,pop_size, generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 347, in initial_generate
-    evaluate_pop(Pt,selections)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 85, in evaluate_pop
-    evaluate_layout(individual)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 67, in evaluate_layout
-    get_layout(individual.definition, individual.room_def, individual.split_list, dir_pop, individual.room_order, individual.min_opening)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 320, in get_layout
-    room_areas = [room["area"] for room in room_def]
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 320, in <listcomp>
-    room_areas = [room["area"] for room in room_def]
-TypeError: string indices must be integers
-2018-11-07 13:11:02,573 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 13:11:06,392 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 39, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 378, in initial_generate
+    select_objects_for_render(Pt)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 455, in select_objects_for_render
+    return jsonify([object_to_visuals(adjacency_sorted[0]),object_to_visuals(interactive_sorted[0]),object_to_visuals(aspect_sorted[0])])
+NameError: name 'jsonify' is not defined
+2018-11-07 14:48:21,924 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 14:48:32,391 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -40,22 +34,17 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 37, in generate_floorplans
-    initial_generate(user_selections,pop_size, generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 348, in initial_generate
-    evaluate_pop(Pt,selections)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 85, in evaluate_pop
-    evaluate_layout(individual)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 67, in evaluate_layout
-    get_layout(individual.definition, individual.room_def, individual.split_list, dir_pop, individual.room_order, individual.min_opening)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 320, in get_layout
-    room_areas = [room["area"] for room in room_def]
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 320, in <listcomp>
-    room_areas = [room["area"] for room in room_def]
-TypeError: string indices must be integers
-2018-11-07 13:14:02,518 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 13:14:12,533 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 13:14:16,612 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 39, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 378, in initial_generate
+    select_objects_for_render(Pt)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 455, in select_objects_for_render
+    return [object_to_visuals(adjacency_sorted[0]),object_to_visuals(interactive_sorted[0]),object_to_visuals(aspect_sorted[0])]
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 462, in object_to_visuals
+    return {"max_sizes": max_sizes,"departments":departments,"adjacency_score":adjacency_score,"id":plan.plan_id}
+NameError: name 'plan' is not defined
+2018-11-07 14:49:24,285 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 14:49:37,234 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -69,21 +58,20 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 37, in generate_floorplans
-    initial_generate(user_selections,pop_size, generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 351, in initial_generate
-    evaluate_pop(Pt,selections)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 85, in evaluate_pop
-    evaluate_layout(individual)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 67, in evaluate_layout
-    get_layout(individual.definition, individual.room_def, individual.split_list, dir_pop, individual.room_order, individual.min_opening)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 320, in get_layout
-    room_areas = [room["area"] for room in room_def]
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 320, in <listcomp>
-    room_areas = [room["area"] for room in room_def]
-TypeError: string indices must be integers
-2018-11-07 13:15:41,934 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 13:15:44,941 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 39, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 378, in initial_generate
+    select_objects_for_render(Pt)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 455, in select_objects_for_render
+    return [object_to_visuals(adjacency_sorted[0]),object_to_visuals(interactive_sorted[0]),object_to_visuals(aspect_sorted[0])]
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 461, in object_to_visuals
+    object.dir_list, object.room_order, object.min_opening)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 338, in get_layout
+    children = root.subdivide(dir_list.pop(0), ids.pop(0))[:]
+IndexError: pop from empty list
+2018-11-07 14:51:10,508 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 14:51:21,236 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 14:51:25,016 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -97,17 +85,15 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 37, in generate_floorplans
-    initial_generate(user_selections,pop_size, generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 351, in initial_generate
-    evaluate_pop(Pt,selections)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 85, in evaluate_pop
-    evaluate_layout(individual)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 67, in evaluate_layout
-    get_layout(individual.definition, individual.room_def, individual.split_list, dir_pop, individual.room_order, individual.min_opening)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 320, in get_layout
-    room_areas = [room["area"] for room in room_def]
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 320, in <listcomp>
-    room_areas = [room["area"] for room in room_def]
-TypeError: string indices must be integers
-2018-11-07 13:17:38,919 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 39, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 378, in initial_generate
+    select_objects_for_render(Pt)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 455, in select_objects_for_render
+    return [object_to_visuals(adjacency_sorted[0]),object_to_visuals(interactive_sorted[0]),object_to_visuals(aspect_sorted[0])]
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 462, in object_to_visuals
+    dir_list, object.room_order, object.min_opening)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 338, in get_layout
+    children = root.subdivide(dir_list.pop(0), ids.pop(0))[:]
+IndexError: pop from empty list
+2018-11-07 14:53:09,754 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]

@@ -9,13 +9,11 @@ from app.models import User, Post, Department, Plan
 from app.email import send_password_reset_email
 import json
 from operator import itemgetter
-from app.generative import json_departments_from_db, random_design, generate, \
-get_from_generation, initial_generate, find_user_selection_object
+from app.generative import json_departments_from_db, random_design, generate, get_population_from_database, \
+initial_generate, select_objects_for_render, evaluate_layout
 from app.space_planning import get_layout
 
 user_selections = []
-# get first element of query to find the current max id
-# plan_id = db.session.query(Plan).order_by(Plan.plan_id.desc()).all()[0]
 
 @app.before_request
 def before_request():
@@ -30,28 +28,32 @@ def floor_plan():
     return render_template('floor_plan.html',departments=departments)
 
 # AJAX functions
-@app.route('/generate_floorplans/', methods = ['POST'])
-def generate_floorplans():
-    pop_size = 50
-    generations = 20
-    initial_generate(user_selections,pop_size, generations)
-    return jsonify({"generations": generations})
-
-# function to return rendered plan elements
-@app.route('/generate_lines/', methods = ['POST'])
-def generate_lines():
-    generation = int(request.form['generation'])
-    generation_rank = int(request.form['generation_rank'])
-    return jsonify(get_from_generation(generation,generation_rank))
+@app.route('/generate_first_floorplans/', methods = ['POST'])
+def generate_first_floorplans():
+    user_selections = []
+    # generate first generation and return
+    pop_size = 30
+    generations = 30
+    print("user selections: ",user_selections)
+    Pt = initial_generate(user_selections, pop_size, generations)
+    print("first floorplans rendered")
+    return jsonify(select_objects_for_render(Pt))
 
 @app.route('/generate_new_floorplans/', methods = ['POST'])
 def generate_new_floorplans():
-    generation_of_favourite = int(request.form['generation'])
-    rank_of_favourite = int(request.form['generation_rank'])
-    user_selections.append(find_user_selection_object(generation_of_favourite,rank_of_favourite))
-    generations = 10
-    current_generation = generate(user_selections,generations)
-    return jsonify({"generations": current_generation})
+    generations = 20
+    id = int(request.form['id'])
+    print("id: ",id)
+    current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
+    Pt = get_population_from_database(current_generation)
+    # add the user selection from the previous generation
+    plan = [plan for plan in Pt if plan.plan_id == id][0]
+    evaluate_layout(plan)
+    user_selections.append(plan)
+    print("user selections: ", user_selections)
+    # create new generation based on choices
+    Pt = generate(user_selections,generations)
+    return jsonify(select_objects_for_render(Pt))
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
@@ -64,8 +66,6 @@ def index():
         db.session.commit()
         return redirect(url_for('departments'))
     return render_template('index.html', title='Home', form=form)
-
-
 
 @app.route('/departments', methods=['GET', 'POST'])
 @login_required
@@ -206,14 +206,6 @@ def del_adjacency(department1,department2):
 
     db.session.commit()
     return redirect(url_for('adjacency'))
-
-
-
-
-
-
-
-
 
 
 

@@ -66,6 +66,7 @@ def evaluate_layout(individual):
     max_sizes, dims_score, aspect_ratios, departments, edges_out, adjacency_score, aspect_score = \
     get_layout(individual.definition, individual.room_def, individual.split_list, dir_pop, individual.room_order, individual.min_opening)
 
+    individual.max_sizes = max_sizes
     individual.adjacency_score = adjacency_score
     individual.aspect_score = aspect_score
     individual.edges_out = edges_out
@@ -119,13 +120,19 @@ def dominance(population,selections):
         for j in range(i+1,len(population)): #Loops through all the remaining indiduals
             #What if adjacency and interactive score are similar? Then i gets favored while in fact solutions are equally good.
             if len(selections)>0:
+                #Adjacency score: #of broken adjecencies , the lower the better
+                #interactive score: The lower, the more similar a given obj is to user inputs in terms of dir list, split list and room order
+                #Aspect score: The lower, the more similar aspect ratios is the rooms of a given obj compared to user inputs
+                #dims score: The lower, the fewer dimensions are breaking the minimum size rule set in space_planning.py
                 if (population[i].adjacency_score <= population[j].adjacency_score) \
                 and (population[i].interactive_score < population[j].interactive_score)\
+                and (population[i].aspect_score < population[j].aspect_score)\
                 and (population[i].dims_score <= population[j].dims_score):
                     population[i].dominates_these.append(population[j])
                     population[j].dominated_count += 1
                 elif (population[i].adjacency_score >= population[j].adjacency_score) \
                 and (population[i].interactive_score > population[j].interactive_score) \
+                and (population[i].aspect_score > population[j].aspect_score) \
                 and (population[i].dims_score >= population[j].dims_score):
                     population[j].dominates_these.append(population[i])
                     population[i].dominated_count += 1
@@ -270,7 +277,7 @@ def breeding(population, mutation_rate):
 
     id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
 
-    print(id)
+    print("latest id is: ", id)
     children = []
     while len(children) < len(population):
         parent1 = binary_tournament(population)
@@ -342,7 +349,7 @@ def init_population(size):
         split_list = split_list, dir_list = dir_list, room_order = room_order,\
         min_opening = min_opening)
         element.plan_id = id
-        print(element.room_def)
+        #print(element.room_def)
         population.append(element)
     return population
 
@@ -350,7 +357,7 @@ def initial_generate(selections,pop_size,generations):
     # delete all existing instances from database
     db.session.query(Plan).delete()
     db.session.commit()
-    print("database cleared")
+    #print("database cleared")
     Pt = init_population(pop_size)
     save_population_to_database(Pt,0)
     Pt = get_population_from_database(0)
@@ -369,7 +376,9 @@ def initial_generate(selections,pop_size,generations):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
+    select_objects_for_render(Pt)
     save_population_to_database(Pt,generations)
+    return Pt
 
 def generate(selections,generations):
     # query for max generation value in database
@@ -383,7 +392,7 @@ def generate(selections,generations):
     crowding(Pt)
     mutation_ratio = 1
     for n in range(generations):
-        #print('Generation: {}'.format(n))
+        print('Generation: {}'.format(n))
         Qt = breeding(Pt, mutation_ratio)
         mutate(Qt, mutation_ratio)
         evaluate_pop(Qt,selections)
@@ -392,8 +401,9 @@ def generate(selections,generations):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
+    select_objects_for_render(Pt)
     save_population_to_database(Pt,generations+current_generation)
-    return current_generation
+    return Pt
 
 def json_departments_from_db():
     departments = current_user.departments
@@ -413,7 +423,7 @@ def json_departments_from_db():
 def random_design(definition):
     # takes a room definition as input and returns it all as json dumped strings
     room_def = definition["rooms"]
-    print("room definiton: ",room_def)
+    #print("room definiton: ",room_def)
     num_rooms = len(room_def)
     split_list = [random.random() for i in range(num_rooms-2)]
     dir_list = [int(round(random.random())) for i in range(num_rooms-1)]
@@ -422,21 +432,39 @@ def random_design(definition):
     min_opening = 1
     return room_def, split_list, dir_list, room_order, min_opening
 
-def object_to_visuals(population,id):
-    plan = [plan for plan in population if plan.plan_id = id][0]
-    max_sizes, dims_score, aspect_ratios, departments, \
-    edges_out, adjacency_score, aspect_score = \
-    get_layout(plan.definition, plan.room_def, plan.split_list, \
-    plan.dir_list, plan.room_order, plan.min_opening)
-    return {"max_sizes": max_sizes,"departments":departments,"adjacency_score":adjacency_score,"id":plan.plan_id}
+def select_objects_for_render(population):
+        pareto_dict = defaultdict(list)
+        for individual in population:
+            pareto_dict[individual.pareto].append(individual)
+        #print('Len of p1: ', len(pareto_dict[1]))
+        #for individual in pareto_dict[1]:
+        #    print(individual)
+        #    print('adj score: ', individual.adjacency_score)
+        #    print('interactive score: ', individual.interactive_score)
+        #    print('Aspect score: ', individual.aspect_score)
+        #    print('Dims score: ', individual.dims_score)
+
+        #Best adjacency og minder mest om user selection
+        adjacency_sorted = sorted(pareto_dict[1], key=lambda x: (x.adjacency_score, x.interactive_score), reverse=False)
+        #Most similar dir/split/room_order
+        interactive_sorted = sorted(pareto_dict[1], key=lambda x: (x.interactive_score, x.adjacency_score), reverse=False)
+        #most similar aspect score
+        aspect_sorted = sorted(pareto_dict[1], key=lambda x: (x.aspect_score, x.adjacency_score, -x.crowding_score), reverse=False)
+        #most similar aspect score
+        crowding_sorted = sorted(pareto_dict[1], key=lambda x: (-x.crowding_score, -x.interactive_score), reverse=False)
+        return [object_to_visuals(adjacency_sorted[0]),object_to_visuals(interactive_sorted[0]),object_to_visuals(aspect_sorted[0])]
+
+def object_to_visuals(object):
+    return {"max_sizes": object.max_sizes,"departments":object.departments,"adjacency_score":object.adjacency_score,"id":object.plan_id}
 
 def get_population_from_database(generation):
     query = db.session.query(Plan).filter_by(generation=generation).all()
     population = []
     for plan in query:
+        dir_list = plan.dir_list
         element = individual(definition=json.loads(plan.definition), \
         room_def = plan.room_def, split_list = plan.split_list, \
-        dir_list = plan.dir_list, room_order = plan.room_order, \
+        dir_list = dir_list, room_order = plan.room_order, \
         min_opening=plan.min_opening)
         element.plan_id=plan.plan_id
         population.append(element)
@@ -450,4 +478,4 @@ def save_population_to_database(population,generation):
         min_opening = plan.min_opening, plan_id=plan.plan_id, \
         generation = plan.generation, owner = current_user))
     db.session.commit()
-    return
+    return generation

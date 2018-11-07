@@ -1,4 +1,9 @@
-2018-11-07 10:32:07,999 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+<<<<<<< HEAD
+2018-11-07 13:00:26,119 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 13:00:28,750 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+=======
+2018-11-06 16:31:00,796 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+>>>>>>> master
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -12,15 +17,32 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 35, in generate_floorplans
-    init_population(user_selections,pop_size, generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 388, in init_population
-    dominance(Rt,selections)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 117, in dominance
-    if (population[i].adjacency_score < population[j].adjacency_score) and (population[i].dims_score <= population[j].dims_score):
-TypeError: unorderable types: int() < NoneType()
-2018-11-07 10:33:49,166 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 10:34:00,547 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+<<<<<<< HEAD
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 37, in generate_floorplans
+    initial_generate(user_selections,pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 348, in initial_generate
+    evaluate_pop(Pt,selections)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 86, in evaluate_pop
+    evaluate_layout(individual)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 68, in evaluate_layout
+    get_layout(json.dumps(individual.definition), individual.room_def, individual.split_list, dir_pop, individual.room_order, individual.min_opening)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 320, in get_layout
+    room_areas = [room["area"] for room in room_def]
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 320, in <listcomp>
+    room_areas = [room["area"] for room in room_def]
+TypeError: string indices must be integers
+2018-11-07 13:01:33,908 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 13:01:36,273 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+=======
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 51, in generate_new_floorplans
+    current_generation = generate(user_selections,generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 368, in generate
+    evaluate_pop(Pt,selections)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 100, in evaluate_pop
+    individual.interactive_dir[i] = ( individual.interactive_dir[i] / max_dir_hamming[i] ) / len(user_input)*(i+1)
+ZeroDivisionError: division by zero
+2018-11-06 16:34:32,506 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-06 16:34:48,024 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -34,15 +56,16 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 35, in generate_floorplans
-    init_population(user_selections,pop_size, generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 389, in init_population
-    dominance(Rt,selections)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 117, in dominance
-    if (population[i].adjacency_score < population[j].adjacency_score) and (population[i].dims_score <= population[j].dims_score):
-TypeError: unorderable types: int() < NoneType()
-2018-11-07 10:36:07,108 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 10:36:17,312 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 51, in generate_new_floorplans
+    current_generation = generate(user_selections,generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 367, in generate
+    evaluate_pop(Pt,selections)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 98, in evaluate_pop
+    individual.interactive_dir[i] = ( individual.interactive_dir[i] / max_dir_hamming[i] ) / len(user_input)*(i+1)
+ZeroDivisionError: division by zero
+2018-11-06 16:38:12,303 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-06 16:38:24,948 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+>>>>>>> master
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -56,15 +79,33 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 35, in generate_floorplans
-    init_population(user_selections,pop_size, generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 389, in init_population
-    dominance(Rt,selections)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 117, in dominance
-    if (population[i].adjacency_score < population[j].adjacency_score) and (population[i].dims_score <= population[j].dims_score):
-TypeError: unorderable types: int() < NoneType()
-2018-11-07 10:44:59,858 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 10:45:24,275 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+<<<<<<< HEAD
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 37, in generate_floorplans
+    initial_generate(user_selections,pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 347, in initial_generate
+    evaluate_pop(Pt,selections)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 85, in evaluate_pop
+    evaluate_layout(individual)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 67, in evaluate_layout
+    get_layout(individual.definition, individual.room_def, individual.split_list, dir_pop, individual.room_order, individual.min_opening)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 320, in get_layout
+    room_areas = [room["area"] for room in room_def]
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 320, in <listcomp>
+    room_areas = [room["area"] for room in room_def]
+TypeError: string indices must be integers
+2018-11-07 13:02:46,750 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 13:02:50,055 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+=======
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 51, in generate_new_floorplans
+    current_generation = generate(user_selections,generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 368, in generate
+    evaluate_pop(Pt,selections)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 99, in evaluate_pop
+    individual.interactive_dir[i] = ( individual.interactive_dir[i] / max_dir_hamming[i] ) / len(user_input)*(i+1)
+ZeroDivisionError: division by zero
+2018-11-06 16:47:37,829 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-06 16:47:44,906 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+>>>>>>> master
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -78,25 +119,69 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
+<<<<<<< HEAD
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 37, in generate_floorplans
+    initial_generate(user_selections,pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 347, in initial_generate
+    evaluate_pop(Pt,selections)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 85, in evaluate_pop
+    evaluate_layout(individual)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 67, in evaluate_layout
+    get_layout(individual.definition, individual.room_def, individual.split_list, dir_pop, individual.room_order, individual.min_opening)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 320, in get_layout
+    room_areas = [room["area"] for room in room_def]
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 320, in <listcomp>
+    room_areas = [room["area"] for room in room_def]
+TypeError: string indices must be integers
+2018-11-07 13:06:57,176 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 13:07:01,092 ERROR: Exception on /generate_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+=======
   File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 35, in generate_floorplans
     init_population(user_selections,pop_size, generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 396, in init_population
-    dominance(Rt,selections)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 117, in dominance
-    if (population[i].adjacency_score < population[j].adjacency_score) and (population[i].dims_score <= population[j].dims_score):
-TypeError: unorderable types: int() < NoneType()
-2018-11-07 11:05:12,667 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 11:51:08,911 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 11:51:16,802 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 12:29:18,774 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 12:33:22,873 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 12:35:04,760 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 12:37:05,327 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 12:37:36,560 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 12:37:42,181 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 12:37:49,312 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 12:40:22,459 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 12:41:23,760 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 12:41:32,926 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 12:41:37,286 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 12:41:48,175 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 347, in init_population
+    evaluate_pop(Pt,selections)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 77, in evaluate_pop
+    print("user input {}".format(user_input[0].split_list))
+IndexError: list index out of range
+2018-11-06 16:48:02,215 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-06 16:48:18,483 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+>>>>>>> master
+Traceback (most recent call last):
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+<<<<<<< HEAD
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 37, in generate_floorplans
+    initial_generate(user_selections,pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 347, in initial_generate
+    evaluate_pop(Pt,selections)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 85, in evaluate_pop
+    evaluate_layout(individual)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 67, in evaluate_layout
+    get_layout(json.loads(individual.definition), individual.room_def, individual.split_list, dir_pop, individual.room_order, individual.min_opening)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/json/__init__.py", line 312, in loads
+    s.__class__.__name__))
+TypeError: the JSON object must be str, not 'dict'
+2018-11-07 13:08:48,149 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+=======
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 51, in generate_new_floorplans
+    current_generation = generate(user_selections,generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 371, in generate
+    evaluate_pop(Pt,selections)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 102, in evaluate_pop
+    individual.interactive_dir[i] = ( individual.interactive_dir[i] / max_dir_hamming[i] ) / len(user_input)*(i+1)
+ZeroDivisionError: division by zero
+2018-11-06 16:52:42,614 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-06 16:58:25,439 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-06 16:59:17,300 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-06 17:01:01,722 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+>>>>>>> master
