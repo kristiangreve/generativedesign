@@ -218,6 +218,8 @@ def del_adjacency(department1,department2):
 
 
 
+
+
 @app.route('/explore')
 @login_required
 def explore():

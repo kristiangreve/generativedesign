@@ -73,8 +73,6 @@ def evaluate_layout(individual):
     individual.dims_score = dims_score
     individual.aspect_ratios = aspect_ratios
 
-
-
 def evaluate_pop(generation, user_input):
     max_dir_hamming = [0,0,0]
     max_room_hamming = [0,0,0]
@@ -140,7 +138,6 @@ def dominance(population,selections):
                 and (population[i].dims_score >= population[j].dims_score):
                     population[j].dominates_these.append(population[i])
                     population[i].dominated_count += 1
-
 
 def pareto_score(population):
     pareto_counter = 1
@@ -224,7 +221,6 @@ def crowding(population):
                 if max_split_num != 0:
                     individual.crowding_split =  individual.crowding_split / max_split_num
                 individual.crowding_score = individual.crowding_dir+individual.crowding_room +individual.crowding_split
-
 
 def comparison(obj1,obj2): # Compares 2 individuals on pareto front, followed by crowding
     if obj1.pareto == obj2.pareto: #if equal rank, look at distance
