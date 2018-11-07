@@ -41,14 +41,18 @@ class individual:
         self.dist = 0
         self.generation = 0
 
+    def get_room_list(self):
+        room_list = []
+        for dep in self.definition['rooms']:
+            room_list.append(dep['name'])
+        return room_list
+
     def evaluate_user_aspect(self, user_input):
         aspect_score = 0
-        #for user_input_i in user_input:
-        #    print('room def: ', user_input_i.room_def)
-        #    print('departments: ', user_input_i.departments)
-        #    for room in user_input_i.room_def['name']:
-        #        aspect_score += abs(self.aspect_ratios[room]-user_input_i.aspect_ratios[room])
-        #    self.aspect_score = aspect_score
+        for user_input_i in user_input:
+            for room in self.aspect_ratios.keys():
+                aspect_score += abs(self.aspect_ratios[room]-user_input_i.aspect_ratios[room])
+        self.aspect_score = aspect_score
 
 """
 init_population:
@@ -62,8 +66,6 @@ def evaluate_layout(individual):
 
     max_sizes, dims_score, aspect_ratios, departments, edges_out, adjacency_score, aspect_score = \
     get_layout(individual.definition,individual.room_def, individual.split_list, dir_pop, individual.room_order, individual.min_opening)
-
-
 
     individual.adjacency_score = adjacency_score
     individual.aspect_score = aspect_score
@@ -84,13 +86,15 @@ def evaluate_pop(generation, user_input):
         if len(user_input)>0: # if user input exists
             if len(user_input)>2: #if more than 3 user inputs, only take into account last 3 selections
                 user_input = user_input[-3:] #slice any elements before last 3 off
+
+            #Sets aspect score of each object based on proximity to user inputs
+            individual.evaluate_user_aspect(user_input)
+
             for index, user_input_i, in enumerate(user_input): #loops through every user input
                 individual.interactive_dir.append(hamming_distance(individual.dir_list, user_input_i.dir_list))
                 individual.interactive_split.append(num_difference_score(individual.split_list,user_input_i.split_list))
                 individual.interactive_room.append(hamming_distance(individual.room_order,user_input_i.room_order))
                 # for later normalization of distances, record max distance
-
-
 
                 if individual.interactive_dir[index] > max_dir_hamming[index]:
                     max_dir_hamming[index] = individual.interactive_dir[index]
@@ -110,8 +114,6 @@ def evaluate_pop(generation, user_input):
             individual.interactive_dir = []
             individual.interactive_split = []
             individual.interactive_room = []
-
-
 
 def dominance(population,selections):
      for i in range(len(population)):      #Loops through all individuals of population
@@ -329,15 +331,11 @@ def find_user_selection_object(generation,rank_of_favourite):
     room_order = json.loads(plan.room_order)
     min_opening = plan.min_opening
 
-    # max_sizes, dims_score, aspect_ratios, departments, edges_out, adjacency_score, aspect_score = \
-    # get_layout(definition,room_def, split_list, dir_list, room_order, min_opening)
-
     floor_plan = individual(definition=definition,room_def= room_def,\
     split_list = split_list, dir_list = dir_list, room_order=room_order,\
     min_opening=min_opening)
 
-    floor_plan.departments=departments
-
+    evaluate_layout(floor_plan)
 
     return floor_plan
 
