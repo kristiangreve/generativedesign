@@ -120,13 +120,19 @@ def dominance(population,selections):
         for j in range(i+1,len(population)): #Loops through all the remaining indiduals
             #What if adjacency and interactive score are similar? Then i gets favored while in fact solutions are equally good.
             if len(selections)>0:
+                #Adjacency score: #of broken adjecencies , the lower the better
+                #interactive score: The lower, the more similar a given obj is to user inputs in terms of dir list, split list and room order
+                #Aspect score: The lower, the more similar aspect ratios is the rooms of a given obj compared to user inputs
+                #dims score: The lower, the fewer dimensions are breaking the minimum size rule set in space_planning.py
                 if (population[i].adjacency_score <= population[j].adjacency_score) \
                 and (population[i].interactive_score < population[j].interactive_score)\
+                and (population[i].aspect_score < population[j].aspect_score)\
                 and (population[i].dims_score <= population[j].dims_score):
                     population[i].dominates_these.append(population[j])
                     population[j].dominated_count += 1
                 elif (population[i].adjacency_score >= population[j].adjacency_score) \
                 and (population[i].interactive_score > population[j].interactive_score) \
+                and (population[i].aspect_score > population[j].aspect_score) \
                 and (population[i].dims_score >= population[j].dims_score):
                     population[j].dominates_these.append(population[i])
                     population[i].dominated_count += 1
@@ -139,7 +145,6 @@ def dominance(population,selections):
                 and (population[i].dims_score >= population[j].dims_score):
                     population[j].dominates_these.append(population[i])
                     population[i].dominated_count += 1
-
 
 def pareto_score(population):
     pareto_counter = 1
@@ -318,8 +323,6 @@ def mutate(population, mutation_rate):
                 population[index].split_list[random_gene] = random.random()
             #parameter = population[index] #Why can't we just do like this!
 
-adjacency_plot = [] #global list to store the best adjacency score from each generation
-
 def find_user_selection_object(generation,rank_of_favourite):
     plan = db.session.query(Plan).filter_by(generation=generation)\
     .order_by(Plan.pareto,Plan.crowding_score.desc()).all()[rank_of_favourite]
@@ -338,6 +341,28 @@ def find_user_selection_object(generation,rank_of_favourite):
     evaluate_layout(floor_plan)
 
     return floor_plan
+
+def select_objects_for_render(population):
+    pareto_dict = defaultdict(list)
+    for individual in population:
+        pareto_dict[individual.pareto].append(individual)
+    #print('Len of p1: ', len(pareto_dict[1]))
+    #for individual in pareto_dict[1]:
+    #    print(individual)
+    #    print('adj score: ', individual.adjacency_score)
+    #    print('interactive score: ', individual.interactive_score)
+    #    print('Aspect score: ', individual.aspect_score)
+    #    print('Dims score: ', individual.dims_score)
+    #Bedst adjacency og minder mest om user selection
+    adjacency_sorted = sorted(pareto_dict[1], key=lambda x: (x.adjacency_score, x.interactive_score), reverse=False)
+    #Most similar dir/split/room_order
+    interactive_sorted = sorted(pareto_dict[1], key=lambda x: (x.interactive_score, x.adjacency_score), reverse=False)
+    #most similar aspect score
+    aspect_sorted = sorted(pareto_dict[1], key=lambda x: (x.aspect_score, x.adjacency_score, -x.crowding_score), reverse=False)
+    #most similar aspect score
+    crowding_sorted = sorted(pareto_dict[1], key=lambda x: (-x.crowding_score, -x.interactive_score), reverse=False)
+
+    return [adjacency_sorted[0],interactive_sorted[0],aspect_sorted[0]]
 
 # crates a new population
 def init_population(selections,pop_size,generations):
@@ -361,6 +386,7 @@ def init_population(selections,pop_size,generations):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
+    select_objects_for_render(Pt)
     save_population_to_database(Pt,generations)
 
 def generate(selections,generations):
@@ -386,6 +412,7 @@ def generate(selections,generations):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
+    select_objects_for_render(Pt)
     save_population_to_database(Pt,generations+current_generation)
     return current_generation
 
