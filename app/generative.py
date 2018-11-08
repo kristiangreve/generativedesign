@@ -274,7 +274,6 @@ def crossover(obj1,obj2):
 
 def breeding(population, mutation_rate):
     # get highest id from database
-
     id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
 
     print("latest id is: ", id)
@@ -288,7 +287,6 @@ def breeding(population, mutation_rate):
             child1.plan_id = id
             id+=1
             child2.plan_id = id
-
             children.append(child1)
             children.append(child2)
     return children
@@ -361,6 +359,8 @@ def initial_generate(selections,pop_size,generations):
     Pt = init_population(pop_size)
     save_population_to_database(Pt,0)
     Pt = get_population_from_database(0)
+    # load max id from database once and make variable that breeding uses
+
     evaluate_pop(Pt,selections)
     dominance(Pt,selections)
     pareto_score(Pt)
@@ -368,6 +368,7 @@ def initial_generate(selections,pop_size,generations):
     mutation_ratio = 1
     for n in range(generations):
         print('Generation: {}'.format(n))
+        # add current max id to inputs
         Qt = breeding(Pt, mutation_ratio)
         mutate(Qt, mutation_ratio)
         evaluate_pop(Qt,selections)
