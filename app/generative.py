@@ -282,6 +282,7 @@ def crossover(obj1,obj2):
 
     return child1,child2
 
+
 def breeding(population, id, mutation_rate):
     # get highest id from database
     id = id
@@ -325,6 +326,7 @@ def mutate(population, mutation_rate):
         mutate_objects = []
         while len(mutate_objects) <= int(mutation_rate*len(population)):
             mutate_objects.append(random.randint(0,len(population)-1))
+
         for index in mutate_objects:
             if atribute == 'room_order':
                 random_gene = random.randint(0,len(population[index].room_order)-1)
@@ -339,6 +341,7 @@ def mutate(population, mutation_rate):
                 random_gene = random.randint(0,len(population[index].split_list)-1)
                 population[index].split_list[random_gene] = random.random()
             #parameter = population[index] #Why can't we just do like this!
+
 
 adjacency_plot = [] #global list to store the best adjacency score from each generation
 
@@ -412,6 +415,8 @@ def generate(selections,generations):
         start = time.time()
         print('Generation: ', (current_generation+n))
         Qt, id = breeding(Pt,id, mutation_ratio)
+        end = time.time()
+        print("Time for breed ", (end - start))
         mutate(Qt, mutation_ratio)
         evaluate_pop(Qt,selections)
         Rt = Pt + Qt
@@ -493,6 +498,9 @@ def select_objects_for_render(population):
             if len(selection_list)==4:
                 break
 
+    print('Canvas1, dims: ', selection_list[0].dims_score)
+    print('Canvas2, dims: ', selection_list[1].dims_score)
+    print('Canvas3, dims: ', selection_list[3].dims_score)
     return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[3])]
     #selection_list = [object_to_visuals(x) for x in selection_list]
     #return selection_list
