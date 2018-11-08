@@ -272,11 +272,9 @@ def crossover(obj1,obj2):
 
     return child1,child2
 
-def breeding(population, mutation_rate):
+def breeding(population, id, mutation_rate):
     # get highest id from database
-    id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
-
-    print("latest id is: ", id)
+    id = id
     children = []
     while len(children) < len(population):
         parent1 = binary_tournament(population)
@@ -289,7 +287,7 @@ def breeding(population, mutation_rate):
             child2.plan_id = id
             children.append(child1)
             children.append(child2)
-    return children
+    return children, id
 
 def selection(pop_size, population):
     pareto_dict = defaultdict(list) #creates a dict for all pop and arranges according to pareto front
@@ -349,17 +347,19 @@ def init_population(size):
         element.plan_id = id
         #print(element.room_def)
         population.append(element)
-    return population
+    return population, id
 
 def initial_generate(selections,pop_size,generations):
     # delete all existing instances from database
     db.session.query(Plan).delete()
     db.session.commit()
     #print("database cleared")
-    Pt = init_population(pop_size)
+    Pt, id = init_population(pop_size)
     save_population_to_database(Pt,0)
-    Pt = get_population_from_database(0)
+
     # load max id from database once and make variable that breeding uses
+
+    print("latest id is: ", id)
 
     evaluate_pop(Pt,selections)
     dominance(Pt,selections)
@@ -367,9 +367,8 @@ def initial_generate(selections,pop_size,generations):
     crowding(Pt)
     mutation_ratio = 1
     for n in range(generations):
-        print('Generation: {}'.format(n))
         # add current max id to inputs
-        Qt = breeding(Pt, mutation_ratio)
+        Qt,id = breeding(Pt, id, mutation_ratio)
         mutate(Qt, mutation_ratio)
         evaluate_pop(Qt,selections)
         Rt = Pt + Qt
@@ -379,6 +378,7 @@ def initial_generate(selections,pop_size,generations):
         Pt = selection(pop_size,Rt)
     select_objects_for_render(Pt)
     save_population_to_database(Pt,generations)
+    print("ID after init: ", id)
     return Pt
 
 def generate(selections,generations):
@@ -386,6 +386,9 @@ def generate(selections,generations):
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
     # load latest generation from database into objects
     Pt = get_population_from_database(current_generation)
+    id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
+    print("ID after load: ", id)
+
     pop_size=len(Pt)
     evaluate_pop(Pt,selections)
     dominance(Pt,selections)
@@ -393,8 +396,8 @@ def generate(selections,generations):
     crowding(Pt)
     mutation_ratio = 1
     for n in range(generations):
-        print('Generation: {}'.format(n))
-        Qt = breeding(Pt, mutation_ratio)
+
+        Qt, id = breeding(Pt,id, mutation_ratio)
         mutate(Qt, mutation_ratio)
         evaluate_pop(Qt,selections)
         Rt = Pt + Qt
@@ -404,6 +407,7 @@ def generate(selections,generations):
         Pt = selection(pop_size,Rt)
     select_objects_for_render(Pt)
     save_population_to_database(Pt,generations+current_generation)
+    print("ID after ", (generations+current_generation), ' generations is: ', id)
     return Pt
 
 def json_departments_from_db():
