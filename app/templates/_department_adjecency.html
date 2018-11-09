@@ -1,8 +1,0 @@
-  <td>
-    <b>{{ department_row.name }}</b>
-  </td>
-  <td align="right">
-    {% for adj in department_row.adjecency | json_to_list %}
-    <font color="grey">{{ adj }}<font>
-    {% endfor %}
-  </td>

@@ -1,5 +1,18 @@
 // handler for button to generate new population from 0
-$("#generate_button").click(generate_first_floorplans);
+
+$(document).ready(generate_first_floorplans);
+var mypapers = []
+$(document).ready(setup_canvases_as_projects);
+function setup_canvases_as_projects(){
+	var canvases = jQuery.makeArray($(".floorcanvas"));
+	canvases.forEach(function(element){
+		var newpaper = new paper.PaperScope();
+		newpaper.setup(element);
+		mypapers.push(newpaper);
+	});
+};
+
+// $("#generate_button").click(generate_first_floorplans);
 
 function generate_first_floorplans() {
 	$.post('/generate_first_floorplans/',{
@@ -13,59 +26,57 @@ function generate_first_floorplans() {
 // on click on floor plan
 $(".floorcanvas").click(function(){
 	// register what generation and index the solution had
-	var id = $(this).attr('id')
+	var plan_id = $(this).attr('plan_id')
 	// make ajax call to generate new floor plans
 	$.post('/generate_new_floorplans/',{
-		id: id
+		id: plan_id
 	}).done(function(response) {
 		render_floorplans(response);
 	});
 });
 
-
 function render_floorplans(render_array) {
 	canvases = jQuery.makeArray($(".floorcanvas"));
-	for(i=0; i<render_array.length; i++){
-		console.log(render_array[i]);
-		console.log(canvases[i]);
-		plotPlan(canvases[i],render_array[i])
-		canvases[i].setAttribute('id',render_array[i]['id']);
-	}
+	for( var i = 0; i< render_array.length; i++){
+		canvases[i].setAttribute('plan_id',render_array[i]['id']);
+		plotPlan(canvases[i],i,render_array[i]);
+	};
 };
-
 
 // function to shorten floats to two decimals
 function parse_dim(float) {
 	return parseFloat(Math.round(float * 100) / 100).toFixed(2);
 }
 
-// function to make ajax call to server and plot the returning floor plan in
-// a specific canvas.
+function plotPlan(plotCanvas,project_id,render_graphics) {
+	console.log(plotCanvas);
+	mypapers[project_id].activate();
+	mypapers[project_id].view.draw();
+	var layer = new Layer();
+	mypapers[project_id].project.clear()
+	mypapers[project_id].project.addLayer(layer)
 
-function plotPlan(plotCanvas,render_graphics) {
-	var scope = new paper.PaperScope();
-	var canvas = document.getElementById(plotCanvas.id);
-	scope.setup(canvas);
-	scope.activate();
 
 	var departments = render_graphics.departments;
 	var max_size = render_graphics.max_sizes;
 
-	// factors for scaling the rectangles and draw outside rectangle
-	var factor_x = view.viewSize.width/max_size[1]
-	var factor_y = view.viewSize.height/max_size[0]
+	var factor_x = parseInt(plotCanvas.style.width) / max_size[1];
+	var factor_y = parseInt(plotCanvas.style.height) / max_size[0];
+	var scale_factor = Math.min(factor_x,factor_y);
 
 	// outline for the floor plan
-	var base = new Point(0,0)
-	var dims = new Size(view.viewSize.width,view.viewSize.height)
+	var outlineWidth = 3;
+	var base = new Point(0,0);
+	var dims = new Size(max_size[1]*scale_factor,max_size[0]*scale_factor)
+
 	var outline = new Rectangle(base,dims);
 	var path = new Path.Rectangle(outline);
 	path.strokeColor = 'black';
-	path.strokeWidth = 5;
+	path.strokeWidth = outlineWidth;
 
 	departments.forEach(function(element) {
-		var base = new Point(element.base[0]*factor_x,element.base[1]*factor_y);
-		var dims = new Size(element.dims[1]*factor_x,element.dims[0]*factor_y);
+		var base = new Point(element.base[0]*scale_factor,element.base[1]*scale_factor);
+		var dims = new Size(element.dims[1]*scale_factor,element.dims[0]*scale_factor);
 		var name = element.name;
 
 		var department = new Rectangle(base,dims);

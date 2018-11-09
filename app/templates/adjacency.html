@@ -3,41 +3,47 @@
 
 {% block app_content %}
 
-<div class="container">
-  <div class="col-md-12">
-    <table class="table table-hover">
+<style>
+  #adjacent_table:hover a {
+    opacity: 0.2;
+  }
+  #adjacent_table:hover tr:hover a {
+    opacity: 1;
+  }
+</style>
 
+<h1>Adjacencies</h1>
+
+<div class="container">
+  <div class="col-md-8">
+    <table id = "adjacent_table" class="table">
       <thead >
         <th>
         </th>
-        {% for department_col in departments[1:] %}
+        {% for department_col in departments%}
         <th class="text-center">
           {{ department_col.name }}
         </th>
         {% endfor %}
       </thead>
-
       <tbody>
-        {% for department_row in departments[:-1] %}
+        {% for department_row in departments %}
         <tr>
-          <td class="text-right">
-            {{ department_row.name }}
-          </td>
-          {% for department_col in departments[1:] %}
+          <th class="text-right">
+            <a>
+              {{ department_row.name }}
+            </a>
+          </th>
+          {% for department_col in departments %}
           <td class="text-center" width = 200px>
-            {% set adj = check_adj(department_row.name,department_col.name) %}
-            {% set plot = adjacent_list_check(department_row.name,department_col.name) %}
-
-            {% if plot== True%}
-            {% if adj== False%}
+            {% if check_adj(department_row.name,department_col.name) == False%}
             <a href="{{ url_for('add_adjacency',department1=department_row.name,department2=department_col.name) }}">
               <i class="material-icons">check_box_outline_blank</i>
             </a>
-            {% elif adj== True%}
+            {% else %}
             <a href="{{ url_for('del_adjacency',department1=department_row.name,department2=department_col.name) }}">
               <i class="material-icons">check_box</i>
             </a>
-            {% endif %}
             {% endif %}
           </td>
           {% endfor %}
@@ -46,21 +52,21 @@
       </tbody>
     </table>
   </div>
-</div>
-<div class="container">
-  <div class="col-md-12">
+  <div class="col-md-4">
+    <table class="table table-hover" width=100%>
+      <thead>
+        <th width=30%>Name</th>
+        <th>Adjacent to</th>
+      </thead>
 
-    {% for department in departments %}
-    <div class="row">
-      {{ department.name }}
-
-      {% for adj in department.adjacency | json_to_list %}
-      {{adj}}
+      {% for department in departments %}
+      <tbody>
+        <tr>
+          {% include '_department_adjacency.html' %}
+        </tr>
+      </tbody>
       {% endfor %}
-
-    </div>
-    {% endfor %}
+    </table>
   </div>
 </div>
-
-      {% endblock %}
+{% endblock %}

@@ -453,6 +453,7 @@ def select_objects_for_render(population):
         aspect_sorted = sorted(pareto_dict[1], key=lambda x: (x.aspect_score, x.adjacency_score, -x.crowding_score), reverse=False)
         #most similar aspect score
         crowding_sorted = sorted(pareto_dict[1], key=lambda x: (-x.crowding_score, -x.interactive_score), reverse=False)
+
         return [object_to_visuals(adjacency_sorted[0]),object_to_visuals(interactive_sorted[0]),object_to_visuals(aspect_sorted[0])]
 
 def object_to_visuals(object):
@@ -477,6 +478,6 @@ def save_population_to_database(population,generation):
         room_def = plan.room_def, split_list = plan.split_list, \
         dir_list = plan.dir_list, room_order = plan.room_order, \
         min_opening = plan.min_opening, plan_id=plan.plan_id, \
-        generation = plan.generation, owner = current_user))
+        generation = generation, owner = current_user))
     db.session.commit()
     return generation

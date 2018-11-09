@@ -2,35 +2,54 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-<div class="container">
+
+<style type="text/css">
+</style>
+
+<div class="container-fluid">
 	<div class="row">
-		<div class="col-md-10">
-			<canvas class="floorcanvas" id="canvas_1" resize="true"></canvas>
-		</div> <!-- /col-md-10 -->
-		<div class="col-md-2">
-			<button id="generate_button" type="button" class="btn btn-primary">Restart generation</button>
+		<div class="col-md-6">
+			<div class="card" align="center">
+				<canvas class="floorcanvas" id="canvas_1" height = 200 ></canvas>
+				<div class="card-body">
+				</div>
+			</div>
 		</div>
-	</div> <!-- /row -->
-	<p></p>
+		<div class="col-md-6">
+			<div class="card" align="center">
+				<canvas class="floorcanvas" id="canvas_2" height = 200></canvas>
+				<div class="card-body">
+				</div>
+			</div>
+		</div>
+	</div>
 	<div class="row">
-		<div class="col-md-10">
-			<canvas class="floorcanvas" id="canvas_2" resize="true"></canvas>
-		</div> <!-- /col-md-10 -->
-	</div> <!-- /row -->
-	<p></p>
-	<div class="row">
-		<div class="col-md-10">
-			<canvas class="floorcanvas" id="canvas_3" resize="true"></canvas>
-		</div> <!-- /col-md-10 -->
-	</div> <!-- /row -->
-	<p></p>
-	<div class="row">
-		<div class="col-md-10">
-			<canvas id="canvas_x" resize="true"></canvas>
-		</div> <!-- /col-md-4 -->
-	</div> <!-- /row -->
-
-	<script type="text/paperscript" canvas='canvas_x' src = "{{ url_for('static', filename='js/floor_plan.js') }}"></script>
-
+		<div class="col-md-6">
+			<div class="card">
+				<canvas class="floorcanvas" id="canvas_3" height = 200></canvas>
+				<div class="card-body">
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="card">
+				<canvas class="floorcanvas" id="canvas_4" height = 200></canvas>
+				<div class="card-body">
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
+
+<div class="container">
+	<div class="col-md-6" style="display: none;">
+		<div class="card">
+			<canvas id="canvas_plot" height = 200></canvas>
+			<div class="card-body">
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/paperscript" canvas='canvas_plot' src = "{{ url_for('static', filename='js/floor_plan.js') }}"></script>
 {% endblock %}

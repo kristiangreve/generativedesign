@@ -3,31 +3,29 @@
 
 {% block app_content %}
 <div class="container">
-  <div class="row">
-    <div class="col-md-4">
-      {{ wtf.quick_form(form) }}
-    </div>
-    <div class="col-md-6">
-      <table class="table table-hover" width=100%>
-        <thead class="thead-dark">
-          <th width=10%></th>
-          <th width=40%>Name</th>
-          <th width=30%></th>
-          <th align="right" width=20%>Size</th>
-        </thead>
-        {% for department in departments %}
-        <div class="row">
-          {% include '_department.html' %}
-        </div>
-        {% endfor %}
+<div class="row">
+  <div class="col-md-4">
+    {{ wtf.quick_form(form) }}
+  </div>
+
+  <div class="col-md-4">
+
+    <table class="table table-hover" width=100%>
+      <thead>
+        <th width=30%>Name</th>
+        <th width=30%>Size</th>
+        <th align="right"></th>
+      </thead>
+      {% for department in departments %}
+      <tbody>
         <tr>
-          <td width=10%></td>
-          <td width=40%><font color="grey">Remaining space<font></td>
-            <td width=30%></td>
-            <td align="right" width=20%><font color="grey">{{ space }}<font></td>
-            </tr>
-          </table>
-        </div>
-      </div>
-    </div>
-    {% endblock %}
+          {% include '_department.html' %}
+        </tr>
+      </tbody>
+      {% endfor %}
+
+    </table>
+  </div>
+  </div>
+
+  {% endblock %}
