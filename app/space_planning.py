@@ -438,7 +438,7 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
 
     # Checks whether the  minimum dimensions of any room is lower than the minimum legal width
     # If any dimension is smaller than allowed, add one to the dims (dimensions) score. Lower score = better
-    min_dimension = 1.5 #min room dimension
+    min_dimension = 3.0 #min room dimension
     dims_score = 0
     for dim_xy in dims:
         for dim in dim_xy:

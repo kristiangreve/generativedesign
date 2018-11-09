@@ -131,25 +131,25 @@ def dominance(population,selections):
                 #interactive score: The lower, the more similar a given obj is to user inputs in terms of dir list, split list and room order
                 #Aspect score: The lower, the more similar aspect ratios is the rooms of a given obj compared to user inputs
                 #dims score: The lower, the fewer dimensions are breaking the minimum size rule set in space_planning.py
-                if (population[i].adjacency_score <= population[j].adjacency_score) \
-                and (population[i].interactive_score < population[j].interactive_score)\
-                and (population[i].aspect_score < population[j].aspect_score)\
-                and (population[i].dims_score <= population[j].dims_score):
+                if (population[i].dims_score <= population[j].dims_score) \
+                and (population[i].adjacency_score <= population[j].adjacency_score): #\
+                #and (population[i].interactive_score < population[j].interactive_score)\
+                #and (population[i].aspect_score < population[j].aspect_score):
                     population[i].dominates_these.append(population[j])
                     population[j].dominated_count += 1
-                elif (population[i].adjacency_score >= population[j].adjacency_score) \
-                and (population[i].interactive_score > population[j].interactive_score) \
-                and (population[i].aspect_score > population[j].aspect_score) \
-                and (population[i].dims_score >= population[j].dims_score):
+                elif (population[i].dims_score >= population[j].dims_score) \
+                and (population[i].adjacency_score >= population[j].adjacency_score): #\
+                #and (population[i].interactive_score > population[j].interactive_score) \
+                #and (population[i].aspect_score > population[j].aspect_score):
                     population[j].dominates_these.append(population[i])
                     population[i].dominated_count += 1
             else:
-                if (population[i].adjacency_score < population[j].adjacency_score)\
-                and (population[i].dims_score <= population[j].dims_score):
+                if (population[i].dims_score <= population[j].dims_score)\
+                and (population[i].adjacency_score < population[j].adjacency_score):
                     population[i].dominates_these.append(population[j])
                     population[j].dominated_count += 1
-                elif (population[i].adjacency_score > population[j].adjacency_score)\
-                and (population[i].dims_score >= population[j].dims_score):
+                elif (population[i].dims_score >= population[j].dims_score)\
+                and (population[i].adjacency_score > population[j].adjacency_score):
                     population[j].dominates_these.append(population[i])
                     population[i].dominated_count += 1
 
@@ -195,19 +195,17 @@ def crowding(population):
     for individual in population:
         pareto_dict[individual.pareto].append(individual)
         reset_atributes(individual)
-    for pareto_front in pareto_dict.values():
-        if pareto_front[0].pareto == 1:
-            print('# of obj in pareto 1: ', len(pareto_front))
+    for pareto_front_list in pareto_dict.values():
 
         max_dir_hamming = 0
         max_room_hamming = 0
         max_split_num = 0
-        if len(pareto_front)>2: #If there's at least 3 solutions in the pareto front (calc. dist. to 2 nearest)
-            for individual in pareto_front:
+        if len(pareto_front_list)>2: #If there's at least 3 solutions in the pareto front (calc. dist. to 2 nearest)
+            for individual in pareto_front_list:
                 hamming_dir_list = [] #creates a hamming list unique to each individual
                 hamming_room_list = [] #creates a hamming list unique to each individual
                 num_split_list = [] #creates a hamming list unique to each individual
-                for comparison in pareto_front:
+                for comparison in pareto_front_list:
                     if individual != comparison:
                         hamming_dir_list.append(hamming_distance(individual.dir_list,comparison.dir_list)) #calculates hamming distance between two solutions
                         hamming_room_list.append(hamming_distance(individual.room_order,comparison.room_order))
@@ -225,12 +223,12 @@ def crowding(population):
                 individual.crowding_room = (hamming_room_list[0]+hamming_room_list[1]) / 2
                 individual.crowding_split =  (num_split_list[0]+num_split_list[1]) / 2
         else:
-            for individual in pareto_front:
+            for individual in pareto_front_list:
                 individual.crowding_score = 3
 
         #normalizes the scores
-        if len(pareto_front)>2:
-            for individual in pareto_front:
+        if len(pareto_front_list)>2:
+            for individual in pareto_front_list:
                 if max_dir_hamming != 0:
                     individual.crowding_dir =  individual.crowding_dir / max_dir_hamming
                 if max_room_hamming != 0:
@@ -355,7 +353,6 @@ def init_population(size):
         split_list = split_list, dir_list = dir_list, room_order = room_order,\
         min_opening = min_opening)
         element.plan_id = id
-        #print(element.room_def)
         population.append(element)
     return population, id
 
@@ -363,22 +360,18 @@ def initial_generate(selections,pop_size,generations):
     # delete all existing instances from database
     db.session.query(Plan).delete()
     db.session.commit()
-    #print("database cleared")
     Pt, id = init_population(pop_size)
 
     evaluate_pop(Pt,selections)
     save_population_to_database(Pt,0)
 
     # load max id from database once and make variable that breeding uses
-
-    print("latest id is: ", id)
-
     dominance(Pt,selections)
     pareto_score(Pt)
     crowding(Pt)
     mutation_ratio = 1
     for n in range(generations):
-        # add current max id to inputs
+        print('Generation: ', n)
         Qt,id = breeding(Pt, id, mutation_ratio)
         mutate(Qt, mutation_ratio)
         evaluate_pop(Qt,selections)
@@ -389,8 +382,6 @@ def initial_generate(selections,pop_size,generations):
         Pt = selection(pop_size,Rt)
     select_objects_for_render(Pt)
     save_population_to_database(Pt,generations)
-    print('Saved pop Size: ', len(Pt))
-    print("ID after init: ", id)
     return Pt
 
 def generate(selections,generations):
@@ -398,9 +389,7 @@ def generate(selections,generations):
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
     # load latest generation from database into objects
     Pt = get_population_from_database(current_generation)
-    print('Loaded Pop size: ', len(Pt))
     id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
-    print("ID after load: ", id)
 
     pop_size=len(Pt)
     evaluate_pop(Pt,selections)
@@ -409,7 +398,7 @@ def generate(selections,generations):
     crowding(Pt)
     mutation_ratio = 1
     for n in range(generations):
-        start = time.time()
+        #start = time.time()
         print('Generation: ', (current_generation+n))
         Qt, id = breeding(Pt,id, mutation_ratio)
         mutate(Qt, mutation_ratio)
@@ -419,11 +408,10 @@ def generate(selections,generations):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
-        end = time.time()
-        print("Time for 1 generation: ", (end - start))
+        #end = time.time()
+        #print("Time for 1 generation: ", (end - start))
     select_objects_for_render(Pt)
     save_population_to_database(Pt,generations+current_generation)
-    print("After ", (generations+current_generation), ' generations ID is: ', id)
     return Pt
 
 def json_departments_from_db():
@@ -463,12 +451,12 @@ def select_objects_for_render(population):
         for pareto_front in pareto_dict.keys():
             if len(selection_list) == 0:
             #Best adjacency of which is most similar to dir/split/ordder of user selction
-                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score, x.interactive_score, -x.crowding_score), reverse=False)
+                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score, x.dims_score, x.interactive_score, -x.crowding_score), reverse=False)
                 selection_list.append(adjacency_sorted[0])
 
             if len(selection_list)==1:
                 #Most similar dir/split/room_order
-                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.interactive_score, x.adjacency_score, -x.crowding_score), reverse=False)
+                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.dims_score, x.interactive_score, x.adjacency_score, -x.crowding_score), reverse=False)
                 for obj in interactive_sorted:
                     if len(selection_list)==1:
                         if obj not in selection_list:
@@ -476,22 +464,33 @@ def select_objects_for_render(population):
 
             if len(selection_list)==2:
                 #most similar aspect score
-                aspect_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_score, x.adjacency_score, -x.crowding_score), reverse=False)
+                aspect_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.dims_score, x.aspect_score, x.adjacency_score, -x.crowding_score), reverse=False)
                 for obj in aspect_sorted:
                     if len(selection_list) == 2:
                         if obj not in selection_list:
                             selection_list.append(obj)
 
+            #if len(selection_list)==3:
+            #    #Most different (crowding) to neighbors
+            #    crowding_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (-x.crowding_score, -x.interactive_score), reverse=False)
+            #    for obj in crowding_sorted:
+            #        if len(selection_list) == 3:
+            #            if obj not in selection_list:
+            #                selection_list.append(obj)
+
             if len(selection_list)==3:
-                #Most different (crowding) to neighbors
-                crowding_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (-x.crowding_score, -x.interactive_score), reverse=False)
-                for obj in crowding_sorted:
-                    if len(selection_list) == 3:
+                #Most similar dir/split/room_order
+                adj2sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.dims_score, x.adjacency_score, x.interactive_score, -x.crowding_score), reverse=False)
+                for obj in adj2sorted:
+                    if len(selection_list)==3:
                         if obj not in selection_list:
                             selection_list.append(obj)
 
             if len(selection_list)==4:
                 break
+
+    for index, obj in enumerate(selection_list):
+        print('Obj: ', index+1, ' #dims broken: ', obj.dims_score, ' adj: ', obj.adjacency_score, ' crowd: ', round(obj.crowding_score,3), ' dir/split: ', round(obj.interactive_score,3), ' aspect: ', round(obj.aspect_score,3))
 
     return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2]),object_to_visuals(selection_list[3])]
     #selection_list = [object_to_visuals(x) for x in selection_list]
