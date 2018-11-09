@@ -43,7 +43,7 @@ def generate_first_floorplans():
 def generate_new_floorplans():
     generations = 20
     id = int(request.form['id'])
-    print("id: ",id)
+    print("id selected: ",id)
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
     Pt = get_population_from_database(current_generation)
     # add the user selection from the previous generation

@@ -2,6 +2,7 @@
 
 $(document).ready(generate_first_floorplans);
 var mypapers = []
+
 $(document).ready(setup_canvases_as_projects);
 function setup_canvases_as_projects(){
 	var canvases = jQuery.makeArray($(".floorcanvas"));

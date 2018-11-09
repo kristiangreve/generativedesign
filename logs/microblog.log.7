@@ -1,10 +1,15 @@
+<<<<<<< HEAD
 2018-11-08 11:05:56,942 ERROR: Exception on /adjacency [GET] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+=======
+2018-11-07 14:47:44,732 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+>>>>>>> 4ae82566dd3f92f5acb2de60073380fc359f72e3
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
     rv = self.handle_user_exception(e)
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+<<<<<<< HEAD
     reraise(exc_type, exc_value, tb)
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
     raise value
@@ -67,6 +72,23 @@ TypeError: the JSON object must be str, not 'Undefined'
 2018-11-08 11:41:28,251 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 2018-11-08 11:41:55,838 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 2018-11-08 11:41:59,688 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+=======
+    reraise(exc_type, exc_value, tb)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 39, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 378, in initial_generate
+    select_objects_for_render(Pt)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 455, in select_objects_for_render
+    return jsonify([object_to_visuals(adjacency_sorted[0]),object_to_visuals(interactive_sorted[0]),object_to_visuals(aspect_sorted[0])])
+NameError: name 'jsonify' is not defined
+2018-11-07 14:48:21,924 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 14:48:32,391 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -80,6 +102,32 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 39, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 378, in initial_generate
+    select_objects_for_render(Pt)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 455, in select_objects_for_render
+    return [object_to_visuals(adjacency_sorted[0]),object_to_visuals(interactive_sorted[0]),object_to_visuals(aspect_sorted[0])]
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 462, in object_to_visuals
+    return {"max_sizes": max_sizes,"departments":departments,"adjacency_score":adjacency_score,"id":plan.plan_id}
+NameError: name 'plan' is not defined
+2018-11-07 14:49:24,285 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 14:49:37,234 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+>>>>>>> 4ae82566dd3f92f5acb2de60073380fc359f72e3
+Traceback (most recent call last):
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+<<<<<<< HEAD
   File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 45, in generate_new_floorplans
     id = int(request.form['id'])
 ValueError: invalid literal for int() with base 10: 'canvas_2'
@@ -88,6 +136,22 @@ ValueError: invalid literal for int() with base 10: 'canvas_2'
 2018-11-08 11:49:55,064 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 2018-11-08 11:50:55,559 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 2018-11-08 11:51:46,902 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+=======
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 39, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 378, in initial_generate
+    select_objects_for_render(Pt)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 455, in select_objects_for_render
+    return [object_to_visuals(adjacency_sorted[0]),object_to_visuals(interactive_sorted[0]),object_to_visuals(aspect_sorted[0])]
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 461, in object_to_visuals
+    object.dir_list, object.room_order, object.min_opening)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 338, in get_layout
+    children = root.subdivide(dir_list.pop(0), ids.pop(0))[:]
+IndexError: pop from empty list
+2018-11-07 14:51:10,508 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 14:51:21,236 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 14:51:25,016 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+>>>>>>> 4ae82566dd3f92f5acb2de60073380fc359f72e3
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -101,6 +165,7 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
+<<<<<<< HEAD
   File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 55, in generate_new_floorplans
     Pt = generate(user_selections,generations)
   File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 397, in generate
@@ -113,3 +178,17 @@ AttributeError: 'NoneType' object has no attribute 'plan_id'
 2018-11-08 11:59:52,143 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 2018-11-08 12:01:17,990 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 2018-11-08 12:03:09,679 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+=======
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 39, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 378, in initial_generate
+    select_objects_for_render(Pt)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 455, in select_objects_for_render
+    return [object_to_visuals(adjacency_sorted[0]),object_to_visuals(interactive_sorted[0]),object_to_visuals(aspect_sorted[0])]
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 462, in object_to_visuals
+    dir_list, object.room_order, object.min_opening)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 338, in get_layout
+    children = root.subdivide(dir_list.pop(0), ids.pop(0))[:]
+IndexError: pop from empty list
+2018-11-07 14:53:09,754 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+>>>>>>> 4ae82566dd3f92f5acb2de60073380fc359f72e3

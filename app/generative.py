@@ -8,6 +8,7 @@ from app.models import User, Plan
 from app import app, db
 from flask_login import current_user
 from sqlalchemy import func
+import time
 
 class individual:
     def __init__(self, definition, room_def, split_list, dir_list, room_order, min_opening):
@@ -106,9 +107,15 @@ def evaluate_pop(generation, user_input):
     if len(user_input)>0:
         for individual in generation:
             for i in range(len(user_input)):
-                individual.interactive_dir[i] = ( individual.interactive_dir[i] / max_dir_hamming[i] ) / len(user_input)*(i+1)
+                if max_dir_hamming[i] != 0:
+                    individual.interactive_dir[i] = ( individual.interactive_dir[i] / max_dir_hamming[i] ) / len(user_input)*(i+1)
+                else:
+                    individual.interactive_dir[i] = 0
                 individual.interactive_split[i] = ( individual.interactive_split[i] / max_split_num[i] ) / len(user_input)*(i+1)
-                individual.interactive_room[i] = ( individual.interactive_room[i] / max_room_hamming[i] ) / len(user_input)*(i+1)
+                if max_dir_hamming[i] != 0:
+                    individual.interactive_room[i] = ( individual.interactive_room[i] / max_room_hamming[i] ) / len(user_input)*(i+1)
+                else:
+                    individual.interactive_room[i] = 0
             individual.interactive_score = sum(individual.interactive_dir) + sum(individual.interactive_split) + sum(individual.interactive_room)
             #Resets the attributes
             individual.interactive_dir = []
@@ -189,6 +196,9 @@ def crowding(population):
         pareto_dict[individual.pareto].append(individual)
         reset_atributes(individual)
     for pareto_front in pareto_dict.values():
+        if pareto_front[0].pareto == 1:
+            print('# of obj in pareto 1: ', len(pareto_front))
+
         max_dir_hamming = 0
         max_room_hamming = 0
         max_split_num = 0
@@ -272,11 +282,9 @@ def crossover(obj1,obj2):
 
     return child1,child2
 
-def breeding(population, mutation_rate):
+def breeding(population, id, mutation_rate):
     # get highest id from database
-    id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
-
-    print("latest id is: ", id)
+    id = id
     children = []
     while len(children) < len(population):
         parent1 = binary_tournament(population)
@@ -289,7 +297,7 @@ def breeding(population, mutation_rate):
             child2.plan_id = id
             children.append(child1)
             children.append(child2)
-    return children
+    return children, id
 
 def selection(pop_size, population):
     pareto_dict = defaultdict(list) #creates a dict for all pop and arranges according to pareto front
@@ -349,27 +357,29 @@ def init_population(size):
         element.plan_id = id
         #print(element.room_def)
         population.append(element)
-    return population
+    return population, id
 
 def initial_generate(selections,pop_size,generations):
     # delete all existing instances from database
     db.session.query(Plan).delete()
     db.session.commit()
     #print("database cleared")
-    Pt = init_population(pop_size)
-    save_population_to_database(Pt,0)
-    Pt = get_population_from_database(0)
-    # load max id from database once and make variable that breeding uses
+    Pt, id = init_population(pop_size)
 
     evaluate_pop(Pt,selections)
+    save_population_to_database(Pt,0)
+
+    # load max id from database once and make variable that breeding uses
+
+    print("latest id is: ", id)
+
     dominance(Pt,selections)
     pareto_score(Pt)
     crowding(Pt)
     mutation_ratio = 1
     for n in range(generations):
-        print('Generation: {}'.format(n))
         # add current max id to inputs
-        Qt = breeding(Pt, mutation_ratio)
+        Qt,id = breeding(Pt, id, mutation_ratio)
         mutate(Qt, mutation_ratio)
         evaluate_pop(Qt,selections)
         Rt = Pt + Qt
@@ -379,6 +389,8 @@ def initial_generate(selections,pop_size,generations):
         Pt = selection(pop_size,Rt)
     select_objects_for_render(Pt)
     save_population_to_database(Pt,generations)
+    print('Saved pop Size: ', len(Pt))
+    print("ID after init: ", id)
     return Pt
 
 def generate(selections,generations):
@@ -386,6 +398,10 @@ def generate(selections,generations):
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
     # load latest generation from database into objects
     Pt = get_population_from_database(current_generation)
+    print('Loaded Pop size: ', len(Pt))
+    id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
+    print("ID after load: ", id)
+
     pop_size=len(Pt)
     evaluate_pop(Pt,selections)
     dominance(Pt,selections)
@@ -393,8 +409,9 @@ def generate(selections,generations):
     crowding(Pt)
     mutation_ratio = 1
     for n in range(generations):
-        print('Generation: {}'.format(n))
-        Qt = breeding(Pt, mutation_ratio)
+        start = time.time()
+        print('Generation: ', (current_generation+n))
+        Qt, id = breeding(Pt,id, mutation_ratio)
         mutate(Qt, mutation_ratio)
         evaluate_pop(Qt,selections)
         Rt = Pt + Qt
@@ -402,8 +419,11 @@ def generate(selections,generations):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
+        end = time.time()
+        print("Time for 1 generation: ", (end - start))
     select_objects_for_render(Pt)
     save_population_to_database(Pt,generations+current_generation)
+    print("After ", (generations+current_generation), ' generations ID is: ', id)
     return Pt
 
 def json_departments_from_db():
@@ -434,27 +454,48 @@ def random_design(definition):
     return room_def, split_list, dir_list, room_order, min_opening
 
 def select_objects_for_render(population):
-        pareto_dict = defaultdict(list)
-        for individual in population:
-            pareto_dict[individual.pareto].append(individual)
-        #print('Len of p1: ', len(pareto_dict[1]))
-        #for individual in pareto_dict[1]:
-        #    print(individual)
-        #    print('adj score: ', individual.adjacency_score)
-        #    print('interactive score: ', individual.interactive_score)
-        #    print('Aspect score: ', individual.aspect_score)
-        #    print('Dims score: ', individual.dims_score)
+    pareto_dict = defaultdict(list)
+    for individual in population:
+        pareto_dict[individual.pareto].append(individual)
 
-        #Best adjacency og minder mest om user selection
-        adjacency_sorted = sorted(pareto_dict[1], key=lambda x: (x.adjacency_score, x.interactive_score), reverse=False)
-        #Most similar dir/split/room_order
-        interactive_sorted = sorted(pareto_dict[1], key=lambda x: (x.interactive_score, x.adjacency_score), reverse=False)
-        #most similar aspect score
-        aspect_sorted = sorted(pareto_dict[1], key=lambda x: (x.aspect_score, x.adjacency_score, -x.crowding_score), reverse=False)
-        #most similar aspect score
-        crowding_sorted = sorted(pareto_dict[1], key=lambda x: (-x.crowding_score, -x.interactive_score), reverse=False)
+    selection_list = []
+    while len(selection_list)<3:
+        for pareto_front in pareto_dict.keys():
+            if len(selection_list) == 0:
+            #Best adjacency of which is most similar to dir/split/ordder of user selction
+                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score, x.interactive_score, -x.crowding_score), reverse=False)
+                selection_list.append(adjacency_sorted[0])
 
-        return [object_to_visuals(adjacency_sorted[0]),object_to_visuals(interactive_sorted[0]),object_to_visuals(aspect_sorted[0])]
+            if len(selection_list)==1:
+                #Most similar dir/split/room_order
+                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.interactive_score, x.adjacency_score, -x.crowding_score), reverse=False)
+                for obj in interactive_sorted:
+                    if len(selection_list)==1:
+                        if obj not in selection_list:
+                            selection_list.append(obj)
+
+            if len(selection_list)==2:
+                #most similar aspect score
+                aspect_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_score, x.adjacency_score, -x.crowding_score), reverse=False)
+                for obj in aspect_sorted:
+                    if len(selection_list) == 2:
+                        if obj not in selection_list:
+                            selection_list.append(obj)
+
+            if len(selection_list)==3:
+                #Most different (crowding) to neighbors
+                crowding_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (-x.crowding_score, -x.interactive_score), reverse=False)
+                for obj in crowding_sorted:
+                    if len(selection_list) == 3:
+                        if obj not in selection_list:
+                            selection_list.append(obj)
+
+            if len(selection_list)==4:
+                break
+
+    return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[3])]
+    #selection_list = [object_to_visuals(x) for x in selection_list]
+    #return selection_list
 
 def object_to_visuals(object):
     return {"max_sizes": object.max_sizes,"departments":object.departments,"adjacency_score":object.adjacency_score,"id":object.plan_id}
