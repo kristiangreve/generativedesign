@@ -1,118 +1,8 @@
 <<<<<<< HEAD
-2018-11-08 11:05:56,942 ERROR: Exception on /adjacency [GET] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+2018-11-08 12:04:26,719 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:04:30,139 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 =======
-2018-11-07 14:47:44,732 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
->>>>>>> 4ae82566dd3f92f5acb2de60073380fc359f72e3
-Traceback (most recent call last):
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
-<<<<<<< HEAD
-    reraise(exc_type, exc_value, tb)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
-    raise value
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
-    return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask_login/utils.py", line 261, in decorated_view
-    return func(*args, **kwargs)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 129, in adjacency
-    return render_template('adjacency.html', title='adjacency', departments=departments)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/templating.py", line 135, in render_template
-    context, ctx.app)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/templating.py", line 117, in _render
-    rv = template.render(context)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/jinja2/environment.py", line 1008, in render
-    return self.environment.handle_exception(exc_info, True)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/jinja2/environment.py", line 780, in handle_exception
-    reraise(exc_type, exc_value, tb)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/jinja2/_compat.py", line 37, in reraise
-    raise value.with_traceback(tb)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/templates/adjacency.html", line 2, in top-level template code
-    {% import 'bootstrap/wtf.html' as wtf %}
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/templates/base.html", line 1, in top-level template code
-    {% extends 'bootstrap/base.html' %}
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 1, in top-level template code
-    {% block doc -%}
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 4, in block "doc"
-    {%- block html %}
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 29, in block "html"
-    {% block body -%}
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 32, in block "body"
-    {% block content -%}
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/templates/base.html", line 100, in block "content"
-    {% block app_content %}{% endblock %}
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/templates/adjacency.html", line 74, in block "app_content"
-    {% include '_department_adjecency.html' %}
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/templates/_department_adjecency.html", line 6, in top-level template code
-    {% for adj in department.adjecency | json_to_list %}
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 147, in json_to_list
-    return json.loads(json_obj)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/json/__init__.py", line 312, in loads
-    s.__class__.__name__))
-TypeError: the JSON object must be str, not 'Undefined'
-2018-11-08 11:07:01,673 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:07:14,003 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:08:11,356 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:09:59,730 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:11:00,752 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:11:39,126 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:12:32,687 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:13:32,312 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:14:35,892 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:16:23,834 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:31:54,210 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:32:30,452 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:34:30,044 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:36:58,867 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:40:54,490 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:41:28,251 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:41:55,838 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:41:59,688 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
-=======
-    reraise(exc_type, exc_value, tb)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
-    raise value
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
-    return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 39, in generate_first_floorplans
-    Pt = initial_generate(user_selections, pop_size, generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 378, in initial_generate
-    select_objects_for_render(Pt)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 455, in select_objects_for_render
-    return jsonify([object_to_visuals(adjacency_sorted[0]),object_to_visuals(interactive_sorted[0]),object_to_visuals(aspect_sorted[0])])
-NameError: name 'jsonify' is not defined
-2018-11-07 14:48:21,924 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 14:48:32,391 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
-Traceback (most recent call last):
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
-    reraise(exc_type, exc_value, tb)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
-    raise value
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
-    return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 39, in generate_first_floorplans
-    Pt = initial_generate(user_selections, pop_size, generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 378, in initial_generate
-    select_objects_for_render(Pt)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 455, in select_objects_for_render
-    return [object_to_visuals(adjacency_sorted[0]),object_to_visuals(interactive_sorted[0]),object_to_visuals(aspect_sorted[0])]
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 462, in object_to_visuals
-    return {"max_sizes": max_sizes,"departments":departments,"adjacency_score":adjacency_score,"id":plan.plan_id}
-NameError: name 'plan' is not defined
-2018-11-07 14:49:24,285 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 14:49:37,234 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+2018-11-07 14:53:12,723 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 >>>>>>> 4ae82566dd3f92f5acb2de60073380fc359f72e3
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
@@ -128,56 +18,23 @@ Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
 <<<<<<< HEAD
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 45, in generate_new_floorplans
-    id = int(request.form['id'])
-ValueError: invalid literal for int() with base 10: 'canvas_2'
-2018-11-08 11:45:24,378 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:48:24,706 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:49:55,064 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:50:55,559 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:51:46,902 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
-=======
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 39, in generate_first_floorplans
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 38, in generate_first_floorplans
     Pt = initial_generate(user_selections, pop_size, generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 378, in initial_generate
-    select_objects_for_render(Pt)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 455, in select_objects_for_render
-    return [object_to_visuals(adjacency_sorted[0]),object_to_visuals(interactive_sorted[0]),object_to_visuals(aspect_sorted[0])]
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 461, in object_to_visuals
-    object.dir_list, object.room_order, object.min_opening)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 338, in get_layout
-    children = root.subdivide(dir_list.pop(0), ids.pop(0))[:]
-IndexError: pop from empty list
-2018-11-07 14:51:10,508 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 14:51:21,236 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-07 14:51:25,016 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
->>>>>>> 4ae82566dd3f92f5acb2de60073380fc359f72e3
-Traceback (most recent call last):
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
-    reraise(exc_type, exc_value, tb)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
-    raise value
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
-    return self.view_functions[rule.endpoint](**req.view_args)
-<<<<<<< HEAD
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 55, in generate_new_floorplans
-    Pt = generate(user_selections,generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 397, in generate
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 372, in initial_generate
     Qt = breeding(Pt, mutation_ratio)
   File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 277, in breeding
     id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
 AttributeError: 'NoneType' object has no attribute 'plan_id'
-2018-11-08 11:52:10,587 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:57:00,298 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 11:59:52,143 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 12:01:17,990 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 12:03:09,679 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:37:00,454 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:38:21,850 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:39:51,863 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:41:31,050 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:42:53,485 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:43:47,188 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:46:16,010 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:47:10,919 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:47:39,566 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:48:01,872 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 =======
   File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 39, in generate_first_floorplans
     Pt = initial_generate(user_selections, pop_size, generations)
@@ -190,5 +47,135 @@ AttributeError: 'NoneType' object has no attribute 'plan_id'
   File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 338, in get_layout
     children = root.subdivide(dir_list.pop(0), ids.pop(0))[:]
 IndexError: pop from empty list
-2018-11-07 14:53:09,754 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 14:54:34,021 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 14:54:37,030 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+>>>>>>> 4ae82566dd3f92f5acb2de60073380fc359f72e3
+Traceback (most recent call last):
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+<<<<<<< HEAD
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 38, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 372, in initial_generate
+    Qt = breeding(Pt, mutation_ratio)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 277, in breeding
+    id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
+AttributeError: 'NoneType' object has no attribute 'plan_id'
+2018-11-08 12:48:50,743 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:49:35,002 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:50:15,832 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:52:15,751 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:52:47,272 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:53:07,769 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+=======
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 39, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 378, in initial_generate
+    select_objects_for_render(Pt)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 455, in select_objects_for_render
+    return [object_to_visuals(adjacency_sorted[0]),object_to_visuals(interactive_sorted[0]),object_to_visuals(aspect_sorted[0])]
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 462, in object_to_visuals
+    dir_list, object.room_order, object.min_opening)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 338, in get_layout
+    children = root.subdivide(dir_list.pop(0), ids.pop(0))[:]
+IndexError: pop from empty list
+2018-11-07 14:55:51,990 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 14:55:55,305 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+>>>>>>> 4ae82566dd3f92f5acb2de60073380fc359f72e3
+Traceback (most recent call last):
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+<<<<<<< HEAD
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 38, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 372, in initial_generate
+    Qt = breeding(Pt, mutation_ratio)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 277, in breeding
+    id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
+AttributeError: 'NoneType' object has no attribute 'plan_id'
+2018-11-08 12:54:08,102 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:55:18,575 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:55:57,471 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:56:31,066 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:57:01,392 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:57:50,220 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 12:58:21,752 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 13:00:01,391 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 13:00:31,759 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 13:04:14,742 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 13:05:29,116 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 13:12:23,829 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 13:13:00,878 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 13:16:18,530 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 13:16:51,959 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 13:17:07,237 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-08 13:19:05,692 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+=======
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 39, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 378, in initial_generate
+    select_objects_for_render(Pt)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 455, in select_objects_for_render
+    return [object_to_visuals(adjacency_sorted[0]),object_to_visuals(interactive_sorted[0]),object_to_visuals(aspect_sorted[0])]
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 458, in object_to_visuals
+    return {"max_sizes": object.max_sizes,"departments":object.departments,"adjacency_score":object.adjacency_score,"id":object.plan_id}
+AttributeError: 'individual' object has no attribute 'max_sizes'
+2018-11-07 14:56:41,229 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 14:57:24,122 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 14:58:07,894 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 14:59:04,487 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 15:00:28,887 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 15:01:06,650 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 15:01:56,210 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 15:03:21,385 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 15:04:03,285 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 15:05:48,289 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 15:05:51,210 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 42, in generate_first_floorplans
+    prin("generation and id",n.generation,n.plan_id)
+NameError: name 'prin' is not defined
+2018-11-07 15:06:00,677 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 15:08:17,664 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 15:09:18,352 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 15:10:43,991 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 15:11:03,687 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 15:11:42,270 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 15:12:48,953 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 15:14:11,938 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 15:14:32,631 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 15:17:00,351 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-07 15:19:00,492 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 >>>>>>> 4ae82566dd3f92f5acb2de60073380fc359f72e3

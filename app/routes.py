@@ -32,8 +32,8 @@ def floor_plan():
 def generate_first_floorplans():
     user_selections = []
     # generate first generation and return
-    pop_size = 30
-    generations = 30
+    pop_size = 80
+    generations = 100
     print("user selections: ",user_selections)
     Pt = initial_generate(user_selections, pop_size, generations)
     print("first floorplans rendered")

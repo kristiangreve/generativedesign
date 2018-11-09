@@ -22,6 +22,7 @@ class individual:
         self.departments = []
         self.aspect_ratios = {}
         self.aspect_score = None
+        self.danil_aspect = None
 
         self.pareto = None
         self.dominated_count = 0
@@ -55,6 +56,12 @@ class individual:
                 aspect_score += abs(self.aspect_ratios[room]-user_input_i.aspect_ratios[room])
         self.aspect_score = aspect_score
 
+    def evaluate_danil_aspect(self):
+        aspect_score = 0
+        ideal_aspect = {'Kitchen': 1, 'Living': 1, 'Dining': 1, 'M_bedroom':1 , 'Bedroom_1': 1, 'Bedroom_2':1}
+        for room in ideal_aspect.keys():
+            aspect_score += abs(self.aspect_ratios[room]-ideal_aspect[room])
+        self.danil_aspect = aspect_score
 """
 init_population:
 Input: size, int which defines the size of the init_population
@@ -75,6 +82,7 @@ def evaluate_layout(individual):
     individual.dims_score = dims_score
     individual.aspect_ratios = aspect_ratios
 
+
 def evaluate_pop(generation, user_input):
     max_dir_hamming = [0,0,0]
     max_room_hamming = [0,0,0]
@@ -83,7 +91,7 @@ def evaluate_pop(generation, user_input):
     for individual in generation:
         if individual.adjacency_score == None: #only call layout if the given object hasn't been evaluated yet
             evaluate_layout(individual)
-
+        individual.evaluate_danil_aspect()
         if len(user_input)>0: # if user input exists
             if len(user_input)>2: #if more than 3 user inputs, only take into account last 3 selections
                 user_input = user_input[-3:] #slice any elements before last 3 off
@@ -126,32 +134,36 @@ def dominance(population,selections):
      for i in range(len(population)):      #Loops through all individuals of population
         for j in range(i+1,len(population)): #Loops through all the remaining indiduals
             #What if adjacency and interactive score are similar? Then i gets favored while in fact solutions are equally good.
-            if len(selections)>0:
+            #if len(selections)>0:
                 #Adjacency score: #of broken adjecencies , the lower the better
                 #interactive score: The lower, the more similar a given obj is to user inputs in terms of dir list, split list and room order
                 #Aspect score: The lower, the more similar aspect ratios is the rooms of a given obj compared to user inputs
                 #dims score: The lower, the fewer dimensions are breaking the minimum size rule set in space_planning.py
-                if (population[i].dims_score <= population[j].dims_score) \
-                and (population[i].adjacency_score <= population[j].adjacency_score): #\
+                #if (population[i].dims_score <= population[j].dims_score) \
+
+            #    and (population[i].adjacency_score <= population[j].adjacency_score): #\
                 #and (population[i].interactive_score < population[j].interactive_score)\
                 #and (population[i].aspect_score < population[j].aspect_score):
-                    population[i].dominates_these.append(population[j])
-                    population[j].dominated_count += 1
-                elif (population[i].dims_score >= population[j].dims_score) \
-                and (population[i].adjacency_score >= population[j].adjacency_score): #\
+            #        population[i].dominates_these.append(population[j])
+            #        population[j].dominated_count += 1
+                #elif (population[i].dims_score >= population[j].dims_score) \
+
+            #    and (population[i].adjacency_score >= population[j].adjacency_score): #\
                 #and (population[i].interactive_score > population[j].interactive_score) \
                 #and (population[i].aspect_score > population[j].aspect_score):
-                    population[j].dominates_these.append(population[i])
-                    population[i].dominated_count += 1
-            else:
-                if (population[i].dims_score <= population[j].dims_score)\
-                and (population[i].adjacency_score < population[j].adjacency_score):
-                    population[i].dominates_these.append(population[j])
-                    population[j].dominated_count += 1
-                elif (population[i].dims_score >= population[j].dims_score)\
-                and (population[i].adjacency_score > population[j].adjacency_score):
-                    population[j].dominates_these.append(population[i])
-                    population[i].dominated_count += 1
+            #        population[j].dominates_these.append(population[i])
+            #        population[i].dominated_count += 1
+            #else:
+                #if (population[i].dims_score <= population[j].dims_score)\
+            if (population[i].adjacency_score <= population[j].adjacency_score) \
+            and (population[i].danil_aspect < population[j].danil_aspect):
+                population[i].dominates_these.append(population[j])
+                population[j].dominated_count += 1
+            #elif (population[i].dims_score >= population[j].dims_score)\
+            elif (population[i].adjacency_score > population[j].adjacency_score) \
+            and (population[i].danil_aspect > population[j].danil_aspect):
+                population[j].dominates_these.append(population[i])
+                population[i].dominated_count += 1
 
 def pareto_score(population):
     pareto_counter = 1
@@ -267,7 +279,6 @@ def crossover(obj1,obj2):
     child2_p1 = obj2.room_order[:room_crossover_point]
     child2_p2 = [item for item in obj1.room_order if item not in child2_p1]
 
-    mid = round(num_rooms/2) #mid-point (rounded) of individual
     child1 = individual(obj1.definition, obj1.room_def,\
     (obj1.split_list[:split_crossover_point]+obj2.split_list[split_crossover_point:]), \
     (obj1.dir_list[:dir_crossover_point]+obj2.dir_list[dir_crossover_point:]), \
@@ -307,6 +318,8 @@ def selection(pop_size, population):
 
     new_gen = []
     for pareto_counter in range(1,worst_pareto+1):
+        if pareto_counter == 1:
+            print('Best adj: ', pareto_dict[pareto_counter][0].adjacency_score)
         if (len(new_gen)+len(pareto_dict[pareto_counter])) < pop_size:
             for obj in pareto_dict[pareto_counter]:
                 new_gen.append(obj)
@@ -337,10 +350,6 @@ def mutate(population, mutation_rate):
                 random_gene = random.randint(0,len(population[index].split_list)-1)
                 population[index].split_list[random_gene] = random.random()
             #parameter = population[index] #Why can't we just do like this!
-
-adjacency_plot = [] #global list to store the best adjacency score from each generation
-
-# crates a new population and iterates a couple of times
 
 def init_population(size):
     definition = json_departments_from_db()
@@ -448,7 +457,10 @@ def select_objects_for_render(population):
 
     selection_list = []
     while len(selection_list)<3:
-        for pareto_front in pareto_dict.keys():
+        sorted_pareto = sorted(pareto for pareto in pareto_dict.keys())
+        for pareto_front in sorted_pareto:
+            print('P: ', pareto_front)
+            print('Adj: ', pareto_dict[pareto_front][0].adjacency_score)
             if len(selection_list) == 0:
             #Best adjacency of which is most similar to dir/split/ordder of user selction
                 adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score, x.dims_score, x.interactive_score, -x.crowding_score), reverse=False)
