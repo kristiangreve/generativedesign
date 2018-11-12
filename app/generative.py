@@ -70,6 +70,7 @@ class individual:
     def normalize_user_aspect(self,n,max_score):
         self.aspect_score[n] = self.aspect_score[n] / max_score
 
+
     def normalize_user_base(self,n,max_score):
         self.base_score[n] = self.base_score[n] / max_score
 
