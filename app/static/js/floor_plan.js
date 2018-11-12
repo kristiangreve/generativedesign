@@ -1,7 +1,8 @@
 // handler for button to generate new population from 0
 
 $(document).ready(generate_first_floorplans);
-var mypapers = []
+var mypapers = [];
+var selected_rooms = [];
 
 $(document).ready(setup_canvases_as_projects);
 function setup_canvases_as_projects(){
@@ -13,8 +14,6 @@ function setup_canvases_as_projects(){
 	});
 };
 
-// $("#generate_button").click(generate_first_floorplans);
-
 function generate_first_floorplans() {
 	$.post('/generate_first_floorplans/',{
 		pop_size:0,
@@ -24,15 +23,17 @@ function generate_first_floorplans() {
 	});
 };
 
-// on click on floor plan
-$(".floorcanvas").click(function(){
+// on click on confirm button
+$("#confirm_button").click(function(){
 	// register what generation and index the solution had
-	var plan_id = $(this).attr('plan_id')
+	var plan_id = $(this).attr('plan_id');
+
 	// make ajax call to generate new floor plans
 	$.post('/generate_new_floorplans/',{
-		id: plan_id
+		selected_rooms: JSON.stringify(selected_rooms)
 	}).done(function(response) {
 		render_floorplans(response);
+		selected_rooms = [];
 	});
 });
 
@@ -50,7 +51,6 @@ function parse_dim(float) {
 }
 
 function plotPlan(plotCanvas,project_id,render_graphics) {
-	console.log(plotCanvas);
 	mypapers[project_id].activate();
 	mypapers[project_id].view.draw();
 	var layer = new Layer();
@@ -84,6 +84,46 @@ function plotPlan(plotCanvas,project_id,render_graphics) {
 		var path = new Path.Rectangle(department);
 		path.strokeColor = 'black';
 		path.strokeWidth = 1;
+		path.fillColor = 'white';
+		path.name = name;
+		path.selected = false;
+		path.opacity = 0.5;
+
+
+
+		path.onMouseEnter = function(event) {
+			if (this.selected == false){
+				this.fillColor = 'black';
+			} else if (this.selected == true){
+				this.fillColor = 'red';
+			}
+		};
+
+		path.onClick = function(event) {
+			var dict = "{id:" + plotCanvas.getAttribute('plan_id') + "," + "department:" + this.name + "}";
+			// if it has not been clicked
+			if (this.selected == false){
+				this.selected = true;
+				this.fillColor = 'green';
+				selected_rooms.push(dict);
+
+			// if it has been clicked
+		} else if (this.selected == true){
+				this.fillColor = 'white';
+				this.selected = false;
+				selected_rooms.splice(selected_rooms.indexOf(dict), 1 );
+			};
+		};
+
+		path.onMouseLeave = function(event) {
+			// if it has not been clicked
+			if (this.selected == false) {
+				this.fillColor = 'white';
+			} else if (this.selected == true) {
+				this.fillColor = 'green';
+			};
+		};
+
 
 		// for plotting dimensions
 		var w = parse_dim(element.dims[1]);
