@@ -103,8 +103,11 @@ def evaluate_pop(generation, user_input):
             evaluate_layout(individual)
 
         if len(user_input)>0: # if user input exists
-            if len(user_input)>2: #if more than 3 user inputs, only take into account last 3 selections
-                user_input = user_input[-3:] #slice any elements before last 3 off
+            #if len(user_input)>2: #if more than 3 user inputs, only take into account last 3 selections
+                #user_input = user_input[-3:] #slice any elements before last 3 off
+
+                ## TESTING/ DELETE LATER
+            user_input = user_input[-1:] #for testing similarity
 
             #Sets aspect score of each object based on proximity to user inputs
 
@@ -164,25 +167,25 @@ def dominance(population,selections):
                 #interactive score: The lower, the more similar a given obj is to user inputs in terms of dir list, split list and room order
                 #Aspect score: The lower, the more similar aspect ratios is the rooms of a given obj compared to user inputs
                 #dims score: The lower, the fewer dimensions are breaking the minimum size rule set in space_planning.py
-                if (population[i].adjacency_score <= population[j].adjacency_score) \
-                and (population[i].interactive_score < population[j].interactive_score)\
-                and (population[i].aspect_score < population[j].aspect_score)\
-                and (population[i].dims_score <= population[j].dims_score):
+                if (population[i].adjacency_score <= population[j].adjacency_score)\
+                and (population[i].dims_score < population[j].dims_score):
+                #and (population[i].interactive_score < population[j].interactive_score)\
+                #and (population[i].aspect_score < population[j].aspect_score)\
                     population[i].dominates_these.append(population[j])
                     population[j].dominated_count += 1
-                elif (population[i].adjacency_score >= population[j].adjacency_score) \
-                and (population[i].interactive_score > population[j].interactive_score) \
-                and (population[i].aspect_score > population[j].aspect_score) \
-                and (population[i].dims_score >= population[j].dims_score):
+                elif (population[i].adjacency_score >= population[j].adjacency_score)\
+                and (population[i].dims_score > population[j].dims_score):
+                #and (population[i].interactive_score > population[j].interactive_score) \
+                #and (population[i].aspect_score > population[j].aspect_score) \
                     population[j].dominates_these.append(population[i])
                     population[i].dominated_count += 1
             else:
-                if (population[i].adjacency_score < population[j].adjacency_score)\
-                and (population[i].dims_score <= population[j].dims_score):
+                if (population[i].adjacency_score <= population[j].adjacency_score)\
+                and (population[i].dims_score < population[j].dims_score):
                     population[i].dominates_these.append(population[j])
                     population[j].dominated_count += 1
-                elif (population[i].adjacency_score > population[j].adjacency_score)\
-                and (population[i].dims_score >= population[j].dims_score):
+                elif (population[i].adjacency_score >= population[j].adjacency_score)\
+                and (population[i].dims_score > population[j].dims_score):
                     population[j].dominates_these.append(population[i])
                     population[i].dominated_count += 1
 
@@ -498,33 +501,39 @@ def select_objects_for_render(population,selections):
         for pareto_front in pareto_dict.keys():
             if len(selection_list) == 0:
             #Best adjacency of which is most similar to dir/split/ordder of user selction
-                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.interactive_score, x.dims_score, x.adjacency_score,  -x.crowding_score), reverse=False)
+                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.interactive_score, x.adjacency_score,  x.dims_score, -x.crowding_score), reverse=False)
                 selection_list.append(adjacency_sorted[0])
 
             if len(selection_list)==1:
                 #Most similar dir/split/room_order
-                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.interactive_score, x.dims_score, x.adjacency_score, -x.crowding_score), reverse=False)
+                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_base_score, x.adjacency_score, x.dims_score,-x.crowding_score), reverse=False)
                 for obj in interactive_sorted:
                     if len(selection_list)==1:
-                        if obj not in selection_list:
-                            selection_list.append(obj)
+                        #if obj not in selection_list:
+                        #if obj != selection_list[0]:
+                        selection_list.append(obj)
 
             if len(selection_list)==2:
                 #most similar aspect score
-                aspect_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_base_score, x.dims_score, x.adjacency_score, -x.crowding_score), reverse=False)
+                aspect_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score, x.dims_score, -x.crowding_score), reverse=False)
                 for obj in aspect_sorted:
                     if len(selection_list) == 2:
-                        if obj not in selection_list:
-                            selection_list.append(obj)
+                        #if obj not in selection_list:
+                        selection_list.append(obj)
 
             if len(selection_list)==3:
                 #Most different (crowding) to neighbors
-                crowding_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_base_score, x.dims_score, x.adjacency_score, -x.crowding_score), reverse=False)
+                #crowding_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_base_score, x.adjacency_score, x.dims_score, -x.crowding_score), reverse=False)
                 #sorted(pareto_dict[pareto_front], key=lambda x: (-x.crowding_score, -x.interactive_score), reverse=False)
-                for obj in crowding_sorted:
-                    if len(selection_list) == 3:
-                        if obj not in selection_list:
-                            selection_list.append(obj)
+                #for obj in crowding_sorted:
+                #    if len(selection_list) == 3:
+                #        #if obj not in selection_list:
+                #        if obj != selection_list[2]:
+                #            selection_list.append(obj)
+                if len(selections)>0:
+                    selection_list.append(selections[-1])
+                else:
+                    selection_list.append(selection_list[2])
 
             if len(selection_list)==4:
                 break
@@ -533,6 +542,7 @@ def select_objects_for_render(population,selections):
         print('Obj:', index, ' : ', obj)
         print('aspect/base', obj.aspect_base_score)
         print('interactive', obj.interactive_score)
+        print('Adj: ', obj.adjacency_score, ' dims: ', obj.dims_score)
     return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2]),object_to_visuals(selection_list[3])]
     #selection_list = [object_to_visuals(x) for x in selection_list]
     #return selection_list
