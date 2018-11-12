@@ -19,6 +19,7 @@ class individual:
         self.dir_list = dir_list
         self.room_order = room_order
         self.min_opening = min_opening
+        self.plan_id = None
         self.dims_score = None
         self.departments = []
         self.aspect_base = {}
@@ -69,7 +70,6 @@ class individual:
 
     def normalize_user_aspect(self,n,max_score):
         self.aspect_score[n] = self.aspect_score[n] / max_score
-
 
     def normalize_user_base(self,n,max_score):
         self.base_score[n] = self.base_score[n] / max_score
@@ -126,14 +126,15 @@ def evaluate_pop(generation, user_input):
 
     max_aspect = [0,0,0]
     max_base_dist = [0,0,0]
-    for n in range(len(user_input)): #finds max score
-        max_aspect[n] = max(individual.aspect_score[n] for individual in generation)
-        max_base_dist[n] = max(individual.base_score[n] for individual in generation)
-    for individual in generation: #normalizes input
-        for index in range(len(user_input)):
-            individual.normalize_user_aspect(index,max_aspect[index])
-            individual.normalize_user_base(index,max_base_dist[index])
-            individual.aspect_base_score = individual.base_score + individual.aspect_score
+    if len(user_input)>0:
+        for n in range(len(user_input)): #finds max score
+            max_aspect[n] = max(individual.aspect_score[n] for individual in generation)
+            max_base_dist[n] = max(individual.base_score[n] for individual in generation)
+        for individual in generation: #normalizes input
+            for index in range(len(user_input)):
+                individual.normalize_user_aspect(index,max_aspect[index])
+                individual.normalize_user_base(index,max_base_dist[index])
+                individual.aspect_base_score = sum(individual.base_score) + sum(individual.aspect_score)
 
 
     if len(user_input)>0:
@@ -302,7 +303,7 @@ def crossover(obj1,obj2):
     child2_p1 = obj2.room_order[:room_crossover_point]
     child2_p2 = [item for item in obj1.room_order if item not in child2_p1]
 
-    mid = round(num_rooms/2) #mid-point (rounded) of individual
+
     child1 = individual(obj1.definition, obj1.room_def,\
     (obj1.split_list[:split_crossover_point]+obj2.split_list[split_crossover_point:]), \
     (obj1.dir_list[:dir_crossover_point]+obj2.dir_list[dir_crossover_point:]), \
@@ -420,7 +421,7 @@ def initial_generate(selections,pop_size,generations):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
-    select_objects_for_render(Pt)
+    select_objects_for_render(Pt, selections)
     save_population_to_database(Pt,generations)
     print('Saved pop Size: ', len(Pt))
     print("ID after init: ", id)
@@ -454,7 +455,7 @@ def generate(selections,generations):
         Pt = selection(pop_size,Rt)
         end = time.time()
         print("Time for 1 generation: ", (end - start))
-    select_objects_for_render(Pt)
+    select_objects_for_render(Pt,selections)
     save_population_to_database(Pt,generations+current_generation)
     print("After ", (generations+current_generation), ' generations ID is: ', id)
     return Pt
@@ -486,10 +487,11 @@ def random_design(definition):
     min_opening = 1
     return room_def, split_list, dir_list, room_order, min_opening
 
-def select_objects_for_render(population):
+def select_objects_for_render(population,selections):
     pareto_dict = defaultdict(list)
     for individual in population:
-        pareto_dict[individual.pareto].append(individual)
+        if individual.plan_id not in [ind.plan_id for ind in selections]:
+            pareto_dict[individual.pareto].append(individual)
 
     selection_list = []
     while len(selection_list)<3:

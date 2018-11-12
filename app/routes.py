@@ -37,7 +37,7 @@ def generate_first_floorplans():
     print("user selections: ",user_selections)
     Pt = initial_generate(user_selections, pop_size, generations)
     print("first floorplans rendered")
-    return jsonify(select_objects_for_render(Pt))
+    return jsonify(select_objects_for_render(Pt, user_selections))
 
 @app.route('/generate_new_floorplans/', methods = ['POST'])
 def generate_new_floorplans():
@@ -53,7 +53,7 @@ def generate_new_floorplans():
     print("user selections: ", user_selections)
     # create new generation based on choices
     Pt = generate(user_selections,generations)
-    return jsonify(select_objects_for_render(Pt))
+    return jsonify(select_objects_for_render(Pt,user_selections))
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
