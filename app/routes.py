@@ -33,7 +33,7 @@ def generate_first_floorplans():
     user_selections = []
     # generate first generation and return
     pop_size = 30
-    generations = 30
+    generations = 5
     print("user selections: ",user_selections)
     Pt = initial_generate(user_selections, pop_size, generations)
     print("first floorplans rendered")
@@ -41,7 +41,7 @@ def generate_first_floorplans():
 
 @app.route('/generate_new_floorplans/', methods = ['POST'])
 def generate_new_floorplans():
-    generations = 20
+    generations = 5
     id = int(request.form['id'])
     print("id selected: ",id)
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
