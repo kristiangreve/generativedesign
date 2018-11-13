@@ -1,11 +1,5 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
-2018-11-08 15:42:59,723 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 15:43:16,840 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 15:43:20,971 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
-=======
-2018-11-08 11:07:19,111 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
-=======
 2018-11-08 16:00:31,596 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 2018-11-08 16:01:25,406 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 2018-11-09 09:23:34,433 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
@@ -20,6 +14,10 @@
 2018-11-09 09:35:27,932 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
 =======
 2018-11-08 11:14:47,136 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+=======
+2018-11-09 09:58:51,041 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+=======
+2018-11-08 13:16:03,946 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 >>>>>>> 89b84730c2357bf36af3d23bcc1cd0f979543e09
 >>>>>>> 4ae82566dd3f92f5acb2de60073380fc359f72e3
 Traceback (most recent call last):
@@ -44,17 +42,6 @@ Traceback (most recent call last):
     id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
 AttributeError: 'NoneType' object has no attribute 'plan_id'
 <<<<<<< HEAD
-2018-11-08 15:43:30,526 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 15:44:25,080 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 15:44:59,164 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 15:45:30,193 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 15:47:52,935 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 15:50:22,614 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 15:52:15,891 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 15:53:19,888 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 15:54:18,938 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 15:54:45,802 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
-=======
 2018-11-09 09:35:58,259 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 2018-11-09 09:36:37,572 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 2018-11-09 09:36:57,121 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
@@ -71,7 +58,6 @@ AttributeError: 'NoneType' object has no attribute 'plan_id'
 2018-11-09 09:48:30,126 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 2018-11-09 09:49:11,507 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 2018-11-09 09:49:17,199 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
->>>>>>> 89b84730c2357bf36af3d23bcc1cd0f979543e09
 =======
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 40, in generate_first_floorplans
     return jsonify(select_objects_for_render(Pt))
@@ -90,59 +76,10 @@ AttributeError: 'NoneType' object has no attribute 'plan_id'
   File "C:\Users\jalke\Anaconda3\lib\json\encoder.py", line 180, in default
     o.__class__.__name__)
 TypeError: Object of type 'individual' is not JSON serializable
-<<<<<<< HEAD
-2018-11-08 11:09:08,915 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-08 11:09:12,483 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
->>>>>>> 4ae82566dd3f92f5acb2de60073380fc359f72e3
-Traceback (most recent call last):
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
-    response = self.full_dispatch_request()
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
-    reraise(exc_type, exc_value, tb)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
-    raise value
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
-    return self.view_functions[rule.endpoint](**req.view_args)
-<<<<<<< HEAD
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 55, in generate_new_floorplans
-    Pt = generate(user_selections,generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 390, in generate
-    evaluate_pop(Pt,selections)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 109, in evaluate_pop
-    individual.interactive_dir[i] = ( individual.interactive_dir[i] / max_dir_hamming[i] ) / len(user_input)*(i+1)
-ZeroDivisionError: division by zero
-2018-11-08 15:54:49,202 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
-=======
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 40, in generate_first_floorplans
-    return jsonify(select_objects_for_render(Pt))
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\json.py", line 263, in jsonify
-    (dumps(data, indent=indent, separators=separators), '\n'),
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\json.py", line 123, in dumps
-    rv = _json.dumps(obj, **kwargs)
-  File "C:\Users\jalke\Anaconda3\lib\json\__init__.py", line 238, in dumps
-    **kw).encode(obj)
-  File "C:\Users\jalke\Anaconda3\lib\json\encoder.py", line 199, in encode
-    chunks = self.iterencode(o, _one_shot=True)
-  File "C:\Users\jalke\Anaconda3\lib\json\encoder.py", line 257, in iterencode
-    return _iterencode(o, 0)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\json.py", line 80, in default
-    return _json.JSONEncoder.default(self, o)
-  File "C:\Users\jalke\Anaconda3\lib\json\encoder.py", line 180, in default
-    o.__class__.__name__)
-TypeError: Object of type 'individual' is not JSON serializable
-2018-11-08 11:10:43,685 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-08 11:10:48,747 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
->>>>>>> 4ae82566dd3f92f5acb2de60073380fc359f72e3
-=======
 2018-11-08 11:30:57,632 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
 2018-11-08 11:33:22,520 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
 2018-11-08 11:34:13,394 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
 2018-11-08 11:34:17,581 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
->>>>>>> 89b84730c2357bf36af3d23bcc1cd0f979543e09
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -156,17 +93,6 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-<<<<<<< HEAD
-<<<<<<< HEAD
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 55, in generate_new_floorplans
-    Pt = generate(user_selections,generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 390, in generate
-    evaluate_pop(Pt,selections)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 109, in evaluate_pop
-    individual.interactive_dir[i] = ( individual.interactive_dir[i] / max_dir_hamming[i] ) / len(user_input)*(i+1)
-ZeroDivisionError: division by zero
-2018-11-08 15:54:49,970 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
-=======
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 38, in generate_first_floorplans
     Pt = initial_generate(user_selections, pop_size, generations)
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 379, in initial_generate
@@ -176,34 +102,35 @@ ZeroDivisionError: division by zero
 NameError: name 'objects_to_visuals' is not defined
 2018-11-08 11:34:39,239 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
 2018-11-08 11:34:42,749 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
->>>>>>> 4ae82566dd3f92f5acb2de60073380fc359f72e3
->>>>>>> 89b84730c2357bf36af3d23bcc1cd0f979543e09
-Traceback (most recent call last):
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
-    reraise(exc_type, exc_value, tb)
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
-    raise value
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
-    return self.view_functions[rule.endpoint](**req.view_args)
-<<<<<<< HEAD
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 55, in generate_new_floorplans
+=======
+=======
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 55, in generate_new_floorplans
     Pt = generate(user_selections,generations)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 390, in generate
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 400, in generate
     evaluate_pop(Pt,selections)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 109, in evaluate_pop
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 110, in evaluate_pop
     individual.interactive_dir[i] = ( individual.interactive_dir[i] / max_dir_hamming[i] ) / len(user_input)*(i+1)
 ZeroDivisionError: division by zero
-2018-11-08 15:57:17,624 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 15:58:06,207 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 15:58:25,452 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-08 15:58:28,586 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
-=======
+2018-11-08 13:23:12,771 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-08 13:27:38,924 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+>>>>>>> 89b84730c2357bf36af3d23bcc1cd0f979543e09
+>>>>>>> 4ae82566dd3f92f5acb2de60073380fc359f72e3
+2018-11-12 12:47:06,246 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 12:47:36,680 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+Traceback (most recent call last):
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
+    raise value
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+<<<<<<< HEAD
 <<<<<<< HEAD
   File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 38, in generate_first_floorplans
     Pt = initial_generate(user_selections, pop_size, generations)
@@ -222,21 +149,11 @@ AttributeError: 'NoneType' object has no attribute 'plan_id'
 2018-11-09 09:57:03,494 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 2018-11-09 09:57:20,438 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 2018-11-09 09:58:50,036 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
->>>>>>> 89b84730c2357bf36af3d23bcc1cd0f979543e09
 =======
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 38, in generate_first_floorplans
     Pt = initial_generate(user_selections, pop_size, generations)
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 379, in initial_generate
     select_objects_for_render(Pt)
-<<<<<<< HEAD
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 450, in select_objects_for_render
-    adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score, x.interactive_score, -x.crowding), reverse=False)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 450, in <lambda>
-    adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score, x.interactive_score, -x.crowding), reverse=False)
-AttributeError: 'individual' object has no attribute 'crowding'
-2018-11-08 11:11:23,369 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-08 11:11:26,708 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
-=======
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 477, in select_objects_for_render
     return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2])]
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 481, in object_to_visuals
@@ -249,6 +166,47 @@ AttributeError: 'dict' object has no attribute 'max_sizes'
 2018-11-08 11:57:03,331 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
 2018-11-08 11:57:26,003 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 >>>>>>> 4ae82566dd3f92f5acb2de60073380fc359f72e3
+=======
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 55, in generate_new_floorplans
+    Pt = generate(user_selections,generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 418, in generate
+    evaluate_pop(Pt,selections)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 97, in evaluate_pop
+    individual.evaluate_user_aspect(user_input)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 56, in evaluate_user_aspect
+    aspect_score[index] += abs(self.aspect_ratios[room][0]-user_input_i.aspect_ratios[room][0])
+TypeError: 'int' object is not subscriptable
+2018-11-12 12:48:27,624 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 12:48:30,025 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+Traceback (most recent call last):
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
+    raise value
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 55, in generate_new_floorplans
+    Pt = generate(user_selections,generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 417, in generate
+    evaluate_pop(Pt,selections)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 97, in evaluate_pop
+    if individual.aspect_score[0] > max_aspect[0]:
+UnboundLocalError: local variable 'max_aspect' referenced before assignment
+2018-11-12 12:48:58,148 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 12:56:03,432 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 13:03:01,472 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 13:05:47,728 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 13:12:28,811 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 13:14:11,779 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 13:14:56,822 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 13:17:30,721 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 13:17:41,221 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 >>>>>>> 89b84730c2357bf36af3d23bcc1cd0f979543e09
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
@@ -264,40 +222,6 @@ Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
 <<<<<<< HEAD
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 40, in generate_first_floorplans
-    return jsonify(select_objects_for_render(Pt))
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\json.py", line 263, in jsonify
-    (dumps(data, indent=indent, separators=separators), '\n'),
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\json.py", line 123, in dumps
-    rv = _json.dumps(obj, **kwargs)
-  File "C:\Users\jalke\Anaconda3\lib\json\__init__.py", line 238, in dumps
-    **kw).encode(obj)
-  File "C:\Users\jalke\Anaconda3\lib\json\encoder.py", line 199, in encode
-    chunks = self.iterencode(o, _one_shot=True)
-  File "C:\Users\jalke\Anaconda3\lib\json\encoder.py", line 257, in iterencode
-    return _iterencode(o, 0)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\json.py", line 80, in default
-    return _json.JSONEncoder.default(self, o)
-  File "C:\Users\jalke\Anaconda3\lib\json\encoder.py", line 180, in default
-    o.__class__.__name__)
-TypeError: Object of type 'individual' is not JSON serializable
-2018-11-08 11:11:55,466 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
->>>>>>> 4ae82566dd3f92f5acb2de60073380fc359f72e3
-Traceback (most recent call last):
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
-    response = self.full_dispatch_request()
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
-    reraise(exc_type, exc_value, tb)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
-    raise value
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
-    return self.view_functions[rule.endpoint](**req.view_args)
-=======
->>>>>>> 89b84730c2357bf36af3d23bcc1cd0f979543e09
 <<<<<<< HEAD
   File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 38, in generate_first_floorplans
     Pt = initial_generate(user_selections, pop_size, generations)
@@ -306,14 +230,6 @@ Traceback (most recent call last):
   File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 277, in breeding
     id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
 AttributeError: 'NoneType' object has no attribute 'plan_id'
-<<<<<<< HEAD
-2018-11-08 15:58:50,830 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-=======
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 50, in generate_new_floorplans
-    plan = [plan for plan in Pt if plan.plan_id == id][0]
-IndexError: list index out of range
-2018-11-08 11:14:42,141 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-=======
 =======
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 55, in generate_new_floorplans
     Pt = generate(user_selections,generations)
@@ -333,5 +249,15 @@ NameError: name 'time' is not defined
 2018-11-08 13:09:14,093 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
 2018-11-08 13:12:36,286 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
 2018-11-08 13:15:38,981 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
->>>>>>> 89b84730c2357bf36af3d23bcc1cd0f979543e09
 >>>>>>> 4ae82566dd3f92f5acb2de60073380fc359f72e3
+=======
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 55, in generate_new_floorplans
+    Pt = generate(user_selections,generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 424, in generate
+    evaluate_pop(Pt,selections)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 114, in evaluate_pop
+    for inv in population:
+NameError: name 'population' is not defined
+2018-11-12 13:18:04,193 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 13:21:29,268 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+>>>>>>> 89b84730c2357bf36af3d23bcc1cd0f979543e09

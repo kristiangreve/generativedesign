@@ -100,7 +100,8 @@ function plotPlan(plotCanvas,project_id,render_graphics) {
 		};
 
 		path.onClick = function(event) {
-			var dict = "{id:" + plotCanvas.getAttribute('plan_id') + "," + "department:" + this.name + "}";
+			var dict = [plotCanvas.getAttribute('plan_id'),this.name];
+			// var dict = "{id:" + plotCanvas.getAttribute('plan_id') + "," + "department:" + this.name + "}";
 			// if it has not been clicked
 			if (this.selected == false){
 				this.selected = true;

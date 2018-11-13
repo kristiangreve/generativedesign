@@ -41,15 +41,9 @@ def generate_first_floorplans():
 
 @app.route('/generate_new_floorplans/', methods = ['GET', 'POST'])
 def generate_new_floorplans():
-<<<<<<< HEAD
     generations = 10
     selected_rooms = json.loads(request.form['selected_rooms'])
     print("rooms selected: ",selected_rooms)
-=======
-    generations = 20
-    id = int(request.form['id'])
-    print("id selected: ",id)
->>>>>>> 89b84730c2357bf36af3d23bcc1cd0f979543e09
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
     Pt = get_population_from_database(current_generation)
     # add the user selection from the previous generation
