@@ -439,7 +439,7 @@ def initial_generate(selections,pop_size,generations):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
-    select_objects_for_render(Pt, selections)
+    #select_objects_for_render(Pt, selections)
     save_population_to_database(Pt,generations)
     print('Saved pop Size: ', len(Pt))
     print("ID after init: ", id)
@@ -473,7 +473,7 @@ def generate(selections,generations):
         Pt = selection(pop_size,Rt)
         end = time.time()
         print("Time for 1 generation: ", (end - start))
-    select_objects_for_render(Pt,selections)
+    #select_objects_for_render(Pt,selections)
     save_population_to_database(Pt,generations+current_generation)
     print("After ", (generations+current_generation), ' generations ID is: ', id)
     return Pt
@@ -507,11 +507,14 @@ def random_design(definition):
 
 def select_objects_for_render(population,selections):
     pareto_dict = defaultdict(list)
+    adj_counter = 0
     for individual in population:
         if individual.plan_id not in [ind.plan_id for ind in selections]:
             pareto_dict[individual.pareto].append(individual)
+            if individual.adjacency_score == 0:
+                adj_counter += 1
 
-    print('Pareto dict: ', pareto_dict)
+    print('# of adj 0:', adj_counter)
     selection_list = []
     while len(selection_list)<3:
         for pareto_front in pareto_dict.keys():
@@ -519,34 +522,33 @@ def select_objects_for_render(population,selections):
             print('Pareto: ', pareto_front)
             if len(selection_list) == 0:
             #Best adjacency of which is most similar to dir/split/ordder of user selction
-                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.interactive_score, x.adjacency_score,  x.dims_score, -x.crowding_score), reverse=False)
+                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score,x.aspect_ratio_score,  x.dims_score, -x.crowding_score), reverse=False)
                 selection_list.append(adjacency_sorted[0])
 
             if len(selection_list)==1:
                 #Most similar dir/split/room_order
-                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_base_score, x.adjacency_score, x.dims_score,-x.crowding_score), reverse=False)
+                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score,x.aspect_ratio_score, x.dims_score,-x.crowding_score), reverse=False)
                 for obj in interactive_sorted:
                     if len(selection_list)==1:
-                        #if obj not in selection_list:
-                        #if obj != selection_list[0]:
-                        selection_list.append(obj)
+                        if obj not in selection_list:
+                            selection_list.append(obj)
 
             if len(selection_list)==2:
                 #most similar aspect score
-                aspect_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score, x.dims_score, -x.crowding_score), reverse=False)
+                aspect_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score, x.dims_score,x.aspect_ratio_score,-x.crowding_score), reverse=False)
                 for obj in aspect_sorted:
                     if len(selection_list) == 2:
-                        #if obj not in selection_list:
-                        selection_list.append(obj)
+                        if obj not in selection_list:
+                            selection_list.append(obj)
 
             if len(selection_list)==3:
                 #Most different (crowding) to neighbors
-                crowding_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score,x.aspect_ratio_score, x.dims_score, -x.crowding_score), reverse=False)
+                crowding_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score,x.dims_score,x.aspect_ratio_score -x.crowding_score), reverse=False)
                 for obj in crowding_sorted:
                     if len(selection_list) == 3:
                         if obj not in selection_list:
                 #        if obj != selection_list[2]:
-                         selection_list.append(obj)
+                            selection_list.append(obj)
 
 
                 ############## show last selected
@@ -560,9 +562,9 @@ def select_objects_for_render(population,selections):
 
     for index, obj in enumerate(selection_list):
         print('Obj:', index, ' : ', obj)
-        print('aspect/base', obj.aspect_base_score)
-        print('interactive', obj.interactive_score)
-        print('Adj: ', obj.adjacency_score, ' dims: ', obj.dims_score)
+        #print('aspect/base', obj.aspect_base_score)
+        #print('interactive', obj.interactive_score)
+        print('Adj: ', obj.adjacency_score, 'aspect: ', obj.aspect_ratio_score, ' dims: ', obj.dims_score, 'Crowd: ', obj.crowding_score)
     return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2]),object_to_visuals(selection_list[3])]
     #selection_list = [object_to_visuals(x) for x in selection_list]
     #return selection_list

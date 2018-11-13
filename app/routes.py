@@ -101,7 +101,6 @@ def delete_department(department):
     return redirect(url_for('departments'))
 
 
-
 @app.route('/edit_department/<department>', methods=['GET', 'POST'])
 @login_required
 def edit_department(department):
@@ -119,8 +118,6 @@ def edit_department(department):
         form.name.data = department.name.capitalize()
         form.employees.data = department.employees
     return render_template('edit_department.html', title='Edit department', form=form, departments=departments)
-
-
 
 @app.route('/adjacency', methods=['GET', 'POST'])
 @login_required
@@ -206,10 +203,6 @@ def del_adjacency(department1,department2):
 
     db.session.commit()
     return redirect(url_for('adjacency'))
-
-
-
-
 
 
 @app.route('/explore')
