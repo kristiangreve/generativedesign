@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 2018-11-12 14:37:37,474 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+=======
+2018-11-12 15:40:22,219 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+>>>>>>> 89b84730c2357bf36af3d23bcc1cd0f979543e09
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -12,6 +16,7 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
+<<<<<<< HEAD
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 55, in generate_new_floorplans
     Pt = generate(user_selections,generations)
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 443, in generate
@@ -23,6 +28,12 @@ Traceback (most recent call last):
 TypeError: 'float' object is not subscriptable
 2018-11-12 14:38:26,974 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
 2018-11-12 14:38:34,771 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+=======
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 40, in generate_first_floorplans
+    return jsonify(select_objects_for_render(Pt))
+TypeError: select_objects_for_render() missing 1 required positional argument: 'selections'
+2018-11-12 15:41:07,881 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 15:41:12,568 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -36,6 +47,36 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 40, in generate_first_floorplans
+    return jsonify(select_objects_for_render(Pt))
+TypeError: select_objects_for_render() missing 1 required positional argument: 'selections'
+2018-11-12 15:41:27,849 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 15:42:49,845 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 15:43:57,477 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 15:45:56,197 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 15:48:33,133 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 15:48:50,067 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 15:49:04,057 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 15:49:43,426 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 15:50:33,201 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 15:52:02,697 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 15:54:26,394 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 15:54:36,499 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+>>>>>>> 89b84730c2357bf36af3d23bcc1cd0f979543e09
+Traceback (most recent call last):
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
+    raise value
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+<<<<<<< HEAD
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 55, in generate_new_floorplans
     Pt = generate(user_selections,generations)
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 444, in generate
@@ -47,6 +88,20 @@ Traceback (most recent call last):
 TypeError: 'float' object is not subscriptable
 2018-11-12 14:41:24,093 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
 2018-11-12 14:41:34,686 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+=======
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 38, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 424, in initial_generate
+    select_objects_for_render(Pt, selections)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 509, in select_objects_for_render
+    if obj not in selection_list[0]:
+TypeError: argument of type 'individual' is not iterable
+2018-11-12 15:55:18,083 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 15:57:16,100 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 16:04:58,978 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 16:09:07,676 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 16:09:17,755 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+>>>>>>> 89b84730c2357bf36af3d23bcc1cd0f979543e09
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -60,6 +115,7 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
+<<<<<<< HEAD
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 55, in generate_new_floorplans
     Pt = generate(user_selections,generations)
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 446, in generate
@@ -71,6 +127,17 @@ Traceback (most recent call last):
 NameError: name 'self_aspect_base' is not defined
 2018-11-12 14:41:58,164 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
 2018-11-12 14:42:03,249 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+=======
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 38, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 427, in initial_generate
+    select_objects_for_render(Pt, selections)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 533, in select_objects_for_render
+    selection_list.append(selections[-1])
+IndexError: list index out of range
+2018-11-12 16:10:07,420 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-12 16:10:31,246 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+>>>>>>> 89b84730c2357bf36af3d23bcc1cd0f979543e09
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -84,6 +151,7 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
+<<<<<<< HEAD
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 55, in generate_new_floorplans
     Pt = generate(user_selections,generations)
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 446, in generate
@@ -116,3 +184,13 @@ TypeError: 'float' object is not subscriptable
 2018-11-12 16:18:01,974 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 2018-11-12 16:32:22,328 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 2018-11-12 16:32:29,762 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+=======
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 38, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 427, in initial_generate
+    select_objects_for_render(Pt, selections)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 545, in select_objects_for_render
+    return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2]),object_to_visuals(selection_list[3])]
+IndexError: list index out of range
+2018-11-12 16:11:48,315 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+>>>>>>> 89b84730c2357bf36af3d23bcc1cd0f979543e09
