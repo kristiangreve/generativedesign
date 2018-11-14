@@ -247,8 +247,8 @@ def crowding(population):
         pareto_dict[individual.pareto].append(individual)
         reset_atributes(individual)
     for pareto_front in pareto_dict.values():
-        if pareto_front[0].pareto == 1:
-            print('# of obj in pareto 1: ', len(pareto_front))
+        #if pareto_front[0].pareto == 1:
+        #    print('# of obj in pareto 1: ', len(pareto_front))
 
 
         max_dir_hamming = 0
@@ -392,8 +392,6 @@ def mutate(population, mutation_rate):
                 population[index].split_list[random_gene] = random.random()
             #parameter = population[index] #Why can't we just do like this!
 
-adjacency_plot = [] #global list to store the best adjacency score from each generation
-
 # crates a new population and iterates a couple of times
 
 def init_population(size):
@@ -411,7 +409,7 @@ def init_population(size):
         population.append(element)
     return population, id
 
-def initial_generate(selections,pop_size,generations):
+def initial_generate(selections,pop_size,generations, mutation):
     # delete all existing instances from database
     db.session.query(Plan).delete()
     db.session.commit()
@@ -422,14 +420,15 @@ def initial_generate(selections,pop_size,generations):
     save_population_to_database(Pt,0)
 
     # load max id from database once and make variable that breeding uses
-
-    print("latest id is: ", id)
-
+    best_adj = 100
     dominance(Pt,selections)
     pareto_score(Pt)
     crowding(Pt)
-    mutation_ratio = 1
-    for n in range(generations):
+    mutation_ratio = mutation
+    start = time.time()
+    gen_to_1 = 0
+    generation = 0
+    while (generation < generations) and best_adj != 0:
         # add current max id to inputs
         Qt,id = breeding(Pt, id, mutation_ratio)
         mutate(Qt, mutation_ratio)
@@ -439,11 +438,35 @@ def initial_generate(selections,pop_size,generations):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
+        for ind in Pt:
+            if ind.adjacency_score < best_adj:
+                best_adj = ind.adjacency_score
+                if best_adj == 1:
+                    gen_to_1 = int(generation)
+        print('pop: ', pop_size, ' mut: ', mutation, ' gen: ', generation, ' adj: ', best_adj)
+        generation +=1
     #select_objects_for_render(Pt, selections)
     save_population_to_database(Pt,generations)
-    print('Saved pop Size: ', len(Pt))
-    print("ID after init: ", id)
-    return Pt
+    end = time.time()
+    elapsed_time = (end - start)
+    #return Pt
+    return [pop_size,mutation,generations,gen_to_1,best_adj,generation,elapsed_time]
+
+#pop_sample = [50,100,150,200]
+#mutation_rate = [0.25, 0.5, 0.75, 1]
+
+
+def test_run():
+    pop_sample = [50,100,200]
+    mutation_rate = [0.25, 0.5,0.75, 1]
+    performance_list = []
+    for pop in pop_sample:
+        for mut in mutation_rate:
+            for n in range(5):
+                performance_list.append(initial_generate([],pop,300,mut))
+
+    print(performance_list)
+
 
 def generate(selections,generations):
     # query for max generation value in database

@@ -10,7 +10,7 @@ from app.email import send_password_reset_email
 import json
 from operator import itemgetter
 from app.generative import json_departments_from_db, random_design, generate, get_population_from_database, \
-initial_generate, select_objects_for_render, evaluate_layout
+initial_generate, select_objects_for_render, evaluate_layout, test_run
 from app.space_planning import get_layout
 
 user_selections = []
@@ -59,6 +59,7 @@ def generate_new_floorplans():
 @app.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
+    test_run()
     form = EditFloorPlanForm()
     if form.validate_on_submit():
         current_user.length = form.length.data
