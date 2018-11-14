@@ -375,7 +375,7 @@ def mutate(population, mutation_rate):
     atribute_list = ['split_list', 'dir_list','room_order']
     for atribute in atribute_list:
         mutate_objects = []
-        while len(mutate_objects) <= int(mutation_rate*len(population)):
+        while len(mutate_objects) < int(mutation_rate*len(population)*len(getattr(population[0],atribute))):
             mutate_objects.append(random.randint(0,len(population)-1))
         for index in mutate_objects:
             if atribute == 'room_order':
@@ -390,7 +390,6 @@ def mutate(population, mutation_rate):
             elif atribute == 'split_list':
                 random_gene = random.randint(0,len(population[index].split_list)-1)
                 population[index].split_list[random_gene] = random.random()
-            #parameter = population[index] #Why can't we just do like this!
 
 # crates a new population and iterates a couple of times
 
@@ -457,13 +456,15 @@ def initial_generate(selections,pop_size,generations, mutation):
 
 
 def test_run():
-    pop_sample = [50,100,200]
-    mutation_rate = [0.25, 0.5,0.75, 1]
+    #pop_sample = [50,100,200]
+    #mutation_rate = [0.25, 0.5,0.75, 1]
+    pop_sample = [50]
+    mutation_rate = [0.01, 0.05, 0.1, 0.25, 0.5]
     performance_list = []
     for pop in pop_sample:
         for mut in mutation_rate:
             for n in range(5):
-                performance_list.append(initial_generate([],pop,300,mut))
+                performance_list.append(initial_generate([],pop,200,mut))
 
     print(performance_list)
 
