@@ -10,7 +10,7 @@ from app.email import send_password_reset_email
 import json
 from operator import itemgetter
 from app.generative import json_departments_from_db, random_design, generate, get_population_from_database, \
-initial_generate, select_objects_for_render, evaluate_layout, test_run
+initial_generate, select_objects_for_render, evaluate_layout
 from app.space_planning import get_layout
 
 user_selections = []
@@ -32,8 +32,8 @@ def floor_plan():
 def generate_first_floorplans():
     user_selections = []
     # generate first generation and return
-    pop_size = 80
-    generations = 200
+    pop_size = 50
+    generations = 100
     print("user selections: ",user_selections)
     Pt = initial_generate(user_selections, pop_size, generations)
     print("first floorplans rendered")
@@ -59,7 +59,6 @@ def generate_new_floorplans():
 @app.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
-    test_run()
     form = EditFloorPlanForm()
     if form.validate_on_submit():
         current_user.length = form.length.data
