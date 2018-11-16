@@ -437,9 +437,6 @@ def initial_generate(selections,pop_size,generations):
 
     evaluate_pop(Pt,selections)
     save_population_to_database(Pt,0)
-
-    # load max id from database once and make variable that breeding uses
-
     dominance(Pt,selections)
     pareto_score(Pt)
     crowding(Pt)
@@ -499,12 +496,10 @@ def generate(selections,generations):
     dominance(Pt,selections)
     pareto_score(Pt)
     crowding(Pt)
-    mutation_ratio = 0.2
+    mutation_ratio = 0.05
 
     for n in range(generations):
         print('Generation: ', current_generation+n)
-
-        start = time.time()
         Qt, id = breeding(Pt,id, mutation_ratio)
         mutate(Qt, mutation_ratio)
         evaluate_pop(Qt,selections)
@@ -513,12 +508,6 @@ def generate(selections,generations):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
-        best_adj = 100
-        for obj in Pt:
-            if obj.adjacency_score < best_adj:
-                best_adj = obj.adjacency_score
-        print('Best adj: ' ,best_adj)
-        end = time.time()
     #select_objects_for_render(Pt,selections)
     save_population_to_database(Pt,generations+current_generation)
     print("Run a total of ", (generations+current_generation), ' generations')

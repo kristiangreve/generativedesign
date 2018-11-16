@@ -57,3 +57,5 @@ NameError: name 'n' is not defined
 2018-11-13 09:13:10,083 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 >>>>>>> a9cef778715bc0e5006c28d2b32d42c915896c01
 2018-11-16 12:50:49,006 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-16 13:22:54,055 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-16 13:28:56,110 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
