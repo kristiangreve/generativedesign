@@ -39,18 +39,18 @@ def generate_first_floorplans():
     print("first floorplans rendered")
     return jsonify(select_objects_for_render(Pt, user_selections))
 
-@app.route('/generate_new_floorplans/', methods = ['POST'])
+@app.route('/generate_new_floorplans/', methods = ['GET', 'POST'])
 def generate_new_floorplans():
-    generations = 20
-    id = int(request.form['id'])
-    print("id selected: ",id)
+    generations = 10
+    selected_rooms = json.loads(request.form['selected_rooms'])
+    print("rooms selected: ",selected_rooms)
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
     Pt = get_population_from_database(current_generation)
     # add the user selection from the previous generation
-    plan = [plan for plan in Pt if plan.plan_id == id][0]
-    evaluate_layout(plan)
-    user_selections.append(plan)
-    print("user selections: ", user_selections)
+    #plan = [plan for plan in Pt if plan.plan_id == 1][0]
+    #evaluate_layout(plan)
+    #user_selections.append(plan)
+    #print("user selections: ", user_selections)
     # create new generation based on choices
     Pt = generate(user_selections,generations)
     return jsonify(select_objects_for_render(Pt,user_selections))
