@@ -1,4 +1,5 @@
-2018-11-15 11:58:58,861 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+2018-11-16 12:40:51,470 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-16 12:40:57,335 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -12,8 +13,35 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 50, in generate_new_floorplans
-    plan = [plan for plan in Pt if plan.plan_id == id][0]
-IndexError: list index out of range
-2018-11-15 13:43:39,935 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-15 14:40:46,789 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 38, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 486, in initial_generate
+    x,y,gen_list = plot_pop(Pt,n,x,y,gen_list)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 505, in plot_pop
+    gen.append(int(generation/10))
+NameError: name 'gen' is not defined
+2018-11-16 12:41:28,935 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-16 12:41:32,979 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+Traceback (most recent call last):
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
+    raise value
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 38, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 486, in initial_generate
+    x,y,gen_list = plot_pop(Pt,n,x,y,gen_list)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 509, in plot_pop
+    plt.scatter(x, y, alpha=0.3, s=100, label = int(n/10))
+NameError: name 'n' is not defined
+2018-11-16 12:41:53,932 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-16 12:44:07,343 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-16 12:44:24,537 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]

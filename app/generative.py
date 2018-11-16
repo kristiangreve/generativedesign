@@ -10,6 +10,7 @@ from flask_login import current_user
 from sqlalchemy import func
 import time
 import numpy as numpy
+from random import gauss
 
 class individual:
     def __init__(self, definition, room_def, split_list, dir_list, room_order, min_opening):
@@ -112,11 +113,11 @@ def evaluate_pop(generation, user_input):
             evaluate_layout(individual)
             individual.evaluate_aspect_ratio()
         if len(user_input)>0: # if user input exists
-            #if len(user_input)>2: #if more than 3 user inputs, only take into account last 3 selections
-                #user_input = user_input[-3:] #slice any elements before last 3 off
+            if len(user_input)>2: #if more than 3 user inputs, only take into account last 3 selections
+                user_input = user_input[-3:] #slice any elements before last 3 off
 
                 ## TESTING/ DELETE LATER
-            user_input = user_input[-1:] #for testing similarity
+            #user_input = user_input[-1:] #for testing similarity
 
             #Sets aspect score of each object based on proximity to user inputs
 
@@ -177,19 +178,17 @@ def dominance(population,selections):
                 #Aspect score: The lower, the more similar aspect ratios is the rooms of a given obj compared to user inputs
                 #dims score: The lower, the fewer dimensions are breaking the minimum size rule set in space_planning.py
                 if (population[i].adjacency_score <= population[j].adjacency_score)\
-                and (population[i].aspect_ratio_score < population[j].aspect_ratio_score)\
-                and (population[i].dims_score < population[j].dims_score):
+                and (population[i].aspect_ratio_score < population[j].aspect_ratio_score):
+                #and (population[i].dims_score < population[j].dims_score):
                 #and (population[i].aspect_base_score < population[j].aspect_base_score):
                 #and (population[i].interactive_score < population[j].interactive_score)\
-                #and (population[i].aspect_base_score < population[j].aspect_base_score)\
                     population[i].dominates_these.append(population[j])
                     population[j].dominated_count += 1
                 elif (population[i].adjacency_score >= population[j].adjacency_score)\
-                and (population[i].aspect_ratio_score > population[j].aspect_ratio_score)\
-                and (population[i].dims_score > population[j].dims_score):
+                and (population[i].aspect_ratio_score > population[j].aspect_ratio_score):
+                #and (population[i].dims_score > population[j].dims_score):
                 #and (population[i].aspect_base_score > population[j].aspect_base_score):
                 #and (population[i].interactive_score > population[j].interactive_score) \
-                #and (population[i].aspect_base_score > population[j].aspect_base_score) \
                     population[j].dominates_these.append(population[i])
                     population[i].dominated_count += 1
             else:
@@ -294,7 +293,7 @@ def crowding(population):
 def comparison(obj1,obj2): # Compares 2 individuals on pareto front, followed by crowding
     if obj1.pareto == obj2.pareto: #if equal rank, look at distance
         #if obj1.crowding_score>obj2.crowding_score:
-        if obj1.aspect_base_score < obj2.aspect_base_score:
+        if obj1.aspect_base_score < obj2.aspect_base_score: #Select object in pareto most simlar to user selection
             return obj1
         elif obj1.aspect_base_score > obj2.aspect_base_score:
             return obj2
@@ -347,24 +346,24 @@ def crossover(obj1,obj2):
     child2.evaluate_aspect_ratio()
     children_test = [child1,child2]
     parent_test = [obj1,obj2]
-    for child in children_test:
-        for parent in parent_test:
-            if child.aspect_ratio_score == parent.aspect_ratio_score:
-                print('---- SIMILAR CHILD BRED -----')
-                """
-                print('room point: ', room_crossover_point)
-                print('dir point: ', dir_crossover_point)
-                print('split point: ', split_crossover_point)
-                print('P1 rooms', obj1.room_order)
-                print('P2 rooms', obj2.room_order)
-                print('C  rooms', child.room_order)
-                print('P1 dir', obj1.dir_list)
-                print('P2 dir', obj2.dir_list)
-                print('C dir ', child.dir_list)
-                print('P1 split', obj1.split_list)
-                print('P2 split', obj2.split_list)
-                print('C  split', child.split_list)
-                """
+    #for child in children_test:
+        #for parent in parent_test:
+            #if child.aspect_ratio_score == parent.aspect_ratio_score:
+                #print('---- SIMILAR CHILD BRED -----')
+    """
+    print('room point: ', room_crossover_point)
+    print('dir point: ', dir_crossover_point)
+    print('split point: ', split_crossover_point)
+    print('P1 rooms', obj1.room_order)
+    print('P2 rooms', obj2.room_order)
+    print('C  rooms', child.room_order)
+    print('P1 dir', obj1.dir_list)
+    print('P2 dir', obj2.dir_list)
+    print('C dir ', child.dir_list)
+    print('P1 split', obj1.split_list)
+    print('P2 split', obj2.split_list)
+    print('C  split', child.split_list)
+    """
 
 
     return child1,child2
@@ -467,8 +466,12 @@ def initial_generate(selections,pop_size,generations):
     pareto_score(Pt)
     crowding(Pt)
     mutation_ratio = 0.05
-
+    plt.figure()
+    x=[]
+    y=[]
+    gen_list=[]
     for n in range(generations):
+
         print('Generation: ', n)
         # add current max id to inputs
         Qt,id = breeding(Pt, id, mutation_ratio)
@@ -479,13 +482,32 @@ def initial_generate(selections,pop_size,generations):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
-        best_adj = 100
-        for obj in Pt:
-            if obj.adjacency_score < best_adj:
-                best_adj = obj.adjacency_score
-        print('Best adj: ' ,best_adj)
+        x,y,gen_list = prepare_plot(Pt,n,x,y,gen_list)
     save_population_to_database(Pt,generations)
+    show_plot()
     return Pt
+
+def prepare_plot(population, generation,x,y,gen_list):
+    for obj in population:
+        x.append(obj.adjacency_score)
+        y.append(obj.aspect_ratio_score)
+        gen_list.append(int(generation/10))
+    if(generation % 10 == 0): #Group plot colours together pr. 10th generation
+        plt.scatter(x, y, alpha=0.3, s=100, label = int(generation/10))
+        x=[]
+        y=[]
+        gen_list=[]
+    return x,y,gen_list
+
+def show_plot():
+    plt.legend()
+    plt.xticks(range(10))
+    plt.xlim(0, 10)
+    plt.ylim(0, 6)
+    plt.xlabel('Adjacency score')
+    plt.ylabel('Aspect ratio score')
+    #plt.colorbar()
+    plt.show()
 
 
 def generate(selections,generations):
@@ -499,7 +521,7 @@ def generate(selections,generations):
     dominance(Pt,selections)
     pareto_score(Pt)
     crowding(Pt)
-    mutation_ratio = 0.05
+    mutation_ratio = 0.2
 
     for n in range(generations):
         print('Generation: ', current_generation+n)

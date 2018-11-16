@@ -1,28 +1,4 @@
-2018-11-13 09:50:49,120 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
-Traceback (most recent call last):
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
-    response = self.full_dispatch_request()
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
-    reraise(exc_type, exc_value, tb)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
-    raise value
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
-    return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 38, in generate_first_floorplans
-    Pt = initial_generate(user_selections, pop_size, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 421, in initial_generate
-    evaluate_pop(Pt,selections)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 113, in evaluate_pop
-    individual.evaluate_aspect_ratio()
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 61, in evaluate_aspect_ratio
-    aspect_score += abs(self.aspect_base[room][0]-ideal_aspect[room])
-KeyError: 'dining'
-2018-11-13 09:52:08,935 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-13 09:53:07,223 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+2018-11-15 11:58:58,861 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -39,33 +15,43 @@ Traceback (most recent call last):
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 50, in generate_new_floorplans
     plan = [plan for plan in Pt if plan.plan_id == id][0]
 IndexError: list index out of range
-2018-11-13 10:00:02,097 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-13 10:04:17,844 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-13 11:04:38,934 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-13 11:08:31,876 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-13 11:13:25,681 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-13 11:20:10,490 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-13 11:26:17,276 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-13 12:43:01,134 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-13 12:43:25,388 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-13 12:46:59,724 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-13 13:00:59,266 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-13 13:01:10,569 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-13 13:01:52,394 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-13 13:17:49,270 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-13 13:19:07,104 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-13 13:20:19,302 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-14 10:40:23,439 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-14 10:40:54,906 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-14 10:45:58,730 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-14 10:56:04,497 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-14 10:56:22,272 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-14 13:06:55,042 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-14 15:52:55,307 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-14 15:53:17,574 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-14 16:28:03,371 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-14 16:28:27,553 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-14 16:28:42,275 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+2018-11-15 13:43:39,935 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 14:40:46,789 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 15:11:47,833 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 15:13:04,715 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 15:13:16,047 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 15:17:27,282 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 15:20:42,272 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 15:51:45,753 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 15:52:25,355 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 15:53:20,799 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+Traceback (most recent call last):
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
+    raise value
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 50, in generate_new_floorplans
+    plan = [plan for plan in Pt if plan.plan_id == id][0]
+IndexError: list index out of range
+2018-11-15 16:11:42,198 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 16:21:33,137 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 16:25:06,110 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 16:28:01,413 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 16:29:33,104 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 16:42:18,143 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 16:42:49,889 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 16:46:07,399 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 16:53:07,392 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 16:55:08,099 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 16:55:20,896 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -81,22 +67,39 @@ Traceback (most recent call last):
     return self.view_functions[rule.endpoint](**req.view_args)
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 38, in generate_first_floorplans
     Pt = initial_generate(user_selections, pop_size, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 435, in initial_generate
-    Qt,id = breeding(Pt, id, mutation_ratio)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 350, in breeding
-    if child.aspect_ratio_score == parent.aspect_ratio_score:
-AttributeError: 'individual' object has no attribute 'aspect_ratio_score'
-2018-11-14 16:31:31,490 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-14 16:38:24,904 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-14 16:54:49,320 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-14 17:01:53,701 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-14 17:06:08,916 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-14 17:06:17,236 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-14 17:07:52,105 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-14 17:08:48,162 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-14 17:12:26,164 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-15 10:02:11,349 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-15 10:06:32,448 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-15 10:11:13,928 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-15 10:14:25,064 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-15 10:27:14,599 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 496, in initial_generate
+    ax.legend()
+NameError: name 'ax' is not defined
+2018-11-15 16:55:33,284 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 17:00:42,908 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 17:01:23,981 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 17:05:53,328 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 17:07:01,380 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 17:07:06,548 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+Traceback (most recent call last):
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
+    raise value
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 38, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 491, in initial_generate
+    plt.scatter(x, y, alpha=0.3, s=100, label = nt(n/10))
+NameError: name 'nt' is not defined
+2018-11-15 17:07:19,864 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-15 17:07:28,733 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-16 08:13:45,450 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-16 08:24:35,192 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-16 08:25:20,518 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-16 11:12:47,089 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-16 11:13:27,976 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-16 12:04:07,397 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-16 12:11:33,806 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
