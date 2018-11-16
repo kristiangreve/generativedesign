@@ -315,9 +315,7 @@ def crossover(obj1,obj2):
     # get the current plan_id
 
     num_rooms = len(obj1.room_def)
-    #room_crossover_point = random.randint(0,num_rooms)
-    #dir_crossover_point = random.randint(0,num_rooms-1)
-    #split_crossover_point = random.randint(0,num_rooms-2)
+
     room_crossover_point = random.randint(1,num_rooms-1) #To avoid that nothing gets crossed over if max or min
     dir_crossover_point = random.randint(1,num_rooms-2) #To avoid that nothing gets crossed over if max or min
     split_crossover_point = random.randint(1,num_rooms-3) #To avoid that nothing gets crossed over if max or min
@@ -346,26 +344,6 @@ def crossover(obj1,obj2):
     child2.evaluate_aspect_ratio()
     children_test = [child1,child2]
     parent_test = [obj1,obj2]
-    #for child in children_test:
-        #for parent in parent_test:
-            #if child.aspect_ratio_score == parent.aspect_ratio_score:
-                #print('---- SIMILAR CHILD BRED -----')
-    """
-    print('room point: ', room_crossover_point)
-    print('dir point: ', dir_crossover_point)
-    print('split point: ', split_crossover_point)
-    print('P1 rooms', obj1.room_order)
-    print('P2 rooms', obj2.room_order)
-    print('C  rooms', child.room_order)
-    print('P1 dir', obj1.dir_list)
-    print('P2 dir', obj2.dir_list)
-    print('C dir ', child.dir_list)
-    print('P1 split', obj1.split_list)
-    print('P2 split', obj2.split_list)
-    print('C  split', child.split_list)
-    """
-
-
     return child1,child2
 
 def breeding(population, id, mutation_rate):
