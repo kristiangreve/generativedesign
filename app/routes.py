@@ -14,6 +14,7 @@ initial_generate, select_objects_for_render, evaluate_layout, id_to_obj
 from app.space_planning import get_layout
 
 user_selections = []
+user_selections_obj = []
 
 @app.before_request
 def before_request():
@@ -53,9 +54,9 @@ def generate_new_floorplans():
     #user_selections.append(plan)
     print("Routes user selections: ", user_selections)
     # create new generation based on choices
-    user_selections_obj_list = id_to_obj(Pt,user_selections)
-    Pt = generate(user_selections,generations)
-    return jsonify(select_objects_for_render(Pt,user_selections_obj_list))
+    user_selections_obj.append(id_to_obj(Pt,user_selections))
+    Pt = generate(user_selections_obj,user_selections, generations)
+    return jsonify(select_objects_for_render(Pt,user_selections_obj))
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
