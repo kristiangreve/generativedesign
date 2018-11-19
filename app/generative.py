@@ -70,6 +70,15 @@ class individual:
                 aspect_score[index] += abs(self.aspect_base[room][0]-user_input_i.aspect_base[room][0])
         self.aspect_score = aspect_score
 
+    def evaluate_user_aspect_test(self, user_input_dict):
+        aspect_score = [0,0,0]
+        for key in user_input_dict.keys():
+            print('user input gen: ', user_input_gen)
+            for room in self.aspect_base.keys():
+                aspect_score[index] += abs(self.aspect_base[room][0]-user_input_i.aspect_base[room][0])
+        self.aspect_score = aspect_score
+
+
     def evaluate_user_base(self,user_input):
         base_distance = [0,0,0]
         for index, user_input_i in enumerate(user_input):
@@ -112,7 +121,7 @@ def evaluate_pop(generation, user_input):
         if individual.adjacency_score == None: #only call layout if the given object hasn't been evaluated yet
             evaluate_layout(individual)
             individual.evaluate_aspect_ratio()
-        if len(user_input)>0: # if user input exists
+        if len(user_input)>100: # if user input exists
             if len(user_input)>2: #if more than 3 user inputs, only take into account last 3 selections
                 user_input = user_input[-3:] #slice any elements before last 3 off
 
@@ -121,8 +130,8 @@ def evaluate_pop(generation, user_input):
 
             #Sets aspect score of each object based on proximity to user inputs
 
-            individual.evaluate_user_aspect(user_input)
-            individual.evaluate_user_base(user_input)
+            #individual.evaluate_user_aspect(user_input)
+            #individual.evaluate_user_base(user_input)
 
             for index, user_input_i, in enumerate(user_input): #loops through every user input
                 individual.interactive_dir.append(hamming_distance(individual.dir_list, user_input_i.dir_list))
@@ -139,7 +148,7 @@ def evaluate_pop(generation, user_input):
 
     max_aspect = [0,0,0]
     max_base_dist = [0,0,0]
-    if len(user_input)>0:
+    if len(user_input)>100:
         for n in range(len(user_input)): #finds max score
             max_aspect[n] = max(individual.aspect_score[n] for individual in generation)
             max_base_dist[n] = max(individual.base_score[n] for individual in generation)
@@ -150,7 +159,7 @@ def evaluate_pop(generation, user_input):
                 individual.aspect_base_score = sum(individual.base_score) + sum(individual.aspect_score)
 
 
-    if len(user_input)>0:
+    if len(user_input)>100:
         for individual in generation:
             for i in range(len(user_input)):
                 if max_dir_hamming[i] != 0:
@@ -429,6 +438,45 @@ def init_population(size):
         population.append(element)
     return population, id
 
+
+def map_user_selection(population,user_selections):
+    user_selections_obj_list = []
+    user_selections_dict_list = [] #creates an empty list, that if appended to a non existing key simply creates that one (default dict)
+    for feedback_index, generation in enumerate(user_selections): #User selection is a list of lists, each containing the elements selected from a given feedback loop
+        user_selections_dict = defaultdict(list)
+        print('gen user: ', generation)
+        for selected_room in generation: #Loops through each of the elements in a given feedback loop
+            print('selected room: ', selected_room)
+            for obj in population: #loops through entire population
+                if int(selected_room[0]) == obj.plan_id: #finds user selection in pop based on ID
+                    print('match!')
+                    if obj not in user_selections_obj_list:
+                        user_selections_obj_list.append(obj)
+                    print('keys: ', obj.aspect_base.keys())
+                    for room in obj.aspect_base.keys(): #loops through all definitions of that given obj
+                        print('room: ', room)
+                        if room == selected_room[1]: #finds the aspect&base of the selected room for that object
+                            user_selections_dict[room].append(obj.aspect_base[room])
+                            print('break')
+                            break
+        print('appending')
+        user_selections_dict_list.append(user_selections_dict)
+
+    print('Dict list: ', user_selections_dict_list)
+    print('Dict list [0]', user_selections_dict_list[0].keys())
+    #print('User selection Living: ', user_selections_dict['Living'][0]) #first living element [aspect,base] (if several living selected)
+    return user_selections_obj_list, user_selections_dict_list
+
+def id_to_obj(population,user_selections):
+    user_selections_obj_list = []
+    for generation in user_selections: #User selection is a list of lists, each containing the elements selected from a given feedback loop
+        for selected_room in generation: #Loops through each of the elements in a given feedback loop
+            for obj in population: #loops through entire population
+                if int(selected_room[0]) == obj.plan_id: #finds user selection in pop based on ID
+                    if obj not in user_selections_obj_list:
+                        user_selections_obj_list.append(obj)
+    return user_selections_obj_list
+
 def initial_generate(selections,pop_size,generations):
     # delete all existing instances from database
     db.session.query(Plan).delete()
@@ -457,9 +505,9 @@ def initial_generate(selections,pop_size,generations):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
-        x,y,gen_list = prepare_plot(Pt,n,x,y,gen_list)
+        #x,y,gen_list = prepare_plot(Pt,n,x,y,gen_list)
     save_population_to_database(Pt,generations)
-    show_plot()
+    #show_plot()
     return Pt
 
 def prepare_plot(population, generation,x,y,gen_list):
@@ -481,8 +529,8 @@ def show_plot():
     plt.ylim(0, 6)
     plt.xlabel('Adjacency score')
     plt.ylabel('Aspect ratio score')
-    #plt.colorbar()
     plt.show()
+
 
 
 def generate(selections,generations):
@@ -492,19 +540,19 @@ def generate(selections,generations):
     Pt = get_population_from_database(current_generation)
     id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
     pop_size=len(Pt)
-    evaluate_pop(Pt,selections)
-    dominance(Pt,selections)
+    user_obj_list, user_base_aspect_dict = map_user_selection(Pt,selections)
+    evaluate_pop(Pt,user_obj_list)
+    dominance(Pt,user_obj_list)
     pareto_score(Pt)
     crowding(Pt)
     mutation_ratio = 0.05
-
     for n in range(generations):
         print('Generation: ', current_generation+n)
         Qt, id = breeding(Pt,id, mutation_ratio)
         mutate(Qt, mutation_ratio)
-        evaluate_pop(Qt,selections)
+        evaluate_pop(Qt,user_obj_list)
         Rt = Pt + Qt
-        dominance(Rt,selections)
+        dominance(Rt,user_obj_list)
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)

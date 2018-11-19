@@ -10,7 +10,7 @@ from app.email import send_password_reset_email
 import json
 from operator import itemgetter
 from app.generative import json_departments_from_db, random_design, generate, get_population_from_database, \
-initial_generate, select_objects_for_render, evaluate_layout
+initial_generate, select_objects_for_render, evaluate_layout, id_to_obj
 from app.space_planning import get_layout
 
 user_selections = []
@@ -33,7 +33,7 @@ def generate_first_floorplans():
     user_selections = []
     # generate first generation and return
     pop_size = 50
-    generations = 100
+    generations = 50
     print("user selections: ",user_selections)
     Pt = initial_generate(user_selections, pop_size, generations)
     print("first floorplans rendered")
@@ -41,19 +41,21 @@ def generate_first_floorplans():
 
 @app.route('/generate_new_floorplans/', methods = ['GET', 'POST'])
 def generate_new_floorplans():
-    generations = 10
+    generations = 20
     selected_rooms = json.loads(request.form['selected_rooms'])
     print("rooms selected: ",selected_rooms)
+    user_selections.append(selected_rooms)
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
     Pt = get_population_from_database(current_generation)
     # add the user selection from the previous generation
     #plan = [plan for plan in Pt if plan.plan_id == 1][0]
     #evaluate_layout(plan)
     #user_selections.append(plan)
-    #print("user selections: ", user_selections)
+    print("Routes user selections: ", user_selections)
     # create new generation based on choices
+    user_selections_obj_list = id_to_obj(Pt,user_selections)
     Pt = generate(user_selections,generations)
-    return jsonify(select_objects_for_render(Pt,user_selections))
+    return jsonify(select_objects_for_render(Pt,user_selections_obj_list))
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
