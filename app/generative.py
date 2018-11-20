@@ -74,12 +74,12 @@ class individual:
         aspect_score = [0,0,0]
         base_score = [0,0,0]
         for feedback_index, user_dict in enumerate(user_input_dict_list):
-            print('Gen Dict: ', user_dict)
-            for room_list in user_dict.keys():
-                print('user input room: ', room)
-                for room in room_list:
-                    aspect_score[feedback_index] += abs(self.aspect_base[room][0]-user_dict[room][0])
+            for room_name,value_list in user_dict.items():
+                for index,value_pair in enumerate(value_list): #There might be several value pairs for 1 room eg if 2 "living room" is selected in same feedback loop
+                    aspect_score[feedback_index] += abs(self.aspect_base[room_name][0]-user_dict[room_name][index][0])
+                    base_score[feedback_index] += abs(numpy.linalg.norm(self.aspect_base[room_name][1])-numpy.linalg.norm(user_dict[room_name][index][1]))
         self.aspect_score = aspect_score
+        self.base_score = base_score
 
 
     def evaluate_user_base(self,user_input):
@@ -120,10 +120,25 @@ def evaluate_pop(generation,user_input_obj, user_input_dict_list):
         if individual.adjacency_score == None: #only call layout if the given object hasn't been evaluated yet
             evaluate_layout(individual)
             individual.evaluate_aspect_ratio()
-        if len(user_input_obj)>1: # if user input exists
+        if len(user_input_obj)>0: # if user input exists
             if len(user_input_obj)>2: #if more than 3 user inputs, only take into account last 3 selections
-                user_input = user_input_obj[-3:] #slice any elements before last 3 off
+                user_input_obj = user_input_obj[-3:] #slice any elements before last 3 off
             individual.evaluate_user_input(user_input_dict_list)
+
+    max_aspect = [0,0,0]
+    max_base_dist = [0,0,0]
+    if len(user_input_obj)>0:
+        for n in range(len(user_input_obj)): #finds max score
+            max_aspect[n] = max(individual.aspect_score[n] for individual in generation)
+            max_base_dist[n] = max(individual.base_score[n] for individual in generation)
+            print('max aspect: ', max_aspect)
+            print('max base: ', max_base_dist)
+        for individual in generation: #normalizes input
+            for index in range(len(user_input_obj)):
+                individual.normalize_user_aspect(index,max_aspect[index])
+                individual.normalize_user_base(index,max_base_dist[index])
+                individual.aspect_base_score = sum(individual.base_score) + sum(individual.aspect_score)
+
 
 def evaluate_pop_old(generation, user_input):
     max_dir_hamming = [0,0,0]
@@ -134,17 +149,14 @@ def evaluate_pop_old(generation, user_input):
         if individual.adjacency_score == None: #only call layout if the given object hasn't been evaluated yet
             evaluate_layout(individual)
             individual.evaluate_aspect_ratio()
-        if len(user_input)>1: # if user input exists
+        if len(user_input)>0: # if user input exists
             if len(user_input)>2: #if more than 3 user inputs, only take into account last 3 selections
                 user_input = user_input[-3:] #slice any elements before last 3 off
 
-                ## TESTING/ DELETE LATER
-            #user_input = user_input[-1:] #for testing similarity
-
             #Sets aspect score of each object based on proximity to user inputs
 
-            #individual.evaluate_user_aspect(user_input)
-            #individual.evaluate_user_base(user_input)
+            individual.evaluate_user_aspect(user_input)
+            individual.evaluate_user_base(user_input)
 
             for index, user_input_i, in enumerate(user_input): #loops through every user input
                 individual.interactive_dir.append(hamming_distance(individual.dir_list, user_input_i.dir_list))
@@ -161,7 +173,7 @@ def evaluate_pop_old(generation, user_input):
 
     max_aspect = [0,0,0]
     max_base_dist = [0,0,0]
-    if len(user_input)>1:
+    if len(user_input)>0:
         for n in range(len(user_input)): #finds max score
             max_aspect[n] = max(individual.aspect_score[n] for individual in generation)
             max_base_dist[n] = max(individual.base_score[n] for individual in generation)
@@ -172,7 +184,7 @@ def evaluate_pop_old(generation, user_input):
                 individual.aspect_base_score = sum(individual.base_score) + sum(individual.aspect_score)
 
 
-    if len(user_input)>1:
+    if len(user_input)>0:
         for individual in generation:
             for i in range(len(user_input)):
                 if max_dir_hamming[i] != 0:
@@ -610,12 +622,12 @@ def select_objects_for_render(population,selections):
             print('Pareto: ', pareto_front)
             if len(selection_list) == 0:
             #Best adjacency of which is most similar to dir/split/ordder of user selction
-                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score,x.aspect_ratio_score,  x.dims_score, -x.crowding_score), reverse=False)
+                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score,x.aspect_base_score,  x.dims_score, -x.crowding_score), reverse=False)
                 selection_list.append(adjacency_sorted[0])
 
             if len(selection_list)==1:
                 #Most similar dir/split/room_order
-                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score,x.dims_score, x.aspect_ratio_score,-x.crowding_score), reverse=False)
+                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score,x.aspect_base_score,x.aspect_base_score, x.dims_score, -x.crowding_score), reverse=False)
                 for obj in interactive_sorted:
                     if len(selection_list)==1:
                         if obj not in selection_list:
@@ -623,7 +635,7 @@ def select_objects_for_render(population,selections):
 
             if len(selection_list)==2:
                 #most similar aspect score
-                aspect_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.dims_score,x.adjacency_score, x.aspect_ratio_score,-x.crowding_score), reverse=False)
+                aspect_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_base_score,x.adjacency_score, x.dims_score,-x.crowding_score), reverse=False)
                 for obj in aspect_sorted:
                     if len(selection_list) == 2:
                         if obj not in selection_list:
@@ -631,7 +643,7 @@ def select_objects_for_render(population,selections):
 
             if len(selection_list)==3:
                 #Most different (crowding) to neighbors
-                crowding_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_ratio_score, x.adjacency_score,x.dims_score,-x.crowding_score), reverse=False)
+                crowding_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_ratio_score, x.adjacency_score, x.aspect_base_score,x.dims_score,-x.crowding_score), reverse=False)
                 for obj in crowding_sorted:
                     if len(selection_list) == 3:
                         if obj not in selection_list:
