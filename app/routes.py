@@ -34,7 +34,7 @@ def generate_first_floorplans():
     user_selections = []
     # generate first generation and return
     pop_size = 50
-    generations = 50
+    generations = 100
     print("user selections: ",user_selections)
     Pt = initial_generate(user_selections, pop_size, generations)
     print("first floorplans rendered")
@@ -42,19 +42,18 @@ def generate_first_floorplans():
 
 @app.route('/generate_new_floorplans/', methods = ['GET', 'POST'])
 def generate_new_floorplans():
-    generations = 20
+    generations = 50
     selected_rooms = json.loads(request.form['selected_rooms'])
     print("rooms selected: ",selected_rooms)
-    user_selections.append(selected_rooms)
+
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
     Pt = get_population_from_database(current_generation)
-    # add the user selection from the previous generation
-    #plan = [plan for plan in Pt if plan.plan_id == 1][0]
-    #evaluate_layout(plan)
-    #user_selections.append(plan)
-    print("Routes user selections: ", user_selections)
+
+    if len(selected_rooms)>0:
+        user_selections.append(selected_rooms)
+        print("User selection sum: ", user_selections)
+        user_selections_obj.append(id_to_obj(Pt,user_selections))
     # create new generation based on choices
-    user_selections_obj.append(id_to_obj(Pt,user_selections))
     Pt = generate(user_selections_obj,user_selections, generations)
     return jsonify(select_objects_for_render(Pt,user_selections_obj))
 

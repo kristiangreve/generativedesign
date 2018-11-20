@@ -62,17 +62,9 @@ class individual:
             aspect_score += abs(self.aspect_base[room][0]-ideal_aspect[room])
         self.aspect_ratio_score = aspect_score
 
-
-    def evaluate_user_aspect(self, user_input):
-        aspect_score = [0,0,0]
-        for index, user_input_i in enumerate(user_input):
-            for room in self.aspect_base.keys():
-                aspect_score[index] += abs(self.aspect_base[room][0]-user_input_i.aspect_base[room][0])
-        self.aspect_score = aspect_score
-
     def evaluate_user_input(self, user_input_dict_list):
-        aspect_score = [0,0,0]
-        base_score = [0,0,0]
+        aspect_score = [0]*len(user_input_dict_list)
+        base_score = [0]*len(user_input_dict_list)
         for feedback_index, user_dict in enumerate(user_input_dict_list):
             for room_name,value_list in user_dict.items():
                 for index,value_pair in enumerate(value_list): #There might be several value pairs for 1 room eg if 2 "living room" is selected in same feedback loop
@@ -81,20 +73,6 @@ class individual:
         self.aspect_score = aspect_score
         self.base_score = base_score
 
-
-    def evaluate_user_base(self,user_input):
-        base_distance = [0,0,0]
-        for index, user_input_i in enumerate(user_input):
-            for room in self.aspect_base.keys():
-                base_distance[index] += abs(numpy.linalg.norm(self.aspect_base[room][1])-numpy.linalg.norm(user_input_i.aspect_base[room][1]))
-
-        self.base_score = base_distance
-
-    def normalize_user_aspect(self,n,max_score):
-        self.aspect_score[n] = self.aspect_score[n] / max_score
-
-    def normalize_user_base(self,n,max_score):
-        self.base_score[n] = self.base_score[n] / max_score
 
 """
 init_population:
@@ -123,6 +101,7 @@ def evaluate_pop(generation,user_input_obj, user_input_dict_list):
         if len(user_input_obj)>0: # if user input exists
             if len(user_input_obj)>2: #if more than 3 user inputs, only take into account last 3 selections
                 user_input_obj = user_input_obj[-3:] #slice any elements before last 3 off
+                user_input_dict_list = user_input_dict_list[-3:]
             individual.evaluate_user_input(user_input_dict_list)
 
     max_aspect = [0,0,0]
@@ -131,76 +110,16 @@ def evaluate_pop(generation,user_input_obj, user_input_dict_list):
         for n in range(len(user_input_obj)): #finds max score
             max_aspect[n] = max(individual.aspect_score[n] for individual in generation)
             max_base_dist[n] = max(individual.base_score[n] for individual in generation)
-            print('max aspect: ', max_aspect)
-            print('max base: ', max_base_dist)
-        for individual in generation: #normalizes input
+        for individual in generation: #normalizes and weight input
             for index in range(len(user_input_obj)):
-                individual.normalize_user_aspect(index,max_aspect[index])
-                individual.normalize_user_base(index,max_base_dist[index])
-                individual.aspect_base_score = sum(individual.base_score) + sum(individual.aspect_score)
+                individual.aspect_score[index] = individual.aspect_score[index] / max_aspect[index] #normalize score
+                individual.aspect_score[index] = individual.aspect_score[index] / len(user_input_obj)*(index+1) #Makes previous feedback loops less weighted
 
+                individual.base_score[index] = individual.base_score[index] / max_base_dist[index]
+                individual.base_score[index] = individual.base_score[index] / len(user_input_obj)*(index+1) #Makes previous feedback loops less weighted
 
-def evaluate_pop_old(generation, user_input):
-    max_dir_hamming = [0,0,0]
-    max_room_hamming = [0,0,0]
-    max_split_num = [0,0,0]
+            individual.aspect_base_score = sum(individual.base_score) + sum(individual.aspect_score)
 
-    for individual in generation:
-        if individual.adjacency_score == None: #only call layout if the given object hasn't been evaluated yet
-            evaluate_layout(individual)
-            individual.evaluate_aspect_ratio()
-        if len(user_input)>0: # if user input exists
-            if len(user_input)>2: #if more than 3 user inputs, only take into account last 3 selections
-                user_input = user_input[-3:] #slice any elements before last 3 off
-
-            #Sets aspect score of each object based on proximity to user inputs
-
-            individual.evaluate_user_aspect(user_input)
-            individual.evaluate_user_base(user_input)
-
-            for index, user_input_i, in enumerate(user_input): #loops through every user input
-                individual.interactive_dir.append(hamming_distance(individual.dir_list, user_input_i.dir_list))
-                individual.interactive_split.append(num_difference_score(individual.split_list,user_input_i.split_list))
-                individual.interactive_room.append(hamming_distance(individual.room_order,user_input_i.room_order))
-                # for later normalization of distances, record max distance
-
-                if individual.interactive_dir[index] > max_dir_hamming[index]:
-                    max_dir_hamming[index] = individual.interactive_dir[index]
-                if individual.interactive_split[index] > max_split_num[index]:
-                    max_split_num[index] = individual.interactive_split[index]
-                if individual.interactive_room[index] > max_room_hamming[index]:
-                    max_room_hamming[index] = individual.interactive_room[index]
-
-    max_aspect = [0,0,0]
-    max_base_dist = [0,0,0]
-    if len(user_input)>0:
-        for n in range(len(user_input)): #finds max score
-            max_aspect[n] = max(individual.aspect_score[n] for individual in generation)
-            max_base_dist[n] = max(individual.base_score[n] for individual in generation)
-        for individual in generation: #normalizes input
-            for index in range(len(user_input)):
-                individual.normalize_user_aspect(index,max_aspect[index])
-                individual.normalize_user_base(index,max_base_dist[index])
-                individual.aspect_base_score = sum(individual.base_score) + sum(individual.aspect_score)
-
-
-    if len(user_input)>0:
-        for individual in generation:
-            for i in range(len(user_input)):
-                if max_dir_hamming[i] != 0:
-                    individual.interactive_dir[i] = ( individual.interactive_dir[i] / max_dir_hamming[i] ) / len(user_input)*(i+1)
-                else:
-                    individual.interactive_dir[i] = 0
-                individual.interactive_split[i] = ( individual.interactive_split[i] / max_split_num[i] ) / len(user_input)*(i+1)
-                if max_dir_hamming[i] != 0:
-                    individual.interactive_room[i] = ( individual.interactive_room[i] / max_room_hamming[i] ) / len(user_input)*(i+1)
-                else:
-                    individual.interactive_room[i] = 0
-            individual.interactive_score = sum(individual.interactive_dir) + sum(individual.interactive_split) + sum(individual.interactive_room)
-            #Resets the attributes
-            individual.interactive_dir = []
-            individual.interactive_split = []
-            individual.interactive_room = []
 
 def dominance(population,selections):
      for i in range(len(population)):      #Loops through all individuals of population
@@ -208,31 +127,26 @@ def dominance(population,selections):
             #What if adjacency and interactive score are similar? Then i gets favored while in fact solutions are equally good.
             if len(selections)>0:
                 #Adjacency score: #of broken adjecencies , the lower the better
-                #interactive score: The lower, the more similar a given obj is to user inputs in terms of dir list, split list and room order
-                #Aspect score: The lower, the more similar aspect ratios is the rooms of a given obj compared to user inputs
-                #dims score: The lower, the fewer dimensions are breaking the minimum size rule set in space_planning.py
                 if (population[i].adjacency_score <= population[j].adjacency_score)\
                 and (population[i].aspect_ratio_score < population[j].aspect_ratio_score):
-                #and (population[i].dims_score < population[j].dims_score):
                 #and (population[i].aspect_base_score < population[j].aspect_base_score):
-                #and (population[i].interactive_score < population[j].interactive_score)\
+                #and (population[i].dims_score < population[j].dims_score):
                     population[i].dominates_these.append(population[j])
                     population[j].dominated_count += 1
                 elif (population[i].adjacency_score >= population[j].adjacency_score)\
                 and (population[i].aspect_ratio_score > population[j].aspect_ratio_score):
-                #and (population[i].dims_score > population[j].dims_score):
                 #and (population[i].aspect_base_score > population[j].aspect_base_score):
-                #and (population[i].interactive_score > population[j].interactive_score) \
+                #and (population[i].dims_score > population[j].dims_score):
                     population[j].dominates_these.append(population[i])
                     population[i].dominated_count += 1
             else:
-                if (population[i].adjacency_score < population[j].adjacency_score):
-                #and (population[i].aspect_ratio_score < population[j].aspect_ratio_score):
+                if (population[i].adjacency_score < population[j].adjacency_score)\
+                and (population[i].aspect_ratio_score < population[j].aspect_ratio_score):
                 #and (population[i].dims_score < population[j].dims_score):
                     population[i].dominates_these.append(population[j])
                     population[j].dominated_count += 1
-                elif (population[i].adjacency_score > population[j].adjacency_score):
-                #and (population[i].aspect_ratio_score > population[j].aspect_ratio_score):
+                elif (population[i].adjacency_score > population[j].adjacency_score)\
+                and (population[i].aspect_ratio_score > population[j].aspect_ratio_score):
                 #and (population[i].dims_score > population[j].dims_score):
                     population[j].dominates_these.append(population[i])
                     population[i].dominated_count += 1
@@ -283,7 +197,6 @@ def crowding(population):
         #if pareto_front[0].pareto == 1:
         #    print('# of obj in pareto 1: ', len(pareto_front))
 
-
         max_dir_hamming = 0
         max_room_hamming = 0
         max_split_num = 0
@@ -327,6 +240,7 @@ def crowding(population):
 def comparison(obj1,obj2): # Compares 2 individuals on pareto front, followed by crowding
     if obj1.pareto == obj2.pareto: #if equal rank, look at distance
         #if obj1.crowding_score>obj2.crowding_score:
+
         if obj1.aspect_base_score < obj2.aspect_base_score: #Select object in pareto most simlar to user selection
             return obj1
         elif obj1.aspect_base_score > obj2.aspect_base_score:
@@ -627,7 +541,7 @@ def select_objects_for_render(population,selections):
 
             if len(selection_list)==1:
                 #Most similar dir/split/room_order
-                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score,x.aspect_base_score,x.aspect_base_score, x.dims_score, -x.crowding_score), reverse=False)
+                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score,x.aspect_ratio_score, x.aspect_base_score, -x.crowding_score), reverse=False)
                 for obj in interactive_sorted:
                     if len(selection_list)==1:
                         if obj not in selection_list:
@@ -635,7 +549,7 @@ def select_objects_for_render(population,selections):
 
             if len(selection_list)==2:
                 #most similar aspect score
-                aspect_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_base_score,x.adjacency_score, x.dims_score,-x.crowding_score), reverse=False)
+                aspect_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_base_score,x.adjacency_score, -x.crowding_score), reverse=False)
                 for obj in aspect_sorted:
                     if len(selection_list) == 2:
                         if obj not in selection_list:
@@ -643,7 +557,7 @@ def select_objects_for_render(population,selections):
 
             if len(selection_list)==3:
                 #Most different (crowding) to neighbors
-                crowding_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_ratio_score, x.adjacency_score, x.aspect_base_score,x.dims_score,-x.crowding_score), reverse=False)
+                crowding_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_ratio_score,-x.crowding_score, x.adjacency_score, x.aspect_base_score,x.dims_score), reverse=False)
                 for obj in crowding_sorted:
                     if len(selection_list) == 3:
                         if obj not in selection_list:
@@ -664,7 +578,14 @@ def select_objects_for_render(population,selections):
         print('Obj:', index, ' : ', obj)
         #print('aspect/base', obj.aspect_base_score)
         #print('interactive', obj.interactive_score)
-        print('Adj: ', obj.adjacency_score, 'aspect: ', obj.aspect_ratio_score, ' dims: ', obj.dims_score, 'Crowd: ', obj.crowding_score)
+        for i,elem in enumerate(obj.aspect_score): #... this works...
+            obj.aspect_score[i] = round(elem,3)
+
+        for i,elemt in enumerate(obj.base_score): #for some fucked up reason doesn't work
+            obj.base_score[i] = round(elemt,3)
+
+
+        print('Adj: ', obj.adjacency_score, 'user: ', round(obj.aspect_base_score,2),'user_aspect: ', obj.aspect_score, 'user_base: ', obj.base_score, 'aspect: ', round(obj.aspect_ratio_score,2), ' dims: ', obj.dims_score, 'Crowd: ', round(obj.crowding_score,2))
     return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2]),object_to_visuals(selection_list[3])]
     #selection_list = [object_to_visuals(x) for x in selection_list]
     #return selection_list
