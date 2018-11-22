@@ -58,8 +58,10 @@ class individual:
     def evaluate_aspect_ratio(self):
         aspect_score = 0
         ideal_aspect = {'Dining': 1, 'Kitchen':1, 'M_bedroom':1, 'Living':1, 'Bedroom_1':1, 'Bedroom_2':1}
-        for room in ideal_aspect.keys():
-            aspect_score += abs(self.aspect_base[room][0]-ideal_aspect[room])
+        for room in self.aspect_base.keys():
+             aspect_score += abs(self.aspect_base[room][0]-1)
+        #for room in ideal_aspect.keys():
+        #    aspect_score += abs(self.aspect_base[room][0]-ideal_aspect[room])
         self.aspect_ratio_score = aspect_score
 
     def evaluate_user_input(self, user_input_dict_list):
@@ -107,9 +109,12 @@ def evaluate_pop(generation,user_input_obj, user_input_dict_list):
     max_aspect = [0,0,0]
     max_base_dist = [0,0,0]
     if len(user_input_obj)>0:
+        print('user input: ', user_input_obj)
         for n in range(len(user_input_obj)): #finds max score
             max_aspect[n] = max(individual.aspect_score[n] for individual in generation)
             max_base_dist[n] = max(individual.base_score[n] for individual in generation)
+        print('max aspect: ', max_aspect)
+        print('max base: ', max_base_dist)
         for individual in generation: #normalizes and weight input
             for index in range(len(user_input_obj)):
                 individual.aspect_score[index] = individual.aspect_score[index] / max_aspect[index] #normalize score

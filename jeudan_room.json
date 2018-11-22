@@ -1,0 +1,21 @@
+{
+	"aspect": 3.54,
+	"rooms": [
+		{"name": "office1", "area": 137.65, "adjacency": ["outside", "lounge"], "aspect ratio": 2.07},
+		{"name": "office2", "area": 124.7, "adjacency": ["outside", "lounge"], "aspect ratio": 1.88},
+		{"name": "office3", "area": 76.39, "adjacency": ["outside", "hall"], "aspect ratio": 2.07},
+		{"name": "office4", "area": 94.22, "adjacency": ["outside", "hall"], "aspect ratio": 3.28},
+		{"name": "meeting1", "area": 28.73, "adjacency": ["outside", "hall"], "aspect ratio": 1},
+		{"name": "meeting2", "area": 28.73, "adjacency": ["outside", "hall"], "aspect ratio": 1},
+		{"name": "kitchen", "area": 67.32, "adjacency": ["outside", "hall"], "aspect ratio": 2.34},
+		{"name": "toilet1", "area": 12.3, "adjacency": ["hall"], "aspect ratio": 0.43},
+		{"name": "toilet2", "area": 8.65, "adjacency": ["hall"], "aspect ratio": 0.61},
+		{"name": "toilet_special", "area": 6.00, "adjacency": ["hall"], "aspect ratio": 0.61},
+		{"name": "server", "area": 16, "adjacency": ["hall"], "aspect ratio": 0.74},
+		{"name": "lounge", "area": 58.43, "adjacency": ["hall"]},
+		{"name": "bath", "area": 8.11, "adjacency": ["hall"], "aspect ratio": 1.04},
+		{"name": "printer", "area": 7.78, "adjacency": ["hall"], "aspect ratio": 1},
+		{"name": "wardrobue", "area": 6.2, "adjacency": ["hall"], "aspect ratio": 0.8},
+		{"name": "hall", "area": 81.8, "adjacency": ["office1", "office2", "office3", "office4", "meeting1", "meeting2", "kitchen", "toilet1", "meeting2", "lounge", "bath", "printer", "wardrobe"], "aspect ratio": 20.45},
+	]
+}
