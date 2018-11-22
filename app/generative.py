@@ -339,7 +339,7 @@ def selection(pop_size, population):
             for obj in pareto_dict[pareto_counter]:
                 new_gen.append(obj)
         else:
-            sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: x.crowding_score, reverse=True)
+            sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: (x.aspect_base_score, -x.crowding_score), reverse=False)
             for obj in sorted_pareto:
                 if len(new_gen) < pop_size:
                     new_gen.append(obj)
@@ -538,7 +538,7 @@ def select_objects_for_render(population,selections):
     while len(selection_list)<3:
         for pareto_front in sorted(pareto_dict.keys()):
             print('Pareto keys: ', pareto_dict.keys())
-            print('Pareto: ', pareto_front)
+            print('Pareto: ', pareto_front, 'has size: ', len(pareto_dict[pareto_front]))
             if len(selection_list) == 0:
             #Best adjacency of which is most similar to dir/split/ordder of user selction
                 adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score,x.aspect_base_score,  x.dims_score, -x.crowding_score), reverse=False)
