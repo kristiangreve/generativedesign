@@ -11,6 +11,7 @@ from sqlalchemy import func
 import time
 import numpy as numpy
 from random import gauss
+from operator import attrgetter
 
 class individual:
     def __init__(self, definition, room_def, split_list, dir_list, room_order, min_opening):
@@ -191,7 +192,7 @@ def reset_atributes(obj):
     obj.dominated_these = []
 
 def crowd_distance(obj1,comparison1,comparison2):
-    dist = abs(obj1-comparison1) + abs(obj1-comparison2):
+    dist = abs(obj1-comparison1) + abs(obj1-comparison2)
     return dist
 
 def crowding(population):
@@ -203,24 +204,26 @@ def crowding(population):
 
     for pareto_counter in pareto_dict.keys():
         for objective in cost_functions:
-            if len(pareto_front)>2: #If there's at least 3 solutions in the pareto front (calc. dist. to 2 nearest)
-                sorted_pareto = sorted(pareto_dict[pareto_counter], key=getattr(objective), reverse=False)
+            if len(pareto_dict[pareto_counter])>2: #If there's at least 3 solutions in the pareto front (calc. dist. to 2 nearest)
+                sorted_pareto = sorted(pareto_dict[pareto_counter], key=attrgetter(objective), reverse=False)
                 setattr(sorted_pareto[0], 'crowding_'+objective,100)
                 setattr(sorted_pareto[-1], 'crowding_'+objective,100)
                 max_crowd = 0
-                for index,individual in enumerate(sorted_pareto[1:-1]: #Sets the crowd distance of all objects (NOT normalized yet)
-                    crowd_dist = abs(individual-sorted_pareto[index-1]) + abs(individual-sorted_pareto[+1]):
+                for index,individual in enumerate(sorted_pareto[1:-2]): #Sets the crowd distance of all objects (NOT normalized yet)
+                    crowd_dist = abs(getattr(individual,objective)-getattr(sorted_pareto[index-1],objective)) + abs(getattr(individual,objective)-getattr(sorted_pareto[index+1],objective))
                     setattr(individual, 'crowding_'+objective,crowd_dist)
                     if crowd_dist > max_crowd: #In pareto 1 if all is adj 1, max_crowd will be = 0
                         max_crowd = crowd_dist
-                for individual in sorted_pareto[1:-1]: #normalize crowd
+                for individual in sorted_pareto[1:-2]: #normalize crowd
                     if max_crowd != 0:
-                        setattr(individual,'crowding_'+objective,crowd_dist, (getattr(individual,objective)/max_crowd))
+                        setattr(individual,'crowding_'+objective,(getattr(individual,objective)/max_crowd))
                     #setattr(individual, 'crowding_'+objective,crowd_distance(object,sorted_pareto[index-1],sorted_pareto[index+1]))
             else:
                 for individual in pareto_dict[pareto_counter]:
                     setattr(individual,'crowding_'+objective,100)
 
+    for individual in population:
+        individual.crowding_score = getattr(individual,cost_functions[0])+getattr(individual,cost_functions[1])
 
 
 
