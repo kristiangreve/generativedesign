@@ -109,12 +109,9 @@ def evaluate_pop(generation,user_input_obj, user_input_dict_list):
     max_aspect = [0,0,0]
     max_base_dist = [0,0,0]
     if len(user_input_obj)>0:
-        print('user input: ', user_input_obj)
         for n in range(len(user_input_obj)): #finds max score
             max_aspect[n] = max(individual.aspect_score[n] for individual in generation)
             max_base_dist[n] = max(individual.base_score[n] for individual in generation)
-        print('max aspect: ', max_aspect)
-        print('max base: ', max_base_dist)
         for individual in generation: #normalizes and weight input
             for index in range(len(user_input_obj)):
                 individual.aspect_score[index] = individual.aspect_score[index] / max_aspect[index] #normalize score
@@ -193,13 +190,52 @@ def reset_atributes(obj):
     obj.dominated_count = 0
     obj.dominated_these = []
 
+def crowd_distance(obj1,comparison1,comparison2):
+    dist = abs(obj1-comparison1) + abs(obj1-comparison2):
+    return dist
+
 def crowding(population):
     pareto_dict = defaultdict(list)
     for individual in population:
         pareto_dict[individual.pareto].append(individual)
         reset_atributes(individual)
+    cost_functions = ['adjacency_score', 'aspect_ratio_score']
+
+    for pareto_counter in pareto_dict.keys():
+        for objective in cost_functions:
+            if len(pareto_front)>2: #If there's at least 3 solutions in the pareto front (calc. dist. to 2 nearest)
+                sorted_pareto = sorted(pareto_dict[pareto_counter], key=getattr(objective), reverse=False)
+                setattr(sorted_pareto[0], 'crowding_'+objective,100)
+                setattr(sorted_pareto[-1], 'crowding_'+objective,100)
+                max_crowd = 0
+                for index,individual in enumerate(sorted_pareto[1:-1]: #Sets the crowd distance of all objects (NOT normalized yet)
+                    crowd_dist = abs(individual-sorted_pareto[index-1]) + abs(individual-sorted_pareto[+1]):
+                    setattr(individual, 'crowding_'+objective,crowd_dist)
+                    if crowd_dist > max_crowd: #In pareto 1 if all is adj 1, max_crowd will be = 0
+                        max_crowd = crowd_dist
+                for individual in sorted_pareto[1:-1]: #normalize crowd
+                    if max_crowd != 0:
+                        setattr(individual,'crowding_'+objective,crowd_dist, (getattr(individual,objective)/max_crowd))
+                    #setattr(individual, 'crowding_'+objective,crowd_distance(object,sorted_pareto[index-1],sorted_pareto[index+1]))
+            else:
+                for individual in pareto_dict[pareto_counter]:
+                    setattr(individual,'crowding_'+objective,100)
+
+
+
+
+def crowding_old(population):
+    pareto_dict = defaultdict(list)
+    for individual in population:
+        pareto_dict[individual.pareto].append(individual)
+        reset_atributes(individual)
     for pareto_front in pareto_dict.values():
-        #if pareto_front[0].pareto == 1:
+        if pareto_front[0].pareto == 1:
+            best_adj = 100
+            for obj in pareto_front:
+                if obj.adjacency_score < best_adj:
+                    best_adj = obj.adjacency_score
+            print('Best adj: ', best_adj)
         #    print('# of obj in pareto 1: ', len(pareto_front))
 
         max_dir_hamming = 0
@@ -339,10 +375,12 @@ def selection(pop_size, population):
             for obj in pareto_dict[pareto_counter]:
                 new_gen.append(obj)
         else:
-            sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: (x.aspect_base_score, -x.crowding_score), reverse=False)
+            print('Pareto ', pareto_counter , ' cut. Total len: ', len(pareto_dict[pareto_counter]))
+            sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: (-x.crowding_score), reverse=False)
             for obj in sorted_pareto:
                 if len(new_gen) < pop_size:
                     new_gen.append(obj)
+            break
     return new_gen
 
 def mutate(population, mutation_rate):
@@ -527,18 +565,18 @@ def select_objects_for_render(population,selections):
     pareto_dict = defaultdict(list)
     adj_counter = 0
 
-    for individual in population:
+    for individual in population: #Only add objects that are NOT similar to the previously selected
         if individual.plan_id not in [ind.plan_id for sublist in selections for ind in sublist]:
             pareto_dict[individual.pareto].append(individual)
             if individual.adjacency_score == 0:
                 adj_counter += 1
 
+    print('Pareto dict: ', pareto_dict.keys())
     print('# of adj 0:', adj_counter)
+
     selection_list = []
     while len(selection_list)<3:
         for pareto_front in sorted(pareto_dict.keys()):
-            print('Pareto keys: ', pareto_dict.keys())
-            print('Pareto: ', pareto_front, 'has size: ', len(pareto_dict[pareto_front]))
             if len(selection_list) == 0:
             #Best adjacency of which is most similar to dir/split/ordder of user selction
                 adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score,x.aspect_base_score,  x.dims_score, -x.crowding_score), reverse=False)
