@@ -1,0 +1,19 @@
+# pseudo code for floor plan
+
+
+room_list = [lobby, meeting_room, office_1, office_2]
+
+locked_room = [kitchen, bathroom]
+
+random individual:
+
+
+# making phenotype from genotype
+
+
+boundary_box = [(0,100),(0,100)]
+windows = [(0,0),]
+
+# element is coordinates ((0,20),(0,20))
+for element in plan_grid:
+    if element

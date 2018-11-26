@@ -34,7 +34,7 @@ def generate_first_floorplans():
     user_selections = []
     # generate first generation and return
     pop_size = 50
-    generations = 100
+    generations = 10
     print("user selections: ",user_selections)
     Pt = initial_generate(user_selections, pop_size, generations)
     print("first floorplans rendered")
@@ -42,7 +42,7 @@ def generate_first_floorplans():
 
 @app.route('/generate_new_floorplans/', methods = ['GET', 'POST'])
 def generate_new_floorplans():
-    generations = 50
+    generations = 10
     selected_rooms = json.loads(request.form['selected_rooms'])
     print("rooms selected: ",selected_rooms)
 

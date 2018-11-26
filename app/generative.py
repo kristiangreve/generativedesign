@@ -322,7 +322,7 @@ def breeding(population, id, mutation_rate):
             child2.plan_id = id
             children.append(child1)
             children.append(child2)
-    print(similar_counter , ' similar kids bred!')
+    #print(similar_counter , ' similar kids bred!')
     return children, id
 
 def selection(pop_size, population):

@@ -3,55 +3,57 @@
 
 {% block app_content %}
 
-<style type="text/css">
+<style>
+canvas {
+  background-color: white;
+  width: 100%;
+  height: auto;
+}
 </style>
-
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-md-6">
-			<div class="card">
-				<canvas class="floorcanvas" id="canvas_1" height = 400 ></canvas>
-				<div class="card-body">
-				</div>
-			</div>
-		</div>
-		<div class="col-md-6">
-			<div class="card">
-				<canvas class="floorcanvas" id="canvas_2" height = 400></canvas>
-				<div class="card-body">
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-6">
-			<div class="card">
-				<canvas class="floorcanvas" id="canvas_3" height = 400></canvas>
-				<div class="card-body">
-				</div>
-			</div>
-		</div>
-		<div class="col-md-6">
-			<div class="card">
-				<canvas class="floorcanvas" id="canvas_4" height = 400></canvas>
-				<div class="card-body">
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
 
 <button id = "confirm_button" type="button" class="btn btn-primary">Confirm</button>
 
-<div class="container">
-	<div class="col-md-6" style="display: none;">
-		<div class="card">
-			<canvas id="canvas_plot" height = 400></canvas>
-			<div class="card-body">
+	<div class="row">
+		<div class="col-md-7">
+			<div class="card">
+				<div class="card-body">
+					<canvas class="floor_canvas" id="canvas_1" width="300" height="100"></canvas>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-5">
+			<div class="card">
+				<div class="card-body">
+					<canvas class="selection_canvas" id="selection_canvas" width="300" height="100"></canvas>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
+	<div class="row">
+		<br />
+	</div>
+	<div class="row">
+		<div class="col-md-7">
+			<div class="card">
+				<div class="card-body">
+					<canvas class="floor_canvas" id="canvas_2" width="300" height="100"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+	<div class="col-md-8" style="display: none;">
+		<div class="card">
+			<div class="card-body">
+				<canvas id="canvas_plot"></canvas>
+			</div>
+		</div>
+	</div>
 
 <script type="text/paperscript" canvas='canvas_plot' src = "{{ url_for('static', filename='js/floor_plan.js') }}"></script>
+
+
 {% endblock %}
