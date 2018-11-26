@@ -134,14 +134,14 @@ def dominance(population,selections):
             if len(selections)>0:
                 #Adjacency score: #of broken adjecencies , the lower the better
                 if (population[i].adjacency_score <= population[j].adjacency_score)\
-                and (population[i].aspect_ratio_score < population[j].aspect_ratio_score):
-                #and (population[i].aspect_base_score < population[j].aspect_base_score):
+                and (population[i].aspect_ratio_score < population[j].aspect_ratio_score)\
+                and (population[i].aspect_base_score < population[j].aspect_base_score):
                 #and (population[i].dims_score < population[j].dims_score):
                     population[i].dominates_these.append(population[j])
                     population[j].dominated_count += 1
                 elif (population[i].adjacency_score >= population[j].adjacency_score)\
-                and (population[i].aspect_ratio_score > population[j].aspect_ratio_score):
-                #and (population[i].aspect_base_score > population[j].aspect_base_score):
+                and (population[i].aspect_ratio_score > population[j].aspect_ratio_score)\
+                and (population[i].aspect_base_score > population[j].aspect_base_score):
                 #and (population[i].dims_score > population[j].dims_score):
                     population[j].dominates_these.append(population[i])
                     population[i].dominated_count += 1
@@ -360,10 +360,21 @@ def mutate(population, mutation_rate):
                     random_gene2 = random.randint(0,len(population[index].room_order)-1)
                 population[index].room_order[random_gene], population[index].room_order[random_gene2] = population[index].room_order[random_gene2], population[index].room_order[random_gene]
             elif atribute == 'dir_list':
-                random_gene = random.randint(0,len(population[index].dir_list)-1)
+                my_mean = 0
+                my_variance = len(population[index].dir_list)-1
+                random_gene = int(round(abs(gauss(my_mean, math.sqrt(my_variance)))))
+                while random_gene > (len(population[index].dir_list)-1):
+                    random_gene = int(round(abs(gauss(my_mean, math.sqrt(my_variance)))))
+
+                #random_gene = random.randint(0,len(population[index].dir_list)-1)
                 population[index].dir_list[random_gene] = random.randint(0,1)
             elif atribute == 'split_list':
-                random_gene = random.randint(0,len(population[index].split_list)-1)
+                my_mean = 0
+                my_variance = len(population[index].split_list)-1
+                random_gene = int(round(abs(gauss(my_mean, math.sqrt(my_variance)))))
+                while random_gene > (len(population[index].split_list)-1):
+                    random_gene = int(round(abs(gauss(my_mean, math.sqrt(my_variance)))))
+                #random_gene = random.randint(0,len(population[index].split_list)-1)
                 population[index].split_list[random_gene] = random.random()
 
 # crates a new population and iterates a couple of times
