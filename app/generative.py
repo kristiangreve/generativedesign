@@ -60,10 +60,11 @@ class individual:
 
     def evaluate_aspect_ratio(self):
         aspect_score = 0
-        ideal_aspect = {'Dining': 1, 'Kitchen':1, 'M_bedroom':1, 'Living':1, 'Bedroom_1':1, 'Bedroom_2':1}
+        #ideal_aspect = {'Dining': 1, 'Kitchen':1, 'M_bedroom':1, 'Living':1, 'Bedroom_1':1, 'Bedroom_2':1}
         for room in self.aspect_base.keys():
-            if room != 'Hall':
-             aspect_score += abs(self.aspect_base[room][0]-1)
+            if self.aspect_base[room][0] < 0.5: #Only penalty on rooms w. aspect of more than 2 (ratio format = min size / max size)
+                if room != 'Hall'
+                    aspect_score += abs(0.5-2*(self.aspect_base[room][0]*self.aspect_base[room][0])) #squared aspect to punish outliers more, score from 0-0.5 pr. room.
         #for room in ideal_aspect.keys():
         #    aspect_score += abs(self.aspect_base[room][0]-ideal_aspect[room])
         self.aspect_ratio_score = aspect_score
@@ -492,7 +493,7 @@ def generate(user_selections_obj,user_selections_rooms,generations):
     dominance(Pt,user_selections_obj)
     pareto_score(Pt)
     crowding(Pt)
-    mutation_ratio = 0.05
+    mutation_ratio = 0.2
     for n in range(generations):
         print('Generation: ', current_generation+n)
         Qt, id = breeding(Pt,id, mutation_ratio)

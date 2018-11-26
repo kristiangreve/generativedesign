@@ -445,7 +445,7 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
             if dim < min_dimension:
                 dims_score += 1
 
-    #Dictionary mapping every room with its aspect ratio and
+    #Dictionary mapping every room with its aspect ratio and base
     aspect_room_dict = {}
     for index, face in enumerate(layout.faces[1:]):
         aspect_room_dict[room_names[index]] = [face.get_aspect(),face.get_base_point()]
