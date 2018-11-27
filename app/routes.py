@@ -31,7 +31,10 @@ def floor_plan():
 # AJAX functions
 @app.route('/generate_first_floorplans/', methods = ['POST'])
 def generate_first_floorplans():
+    global user_selections #If not declared global it doesnt edit the global list but simply creates a local new list with same name
+    global user_selections_obj
     user_selections = []
+    user_selections_obj = []
     # generate first generation and return
     pop_size = 50
     generations = 10

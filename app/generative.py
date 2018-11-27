@@ -1,4 +1,5 @@
 import random, math, json
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from collections import defaultdict
@@ -11,6 +12,7 @@ from sqlalchemy import func
 import time
 import numpy as numpy
 from random import gauss
+from operator import attrgetter
 
 class individual:
     def __init__(self, definition, room_def, split_list, dir_list, room_order, min_opening):
@@ -42,6 +44,8 @@ class individual:
         self.crowding_dir = None
         self.crowding_room = None
         self.crowding_split = None
+        individual.crowding_adjacency_score = None
+        individual.crowding_aspect_ratio_score = None
         self.crowding_score = []
 
         self.edges_out = []
@@ -56,13 +60,15 @@ class individual:
         return room_list
 
     def evaluate_aspect_ratio(self):
-        aspect_score = 0
-        ideal_aspect = {'Dining': 1, 'Kitchen':1, 'M_bedroom':1, 'Living':1, 'Bedroom_1':1, 'Bedroom_2':1}
+        aspect_ratio_score = 0
+        #ideal_aspect = {'Dining': 1, 'Kitchen':1, 'M_bedroom':1, 'Living':1, 'Bedroom_1':1, 'Bedroom_2':1}
         for room in self.aspect_base.keys():
-             aspect_score += abs(self.aspect_base[room][0]-1)
+            if self.aspect_base[room][0] < 0.5: #Only penalize rooms w. aspect of more than 2 (ratio format = min size / max size)
+                if room != 'Hall':
+                    aspect_ratio_score += abs(0.5-2*(self.aspect_base[room][0]*self.aspect_base[room][0])) #squared aspect to punish outliers more, score from 0-0.5 pr. room.
         #for room in ideal_aspect.keys():
         #    aspect_score += abs(self.aspect_base[room][0]-ideal_aspect[room])
-        self.aspect_ratio_score = aspect_score
+        self.aspect_ratio_score = aspect_ratio_score
 
     def evaluate_user_input(self, user_input_dict_list):
         aspect_score = [0]*len(user_input_dict_list)
@@ -70,9 +76,9 @@ class individual:
         for feedback_index, user_dict in enumerate(user_input_dict_list):
             for room_name,value_list in user_dict.items():
                 for index,value_pair in enumerate(value_list): #There might be several value pairs for 1 room eg if 2 "living room" is selected in same feedback loop
-                    aspect_score[feedback_index] += abs(self.aspect_base[room_name][0]-user_dict[room_name][index][0])
+                    #aspect_score[feedback_index] += abs(self.aspect_base[room_name][0]-user_dict[room_name][index][0])
                     base_score[feedback_index] += abs(numpy.linalg.norm(self.aspect_base[room_name][1])-numpy.linalg.norm(user_dict[room_name][index][1]))
-        self.aspect_score = aspect_score
+        #self.aspect_score = aspect_score
         self.base_score = base_score
 
 
@@ -108,22 +114,20 @@ def evaluate_pop(generation,user_input_obj, user_input_dict_list):
 
     max_aspect = [0,0,0]
     max_base_dist = [0,0,0]
-    if len(user_input_obj)>0:
-        print('user input: ', user_input_obj)
+    if len(user_input_obj)>0:  #normalizes and weight input
         for n in range(len(user_input_obj)): #finds max score
-            max_aspect[n] = max(individual.aspect_score[n] for individual in generation)
+            #max_aspect[n] = max(individual.aspect_score[n] for individual in generation)
             max_base_dist[n] = max(individual.base_score[n] for individual in generation)
-        print('max aspect: ', max_aspect)
-        print('max base: ', max_base_dist)
-        for individual in generation: #normalizes and weight input
+        for individual in generation:
             for index in range(len(user_input_obj)):
-                individual.aspect_score[index] = individual.aspect_score[index] / max_aspect[index] #normalize score
-                individual.aspect_score[index] = individual.aspect_score[index] / len(user_input_obj)*(index+1) #Makes previous feedback loops less weighted
+                #individual.aspect_score[index] = individual.aspect_score[index] / max_aspect[index] #normalize score
+                #individual.aspect_score[index] = individual.aspect_score[index] / len(user_input_obj)*(index+1) #Makes previous feedback loops less weighted
 
                 individual.base_score[index] = individual.base_score[index] / max_base_dist[index]
                 individual.base_score[index] = individual.base_score[index] / len(user_input_obj)*(index+1) #Makes previous feedback loops less weighted
 
-            individual.aspect_base_score = sum(individual.base_score) + sum(individual.aspect_score)
+            #individual.aspect_base_score = sum(individual.base_score) + sum(individual.aspect_score)
+            individual.aspect_base_score = sum(individual.base_score) #Ignore aspect score
 
 
 def dominance(population,selections):
@@ -133,14 +137,14 @@ def dominance(population,selections):
             if len(selections)>0:
                 #Adjacency score: #of broken adjecencies , the lower the better
                 if (population[i].adjacency_score <= population[j].adjacency_score)\
-                and (population[i].aspect_ratio_score < population[j].aspect_ratio_score):
-                #and (population[i].aspect_base_score < population[j].aspect_base_score):
+                and (population[i].aspect_ratio_score < population[j].aspect_ratio_score)\
+                and (population[i].aspect_base_score < population[j].aspect_base_score):
                 #and (population[i].dims_score < population[j].dims_score):
                     population[i].dominates_these.append(population[j])
                     population[j].dominated_count += 1
                 elif (population[i].adjacency_score >= population[j].adjacency_score)\
-                and (population[i].aspect_ratio_score > population[j].aspect_ratio_score):
-                #and (population[i].aspect_base_score > population[j].aspect_base_score):
+                and (population[i].aspect_ratio_score > population[j].aspect_ratio_score)\
+                and (population[i].aspect_base_score > population[j].aspect_base_score):
                 #and (population[i].dims_score > population[j].dims_score):
                     population[j].dominates_these.append(population[i])
                     population[i].dominated_count += 1
@@ -193,60 +197,63 @@ def reset_atributes(obj):
     obj.dominated_count = 0
     obj.dominated_these = []
 
+def crowd_distance(obj1,comparison1,comparison2):
+    dist = abs(obj1-comparison1) + abs(obj1-comparison2)
+    return dist
+
+
+
 def crowding(population):
     pareto_dict = defaultdict(list)
     for individual in population:
         pareto_dict[individual.pareto].append(individual)
         reset_atributes(individual)
-    for pareto_front in pareto_dict.values():
-        #if pareto_front[0].pareto == 1:
-        #    print('# of obj in pareto 1: ', len(pareto_front))
 
-        max_dir_hamming = 0
-        max_room_hamming = 0
-        max_split_num = 0
-        if len(pareto_front)>2: #If there's at least 3 solutions in the pareto front (calc. dist. to 2 nearest)
-            for individual in pareto_front:
-                hamming_dir_list = [] #creates a hamming list unique to each individual
-                hamming_room_list = [] #creates a hamming list unique to each individual
-                num_split_list = [] #creates a hamming list unique to each individual
-                for comparison in pareto_front:
-                    if individual != comparison:
-                        hamming_dir_list.append(hamming_distance(individual.dir_list,comparison.dir_list)) #calculates hamming distance between two solutions
-                        hamming_room_list.append(hamming_distance(individual.room_order,comparison.room_order))
-                        num_split_list.append(num_difference_score(individual.split_list,comparison.split_list))
-                        if hamming_dir_list[-1] > max_dir_hamming:
-                            max_dir_hamming = hamming_dir_list[-1]
-                        if hamming_room_list[-1] > max_room_hamming:
-                            max_room_hamming = hamming_room_list[-1]
-                        if num_split_list[-1] > max_split_num:
-                            max_split_num = num_split_list[-1]
-                hamming_dir_list = sorted(hamming_dir_list)
-                hamming_room_list = sorted(hamming_room_list)
-                num_split_list = sorted(num_split_list)
-                individual.crowding_dir = (hamming_dir_list[0]+hamming_dir_list[1]) / 2 #takes 2 closest objects
-                individual.crowding_room = (hamming_room_list[0]+hamming_room_list[1]) / 2
-                individual.crowding_split =  (num_split_list[0]+num_split_list[1]) / 2
+    for pareto_counter in pareto_dict.keys():
+        if len(pareto_dict[pareto_counter])>2: #If there's at least 3 solutions in the pareto front (calc. dist. to 2 nearest)
+
+            #Calculate adjacency crowd score based on how many individuasl each adjacency bucket contains relative to the others in the same pareto
+            pareto_adj_dict = defaultdict(list)
+            for individual in pareto_dict[pareto_counter]:
+                pareto_adj_dict[individual.adjacency_score].append(individual)
+            for obj_adj_list in pareto_adj_dict.values():
+                for individual in obj_adj_list:
+                    individual.crowding_adjacency_score = 1-len(obj_adj_list)/len(pareto_dict[pareto_counter])
+
+
+            sorted_pareto_ratio = sorted(pareto_dict[pareto_counter], key=lambda x: x.aspect_ratio_score, reverse=False)
+
+            sorted_pareto_ratio[0].crowding_aspect_ratio_score = 1
+            sorted_pareto_ratio[-1].crowding_aspect_ratio_score = 1
+
+            max_crowd_ratio = 0
+
+            for index,individual in enumerate(sorted_pareto_ratio[1:-1]): #Sets the crowd distance of all objects (NOT normalized yet)
+                crowd_ratio_dist = abs(individual.aspect_ratio_score-sorted_pareto_ratio[index-1].aspect_ratio_score) + abs(individual.aspect_ratio_score-sorted_pareto_ratio[index+1].aspect_ratio_score)
+                individual.crowding_aspect_ratio_score = crowd_ratio_dist
+                if crowd_ratio_dist > max_crowd_ratio: #In pareto 1 if all is adj 1, max_crowd will be = 0
+                    max_crowd_ratio = crowd_ratio_dist
+            for individual in sorted_pareto_ratio[1:-1]: #normalize crowd
+                if max_crowd_ratio != 0:
+                    individual.crowding_aspect_ratio_score = individual.crowding_aspect_ratio_score / max_crowd_ratio
         else:
-            for individual in pareto_front:
-                individual.crowding_score = 3
+            for individual in pareto_dict[pareto_counter]:
+                individual.crowding_adjacency_score = 1
+                individual.crowding_aspect_ratio_score = 1
 
-        #normalizes the scores
-        if len(pareto_front)>2:
-            for individual in pareto_front:
-                if max_dir_hamming != 0:
-                    individual.crowding_dir =  individual.crowding_dir / max_dir_hamming
-                if max_room_hamming != 0:
-                    individual.crowding_room =  individual.crowding_room / max_room_hamming
-                if max_split_num != 0:
-                    individual.crowding_split =  individual.crowding_split / max_split_num
-                individual.crowding_score = individual.crowding_dir+individual.crowding_room +individual.crowding_split
+
+    for individual in population:
+        individual.crowding_score = individual.crowding_adjacency_score + individual.crowding_aspect_ratio_score
+
 
 def comparison(obj1,obj2): # Compares 2 individuals on pareto front, followed by crowding
     if obj1.pareto == obj2.pareto: #if equal rank, look at distance
         #if obj1.crowding_score>obj2.crowding_score:
-
-        if obj1.aspect_base_score < obj2.aspect_base_score: #Select object in pareto most simlar to user selection
+        if obj1.dims_score < obj2.dims_score: #Criteria1: Dims score
+            return obj1
+        elif obj2.dims_score > obj2.dims_score:
+            return obj2
+        elif obj1.aspect_base_score < obj2.aspect_base_score: #Select object in pareto most simlar to user selection
             return obj1
         elif obj1.aspect_base_score > obj2.aspect_base_score:
             return obj2
@@ -327,22 +334,22 @@ def breeding(population, id, mutation_rate):
 
 def selection(pop_size, population):
     pareto_dict = defaultdict(list) #creates a dict for all pop and arranges according to pareto front
-    worst_pareto = population[0].pareto
+
     for i in population:
         pareto_dict[i.pareto].append(i)
-        if i.pareto > worst_pareto:
-            worst_pareto = i.pareto
 
     new_gen = []
-    for pareto_counter in range(1,worst_pareto+1):
+    for pareto_counter in range(1,len(pareto_dict)-1):
         if (len(new_gen)+len(pareto_dict[pareto_counter])) < pop_size:
             for obj in pareto_dict[pareto_counter]:
                 new_gen.append(obj)
         else:
-            sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: x.crowding_score, reverse=True)
+            print('Pareto ', pareto_counter , ' cut. Total len: ', len(pareto_dict[pareto_counter]))
+            sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: (-x.crowding_score), reverse=False)
             for obj in sorted_pareto:
                 if len(new_gen) < pop_size:
                     new_gen.append(obj)
+            break
     return new_gen
 
 def mutate(population, mutation_rate):
@@ -359,10 +366,21 @@ def mutate(population, mutation_rate):
                     random_gene2 = random.randint(0,len(population[index].room_order)-1)
                 population[index].room_order[random_gene], population[index].room_order[random_gene2] = population[index].room_order[random_gene2], population[index].room_order[random_gene]
             elif atribute == 'dir_list':
-                random_gene = random.randint(0,len(population[index].dir_list)-1)
+                my_mean = 0
+                my_variance = len(population[index].dir_list)-1
+                random_gene = int(round(abs(gauss(my_mean, math.sqrt(my_variance)))))
+                while random_gene > (len(population[index].dir_list)-1):
+                    random_gene = int(round(abs(gauss(my_mean, math.sqrt(my_variance)))))
+
+                #random_gene = random.randint(0,len(population[index].dir_list)-1)
                 population[index].dir_list[random_gene] = random.randint(0,1)
             elif atribute == 'split_list':
-                random_gene = random.randint(0,len(population[index].split_list)-1)
+                my_mean = 0
+                my_variance = len(population[index].split_list)-1
+                random_gene = int(round(abs(gauss(my_mean, math.sqrt(my_variance)))))
+                while random_gene > (len(population[index].split_list)-1):
+                    random_gene = int(round(abs(gauss(my_mean, math.sqrt(my_variance)))))
+                #random_gene = random.randint(0,len(population[index].split_list)-1)
                 population[index].split_list[random_gene] = random.random()
 
 # crates a new population and iterates a couple of times
@@ -423,11 +441,10 @@ def initial_generate(selections,pop_size,generations):
     crowding(Pt)
     mutation_ratio = 0.05
     plt.figure()
-    x=[]
-    y=[]
+    x1,x_b = [],[]
+    y1,y2,y_b1,y_b2,y_b3= [],[],[],[],[]
     gen_list=[]
     for n in range(generations):
-
         print('Generation: ', n)
         # add current max id to inputs
         Qt,id = breeding(Pt, id, mutation_ratio)
@@ -438,12 +455,108 @@ def initial_generate(selections,pop_size,generations):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
-        #x,y,gen_list = prepare_plot(Pt,n,x,y,gen_list)
+        x1,y1,y2 = prepare_plot(Pt,n,x1,y1,y2)
+        x_b,y_b1,y_b2,y_b3 = prepare_plot_best_of(Pt,n,x_b,y_b1,y_b2,y_b3)
     save_population_to_database(Pt,generations)
-    #show_plot()
+    stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation: '+str(mutation_ratio)
+    stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
+    show_plot(x1,y1,y2, stringlabel,stringshort)
+    plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort)
     return Pt
 
-def prepare_plot(population, generation,x,y,gen_list):
+def prepare_plot(population, generation,x,y1,y2):
+    for obj in population:
+        x.append(generation)
+        y1.append(obj.adjacency_score)
+        y2.append(obj.aspect_ratio_score)
+    return x,y1,y2
+
+def plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort):
+    plt.figure(figsize=(30,15), dpi=80)
+    y_plots = [y_b1,y_b2,y_b3]
+    labels = ['#Broken adjacencies','Aspect ratio deviation','#Broken min. dimensions']
+    colors = ['red','blue','green']
+    #plt.plot(x_b, y_b1,'b', x_b, y_b2,'g',  x_b, y_b3, 'r')
+    for y_val, label,color in zip(y_plots, labels,colors):
+         plt.plot(x_b, y_val, label=label, color=color)
+    plt.legend(fontsize=20)
+    plt.ylim(0, 10)
+    plt.yticks(range(10))
+    plt.xlabel('Generation. ('+stringlabel+')',fontsize=15)
+
+    filename = 'photos/BestOf_'+stringshort
+    i = 0
+    while os.path.exists('{}{:d}.png'.format(filename, i)):
+        i += 1
+    plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
+
+
+def prepare_plot_best_of(population, n,x_b,y_b1,y_b2,y_b3):
+    best_adj = population[0].adjacency_score
+    best_aspect = population[0].aspect_ratio_score
+    best_dims = population[0].dims_score
+    for obj in population:
+        if obj.adjacency_score < best_adj:
+            best_adj = obj.adjacency_score
+        if obj.aspect_ratio_score < best_aspect:
+            best_aspect = obj.aspect_ratio_score
+        if obj.dims_score < best_dims:
+            best_dims = obj.dims_score
+    y_b1.append(best_adj)
+    y_b2.append(best_aspect)
+    y_b3.append(best_dims)
+    x_b.append(n)
+    return x_b,y_b1,y_b2,y_b3
+
+
+def show_plot(x,y1,y2, stringlabel,stringshort):
+    plt.figure(figsize=(30,15), dpi=80)
+    plt.scatter(x,y1, label = 'Adjacency Score', color='red')
+    plt.legend(fontsize=20)
+    plt.yticks(range(20))
+    plt.ylim(0, 20)
+    plt.xlabel('Generation. ('+stringlabel+')',fontsize=15)
+    plt.ylabel('Adjacency score',fontsize=15)
+
+    filename = 'photos/Adjacency_'+stringshort
+    print(filename)
+    i = 0
+    while os.path.exists('{}{:d}.png'.format(filename, i)):
+        i += 1
+    plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
+    #plt.savefig('adjacency.png', bbox_inches='tight')
+    plt.gcf().clear()
+
+    #plt.show()
+    plt.figure(figsize=(30,15),dpi=80)
+    plt.scatter(x,y2, label = 'Aspect ratio Score', color='blue')
+    plt.legend(fontsize=20)
+    plt.ylim(0, 10)
+    plt.ylabel('Aspect ratio score', fontsize=15)
+    plt.xlabel('Generation. ('+stringlabel+')',fontsize=15)
+    #plt.savefig('aspect.png', bbox_inches='tight')
+
+    filename = 'photos/Aspect_'+stringshort
+    plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
+
+    plt.gcf().clear()
+    #plt.show()
+
+def show_2yaxis(x,y1,y2, stringlabel):
+    fig,ax1 = plt.subplots()
+    ax2 = ax1.twinx()
+    ax1.scatter(x,y1, label = 'Adjacency Score', color='red')
+    ax2.scatter(x,y2, label = 'Aspect ratio Score', color='blue')
+    plt.legend()
+    #plt.yticks(range(20))
+    #plt.ylim(0, 20)
+    ax1.set_xlabel('Generation. ('+stringlabel+')')
+    ax1.set_ylabel('Adjacency score')
+    ax2.set_ylabel('Aspect ratio score')
+    plt.show()
+
+
+def prepare_plot_scatter(population, generation,x,y,gen_list):
     for obj in population:
         x.append(obj.adjacency_score)
         y.append(obj.aspect_ratio_score)
@@ -455,7 +568,7 @@ def prepare_plot(population, generation,x,y,gen_list):
         gen_list=[]
     return x,y,gen_list
 
-def show_plot():
+def show_plot_scatter():
     plt.legend()
     plt.xticks(range(10))
     plt.xlim(0, 10)
@@ -481,6 +594,10 @@ def generate(user_selections_obj,user_selections_rooms,generations):
     pareto_score(Pt)
     crowding(Pt)
     mutation_ratio = 0.05
+    plt.figure()
+    x=[]
+    y=[]
+    gen_list=[]
     for n in range(generations):
         print('Generation: ', current_generation+n)
         Qt, id = breeding(Pt,id, mutation_ratio)
@@ -491,7 +608,9 @@ def generate(user_selections_obj,user_selections_rooms,generations):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
+        #x,y,gen_list = prepare_plot(Pt,n,x,y,gen_list)
     #select_objects_for_render(Pt,selections)
+    #show_plot()
     save_population_to_database(Pt,generations+current_generation)
     print("Run a total of ", (generations+current_generation), ' generations')
     return Pt
@@ -527,26 +646,26 @@ def select_objects_for_render(population,selections):
     pareto_dict = defaultdict(list)
     adj_counter = 0
 
-    for individual in population:
+    for individual in population: #Only add objects that are NOT similar to the previously selected
         if individual.plan_id not in [ind.plan_id for sublist in selections for ind in sublist]:
             pareto_dict[individual.pareto].append(individual)
             if individual.adjacency_score == 0:
                 adj_counter += 1
 
+    print('Pareto dict: ', pareto_dict.keys())
     print('# of adj 0:', adj_counter)
+
     selection_list = []
     while len(selection_list)<3:
         for pareto_front in sorted(pareto_dict.keys()):
-            print('Pareto keys: ', pareto_dict.keys())
-            print('Pareto: ', pareto_front)
             if len(selection_list) == 0:
             #Best adjacency of which is most similar to dir/split/ordder of user selction
-                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score,x.aspect_base_score,  x.dims_score, -x.crowding_score), reverse=False)
+                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score,x.aspect_base_score, x.aspect_ratio_score, x.dims_score, -x.crowding_score), reverse=False)
                 selection_list.append(adjacency_sorted[0])
 
             if len(selection_list)==1:
                 #Most similar dir/split/room_order
-                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score,x.aspect_ratio_score, x.aspect_base_score, -x.crowding_score), reverse=False)
+                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_base_score, x.aspect_ratio_score, x.dims_score, x.adjacency_score, -x.crowding_score), reverse=False)
                 for obj in interactive_sorted:
                     if len(selection_list)==1:
                         if obj not in selection_list:
@@ -554,7 +673,7 @@ def select_objects_for_render(population,selections):
 
             if len(selection_list)==2:
                 #most similar aspect score
-                aspect_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_base_score,x.adjacency_score, -x.crowding_score), reverse=False)
+                aspect_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_ratio_score, x.aspect_base_score, -x.crowding_score,x.dims_score), reverse=False)
                 for obj in aspect_sorted:
                     if len(selection_list) == 2:
                         if obj not in selection_list:
@@ -562,7 +681,7 @@ def select_objects_for_render(population,selections):
 
             if len(selection_list)==3:
                 #Most different (crowding) to neighbors
-                crowding_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_ratio_score,-x.crowding_score, x.adjacency_score, x.aspect_base_score,x.dims_score), reverse=False)
+                crowding_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (-x.crowding_score, x.dims_score, x.aspect_ratio_score, x.aspect_base_score), reverse=False)
                 for obj in crowding_sorted:
                     if len(selection_list) == 3:
                         if obj not in selection_list:
@@ -590,7 +709,7 @@ def select_objects_for_render(population,selections):
             obj.base_score[i] = round(elemt,3)
 
 
-        print('Adj: ', obj.adjacency_score, 'user: ', round(obj.aspect_base_score,2),'user_aspect: ', obj.aspect_score, 'user_base: ', obj.base_score, 'aspect: ', round(obj.aspect_ratio_score,2), ' dims: ', obj.dims_score, 'Crowd: ', round(obj.crowding_score,2))
+        print('Adj: ', obj.adjacency_score, 'user: ', round(obj.aspect_base_score,2),'user_aspect: ', obj.aspect_score, 'user_base: ', obj.base_score, 'aspect: ', round(obj.aspect_ratio_score,2), ' dims: ', obj.dims_score, 'Crowd: ', round(obj.crowding_score,2), 'CrowdAdj: ', round(obj.crowding_adjacency_score,2), 'CrowdRatio: ', round(obj.crowding_aspect_ratio_score,2))
     return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2]),object_to_visuals(selection_list[3])]
     #selection_list = [object_to_visuals(x) for x in selection_list]
     #return selection_list

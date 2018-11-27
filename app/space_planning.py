@@ -438,14 +438,14 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
 
     # Checks whether the  minimum dimensions of any room is lower than the minimum legal width
     # If any dimension is smaller than allowed, add one to the dims (dimensions) score. Lower score = better
-    min_dimension = 3 #min room dimension
+    min_dimension = 2 #min room dimension
     dims_score = 0
     for dim_xy in dims:
         for dim in dim_xy:
             if dim < min_dimension:
                 dims_score += 1
 
-    #Dictionary mapping every room with its aspect ratio and
+    #Dictionary mapping every room with its aspect ratio and base
     aspect_room_dict = {}
     for index, face in enumerate(layout.faces[1:]):
         aspect_room_dict[room_names[index]] = [face.get_aspect(),face.get_base_point()]
