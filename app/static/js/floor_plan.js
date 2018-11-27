@@ -1,4 +1,5 @@
 $(document).ready(generate_first_floorplans);
+
 var mypapers = [];
 var selected_rooms = [];
 var current_adjacency_department = [];
