@@ -1,12 +1,4 @@
-2018-11-27 11:14:14,919 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:20:08,097 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:27:36,168 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:30:58,109 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:36:22,463 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:38:22,917 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:39:28,872 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:42:39,207 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:42:47,249 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+2018-11-27 15:48:40,121 ERROR: Exception on /index [GET] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -20,26 +12,20 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 42, in generate_first_floorplans
-    Pt = initial_generate(user_selections, pop_size, generations)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask_login\utils.py", line 261, in decorated_view
+    return func(*args, **kwargs)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 146, in index
+    performance_test_start()
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 74, in performance_test_start
+    plt1_temp,plt2_temp = performance_test(pop,gen,mut)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 58, in performance_test
+    Pt,plt1,plt2 = initial_generate(user_selections, pop_size, generations, mutation_rate)
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 459, in initial_generate
-    show_plot(x,y1,y2, stringlabel)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 486, in show_plot
-    plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\matplotlib\pyplot.py", line 697, in savefig
-    res = fig.savefig(*args, **kwargs)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\matplotlib\figure.py", line 1814, in savefig
-    self.canvas.print_figure(fname, **kwargs)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\matplotlib\backends\backend_qt5agg.py", line 172, in print_figure
-    super(FigureCanvasQTAggBase, self).print_figure(*args, **kwargs)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\matplotlib\backend_bases.py", line 2259, in print_figure
-    **kwargs)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py", line 512, in print_png
-    filename_or_obj = open(filename_or_obj, 'wb')
-FileNotFoundError: [Errno 2] No such file or directory: 'photos/adjacency0.png'
-2018-11-27 11:43:08,848 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:46:06,857 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:46:15,339 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+    x_b,y_b1,y_b2,y_b3 = prepare_plot_best_of(Pt,n,x_b,y_b1,y_b2,y_b3)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 495, in prepare_plot_best_of
+    best_adj = population[0].adjacency_score
+IndexError: list index out of range
+2018-11-27 15:49:09,507 ERROR: Exception on /index [GET] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -53,25 +39,18 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 42, in generate_first_floorplans
-    Pt = initial_generate(user_selections, pop_size, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 460, in initial_generate
-    show_plot(x,y1,y2, stringlabel,stringshort)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 487, in show_plot
-    plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\matplotlib\pyplot.py", line 697, in savefig
-    res = fig.savefig(*args, **kwargs)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\matplotlib\figure.py", line 1814, in savefig
-    self.canvas.print_figure(fname, **kwargs)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\matplotlib\backends\backend_qt5agg.py", line 172, in print_figure
-    super(FigureCanvasQTAggBase, self).print_figure(*args, **kwargs)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\matplotlib\backend_bases.py", line 2259, in print_figure
-    **kwargs)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py", line 512, in print_png
-    filename_or_obj = open(filename_or_obj, 'wb')
-OSError: [Errno 22] Invalid argument: 'photos/Adjacency_P:30G:50M:0.050.png'
-2018-11-27 11:47:37,523 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:47:45,830 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask_login\utils.py", line 261, in decorated_view
+    return func(*args, **kwargs)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 146, in index
+    performance_test_start()
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 97, in performance_test_start
+    plot_multiple(plt2x, y_1_average,y_2_average,y_3_average,stringlabel, stringshort)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 114, in plot_multiple
+    while os.path.exists('{}{:d}.png'.format(filename, i)):
+NameError: name 'os' is not defined
+2018-11-27 15:49:37,328 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 16:22:08,507 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 16:22:21,410 ERROR: Exception on /index [GET] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -85,24 +64,69 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 42, in generate_first_floorplans
-    Pt = initial_generate(user_selections, pop_size, generations)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask_login\utils.py", line 261, in decorated_view
+    return func(*args, **kwargs)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 149, in index
+    performance_test_start()
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 76, in performance_test_start
+    plt1_temp,plt2_temp,time_temp = performance_test(pop,gen,mut)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 59, in performance_test
+    Pt,plt1,plt2, time = initial_generate(user_selections, pop_size, generations, mutation_rate)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 462, in initial_generate
+    time_ellapsed = end_time-start_time
+NameError: name 'end_time' is not defined
+2018-11-27 16:22:56,192 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 16:23:51,469 ERROR: Exception on /index [GET] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+Traceback (most recent call last):
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
+    raise value
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask_login\utils.py", line 261, in decorated_view
+    return func(*args, **kwargs)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 149, in index
+    performance_test_start()
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 76, in performance_test_start
+    plt1_temp,plt2_temp,time_temp = performance_test(pop,gen,mut)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 59, in performance_test
+    Pt,plt1,plt2, time = initial_generate(user_selections, pop_size, generations, mutation_rate)
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 460, in initial_generate
-    show_plot(x,y1,y2, stringlabel,stringshort)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 488, in show_plot
-    plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\matplotlib\pyplot.py", line 697, in savefig
-    res = fig.savefig(*args, **kwargs)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\matplotlib\figure.py", line 1814, in savefig
-    self.canvas.print_figure(fname, **kwargs)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\matplotlib\backends\backend_qt5agg.py", line 172, in print_figure
-    super(FigureCanvasQTAggBase, self).print_figure(*args, **kwargs)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\matplotlib\backend_bases.py", line 2259, in print_figure
-    **kwargs)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py", line 512, in print_png
-    filename_or_obj = open(filename_or_obj, 'wb')
-OSError: [Errno 22] Invalid argument: 'photos/Adjacency_P:30G:50M:0.050.png'
-2018-11-27 11:48:27,546 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:49:27,910 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:54:41,293 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 12:13:11,998 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+    x_b,y_b1,y_b2,y_b3 = prepare_plot_best_of(Pt,n,x_b,y_b1,y_b2,y_b3)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 499, in prepare_plot_best_of
+    best_adj = population[0].adjacency_score
+IndexError: list index out of range
+2018-11-27 16:32:49,484 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 16:35:49,291 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 16:35:56,202 ERROR: Exception on /index [GET] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+Traceback (most recent call last):
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
+    raise value
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask_login\utils.py", line 261, in decorated_view
+    return func(*args, **kwargs)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 150, in index
+    performance_test_start()
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 76, in performance_test_start
+    plt1_temp,plt2_temp,time_temp = performance_test(pop,gen,mut)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 59, in performance_test
+    Pt,plt1,plt2, time = initial_generate(user_selections, pop_size, generations, mutation_rate)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 469, in initial_generate
+    plt.close(figure)
+NameError: name 'figure' is not defined

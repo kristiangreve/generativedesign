@@ -329,7 +329,7 @@ def breeding(population, id, mutation_rate):
             child2.plan_id = id
             children.append(child1)
             children.append(child2)
-    print(similar_counter , ' similar kids bred!')
+    #print(similar_counter , ' similar kids bred!')
     return children, id
 
 def selection(pop_size, population):
@@ -344,12 +344,35 @@ def selection(pop_size, population):
             for obj in pareto_dict[pareto_counter]:
                 new_gen.append(obj)
         else:
-            print('Pareto ', pareto_counter , ' cut. Total len: ', len(pareto_dict[pareto_counter]))
+            #print('Pareto ', pareto_counter , ' cut. Total len: ', len(pareto_dict[pareto_counter]))
             sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: (-x.crowding_score), reverse=False)
             for obj in sorted_pareto:
                 if len(new_gen) < pop_size:
                     new_gen.append(obj)
             break
+    return new_gen
+
+def selection_debug(pop_size, population):
+    pareto_dict = defaultdict(list) #creates a dict for all pop and arranges according to pareto front
+
+    for i in population:
+        pareto_dict[i.pareto].append(i)
+    print('Pareto dict', pareto_dict.keys())
+    new_gen = []
+    for pareto_counter in range(1,len(pareto_dict)+1):
+        print('Len of pareto', pareto_counter, ': ', (len(new_gen)+len(pareto_dict[pareto_counter])))
+        if (len(new_gen)+len(pareto_dict[pareto_counter])) < pop_size:
+            for obj in pareto_dict[pareto_counter]:
+                new_gen.append(obj)
+        else:
+            #print('Pareto ', pareto_counter , ' cut. Total len: ', len(pareto_dict[pareto_counter]))
+            sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: (-x.crowding_score), reverse=False)
+            print('Adding from pareto:',pareto_counter)
+            for obj in sorted_pareto:
+                if len(new_gen) < pop_size:
+                    new_gen.append(obj)
+            break
+    print('New gen: ', new_gen)
     return new_gen
 
 def mutate(population, mutation_rate):
@@ -428,24 +451,27 @@ def id_to_obj(population,user_selections):
                         user_selections_obj_list.append(obj)
     return user_selections_obj_list
 
-def initial_generate(selections,pop_size,generations):
+def initial_generate(selections,pop_size,generations,mutation):
     # delete all existing instances from database
     db.session.query(Plan).delete()
     db.session.commit()
     Pt, id = init_population(pop_size)
-
+    if len(Pt) == 0:
+        print('ERROR LOADING: LEN Pt = 0!')
     evaluate_pop(Pt,selections, selections) #correct this...
     save_population_to_database(Pt,0)
     dominance(Pt,selections)
     pareto_score(Pt)
     crowding(Pt)
-    mutation_ratio = 0.05
+    mutation_ratio = mutation
     plt.figure()
     x1,x_b = [],[]
     y1,y2,y_b1,y_b2,y_b3= [],[],[],[],[]
     gen_list=[]
+    start_time = time.time()
+    print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation)
     for n in range(generations):
-        print('Generation: ', n)
+        #print('Generation: ', n)
         # add current max id to inputs
         Qt,id = breeding(Pt, id, mutation_ratio)
         mutate(Qt, mutation_ratio)
@@ -455,14 +481,21 @@ def initial_generate(selections,pop_size,generations):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
+        if len(Pt) == 0:
+            print('ERROR selection: LEN Pt = 0!')
+            print('Len Rt: ', len(Rt), 'len Qt', len(Qt))
+            Pt = selection_debug(pop_size,Rt)
         x1,y1,y2 = prepare_plot(Pt,n,x1,y1,y2)
         x_b,y_b1,y_b2,y_b3 = prepare_plot_best_of(Pt,n,x_b,y_b1,y_b2,y_b3)
+    end_time = time.time()
+    time_ellapsed = end_time-start_time
     save_population_to_database(Pt,generations)
     stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation: '+str(mutation_ratio)
     stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
-    show_plot(x1,y1,y2, stringlabel,stringshort)
-    plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort)
-    return Pt
+    #show_plot(x1,y1,y2, stringlabel,stringshort)
+    #plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort)
+    plt.close('all')
+    return Pt, [x1,y1,y2], [x_b,y_b1,y_b2,y_b3], time_ellapsed
 
 def prepare_plot(population, generation,x,y1,y2):
     for obj in population:
@@ -489,24 +522,31 @@ def plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort):
     while os.path.exists('{}{:d}.png'.format(filename, i)):
         i += 1
     plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
+    plt.close()
 
 
 def prepare_plot_best_of(population, n,x_b,y_b1,y_b2,y_b3):
-    best_adj = population[0].adjacency_score
-    best_aspect = population[0].aspect_ratio_score
-    best_dims = population[0].dims_score
-    for obj in population:
-        if obj.adjacency_score < best_adj:
-            best_adj = obj.adjacency_score
-        if obj.aspect_ratio_score < best_aspect:
-            best_aspect = obj.aspect_ratio_score
-        if obj.dims_score < best_dims:
-            best_dims = obj.dims_score
-    y_b1.append(best_adj)
-    y_b2.append(best_aspect)
-    y_b3.append(best_dims)
-    x_b.append(n)
-    return x_b,y_b1,y_b2,y_b3
+    try:
+        best_adj = population[0].adjacency_score
+        best_aspect = population[0].aspect_ratio_score
+        best_dims = population[0].dims_score
+        for obj in population:
+            if obj.adjacency_score < best_adj:
+                best_adj = obj.adjacency_score
+            if obj.aspect_ratio_score < best_aspect:
+                best_aspect = obj.aspect_ratio_score
+            if obj.dims_score < best_dims:
+                best_dims = obj.dims_score
+        y_b1.append(best_adj)
+        y_b2.append(best_aspect)
+        y_b3.append(best_dims)
+        x_b.append(n)
+        return x_b,y_b1,y_b2,y_b3
+    except IndexError:
+        print('INDEX ERROR')
+        print('Len of pop: ', len(population))
+        print('Pop: ', population)
+
 
 
 def show_plot(x,y1,y2, stringlabel,stringshort):
@@ -540,6 +580,7 @@ def show_plot(x,y1,y2, stringlabel,stringshort):
     plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
 
     plt.gcf().clear()
+    plt.close()
     #plt.show()
 
 def show_2yaxis(x,y1,y2, stringlabel):
