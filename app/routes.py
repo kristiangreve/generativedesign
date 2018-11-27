@@ -45,7 +45,7 @@ def generate_first_floorplans():
 
 @app.route('/generate_new_floorplans/', methods = ['GET', 'POST'])
 def generate_new_floorplans():
-    generations = 50
+    generations = 10
     selected_rooms = json.loads(request.form['selected_rooms'])
     print("rooms selected: ",selected_rooms)
 

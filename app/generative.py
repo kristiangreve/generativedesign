@@ -1,4 +1,5 @@
 import random, math, json
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from collections import defaultdict
@@ -59,15 +60,15 @@ class individual:
         return room_list
 
     def evaluate_aspect_ratio(self):
-        aspect_score = 0
+        aspect_ratio_score = 0
         #ideal_aspect = {'Dining': 1, 'Kitchen':1, 'M_bedroom':1, 'Living':1, 'Bedroom_1':1, 'Bedroom_2':1}
         for room in self.aspect_base.keys():
-            if self.aspect_base[room][0] < 0.5: #Only penalty on rooms w. aspect of more than 2 (ratio format = min size / max size)
-                if room != 'Hall'
-                    aspect_score += abs(0.5-2*(self.aspect_base[room][0]*self.aspect_base[room][0])) #squared aspect to punish outliers more, score from 0-0.5 pr. room.
+            if self.aspect_base[room][0] < 0.5: #Only penalize rooms w. aspect of more than 2 (ratio format = min size / max size)
+                if room != 'Hall':
+                    aspect_ratio_score += abs(0.5-2*(self.aspect_base[room][0]*self.aspect_base[room][0])) #squared aspect to punish outliers more, score from 0-0.5 pr. room.
         #for room in ideal_aspect.keys():
         #    aspect_score += abs(self.aspect_base[room][0]-ideal_aspect[room])
-        self.aspect_ratio_score = aspect_score
+        self.aspect_ratio_score = aspect_ratio_score
 
     def evaluate_user_input(self, user_input_dict_list):
         aspect_score = [0]*len(user_input_dict_list)
@@ -75,9 +76,9 @@ class individual:
         for feedback_index, user_dict in enumerate(user_input_dict_list):
             for room_name,value_list in user_dict.items():
                 for index,value_pair in enumerate(value_list): #There might be several value pairs for 1 room eg if 2 "living room" is selected in same feedback loop
-                    aspect_score[feedback_index] += abs(self.aspect_base[room_name][0]-user_dict[room_name][index][0])
+                    #aspect_score[feedback_index] += abs(self.aspect_base[room_name][0]-user_dict[room_name][index][0])
                     base_score[feedback_index] += abs(numpy.linalg.norm(self.aspect_base[room_name][1])-numpy.linalg.norm(user_dict[room_name][index][1]))
-        self.aspect_score = aspect_score
+        #self.aspect_score = aspect_score
         self.base_score = base_score
 
 
@@ -113,19 +114,20 @@ def evaluate_pop(generation,user_input_obj, user_input_dict_list):
 
     max_aspect = [0,0,0]
     max_base_dist = [0,0,0]
-    if len(user_input_obj)>0:
+    if len(user_input_obj)>0:  #normalizes and weight input
         for n in range(len(user_input_obj)): #finds max score
-            max_aspect[n] = max(individual.aspect_score[n] for individual in generation)
+            #max_aspect[n] = max(individual.aspect_score[n] for individual in generation)
             max_base_dist[n] = max(individual.base_score[n] for individual in generation)
-        for individual in generation: #normalizes and weight input
+        for individual in generation:
             for index in range(len(user_input_obj)):
-                individual.aspect_score[index] = individual.aspect_score[index] / max_aspect[index] #normalize score
-                individual.aspect_score[index] = individual.aspect_score[index] / len(user_input_obj)*(index+1) #Makes previous feedback loops less weighted
+                #individual.aspect_score[index] = individual.aspect_score[index] / max_aspect[index] #normalize score
+                #individual.aspect_score[index] = individual.aspect_score[index] / len(user_input_obj)*(index+1) #Makes previous feedback loops less weighted
 
                 individual.base_score[index] = individual.base_score[index] / max_base_dist[index]
                 individual.base_score[index] = individual.base_score[index] / len(user_input_obj)*(index+1) #Makes previous feedback loops less weighted
 
-            individual.aspect_base_score = sum(individual.base_score) + sum(individual.aspect_score)
+            #individual.aspect_base_score = sum(individual.base_score) + sum(individual.aspect_score)
+            individual.aspect_base_score = sum(individual.base_score) #Ignore aspect score
 
 
 def dominance(population,selections):
@@ -247,8 +249,11 @@ def crowding(population):
 def comparison(obj1,obj2): # Compares 2 individuals on pareto front, followed by crowding
     if obj1.pareto == obj2.pareto: #if equal rank, look at distance
         #if obj1.crowding_score>obj2.crowding_score:
-
-        if obj1.aspect_base_score < obj2.aspect_base_score: #Select object in pareto most simlar to user selection
+        if obj1.dims_score < obj2.dims_score: #Criteria1: Dims score
+            return obj1
+        elif obj2.dims_score > obj2.dims_score:
+            return obj2
+        elif obj1.aspect_base_score < obj2.aspect_base_score: #Select object in pareto most simlar to user selection
             return obj1
         elif obj1.aspect_base_score > obj2.aspect_base_score:
             return obj2
@@ -436,11 +441,10 @@ def initial_generate(selections,pop_size,generations):
     crowding(Pt)
     mutation_ratio = 0.05
     plt.figure()
-    x=[]
-    y=[]
+    x1,x_b = [],[]
+    y1,y2,y_b1,y_b2,y_b3= [],[],[],[],[]
     gen_list=[]
     for n in range(generations):
-
         print('Generation: ', n)
         # add current max id to inputs
         Qt,id = breeding(Pt, id, mutation_ratio)
@@ -451,12 +455,108 @@ def initial_generate(selections,pop_size,generations):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
-        #x,y,gen_list = prepare_plot(Pt,n,x,y,gen_list)
+        x1,y1,y2 = prepare_plot(Pt,n,x1,y1,y2)
+        x_b,y_b1,y_b2,y_b3 = prepare_plot_best_of(Pt,n,x_b,y_b1,y_b2,y_b3)
     save_population_to_database(Pt,generations)
-    #show_plot()
+    stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation: '+str(mutation_ratio)
+    stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
+    show_plot(x1,y1,y2, stringlabel,stringshort)
+    plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort)
     return Pt
 
-def prepare_plot(population, generation,x,y,gen_list):
+def prepare_plot(population, generation,x,y1,y2):
+    for obj in population:
+        x.append(generation)
+        y1.append(obj.adjacency_score)
+        y2.append(obj.aspect_ratio_score)
+    return x,y1,y2
+
+def plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort):
+    plt.figure(figsize=(30,15), dpi=80)
+    y_plots = [y_b1,y_b2,y_b3]
+    labels = ['#Broken adjacencies','Aspect ratio deviation','#Broken min. dimensions']
+    colors = ['red','blue','green']
+    #plt.plot(x_b, y_b1,'b', x_b, y_b2,'g',  x_b, y_b3, 'r')
+    for y_val, label,color in zip(y_plots, labels,colors):
+         plt.plot(x_b, y_val, label=label, color=color)
+    plt.legend(fontsize=20)
+    plt.ylim(0, 10)
+    plt.yticks(range(10))
+    plt.xlabel('Generation. ('+stringlabel+')',fontsize=15)
+
+    filename = 'photos/BestOf_'+stringshort
+    i = 0
+    while os.path.exists('{}{:d}.png'.format(filename, i)):
+        i += 1
+    plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
+
+
+def prepare_plot_best_of(population, n,x_b,y_b1,y_b2,y_b3):
+    best_adj = population[0].adjacency_score
+    best_aspect = population[0].aspect_ratio_score
+    best_dims = population[0].dims_score
+    for obj in population:
+        if obj.adjacency_score < best_adj:
+            best_adj = obj.adjacency_score
+        if obj.aspect_ratio_score < best_aspect:
+            best_aspect = obj.aspect_ratio_score
+        if obj.dims_score < best_dims:
+            best_dims = obj.dims_score
+    y_b1.append(best_adj)
+    y_b2.append(best_aspect)
+    y_b3.append(best_dims)
+    x_b.append(n)
+    return x_b,y_b1,y_b2,y_b3
+
+
+def show_plot(x,y1,y2, stringlabel,stringshort):
+    plt.figure(figsize=(30,15), dpi=80)
+    plt.scatter(x,y1, label = 'Adjacency Score', color='red')
+    plt.legend(fontsize=20)
+    plt.yticks(range(20))
+    plt.ylim(0, 20)
+    plt.xlabel('Generation. ('+stringlabel+')',fontsize=15)
+    plt.ylabel('Adjacency score',fontsize=15)
+
+    filename = 'photos/Adjacency_'+stringshort
+    print(filename)
+    i = 0
+    while os.path.exists('{}{:d}.png'.format(filename, i)):
+        i += 1
+    plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
+    #plt.savefig('adjacency.png', bbox_inches='tight')
+    plt.gcf().clear()
+
+    #plt.show()
+    plt.figure(figsize=(30,15),dpi=80)
+    plt.scatter(x,y2, label = 'Aspect ratio Score', color='blue')
+    plt.legend(fontsize=20)
+    plt.ylim(0, 10)
+    plt.ylabel('Aspect ratio score', fontsize=15)
+    plt.xlabel('Generation. ('+stringlabel+')',fontsize=15)
+    #plt.savefig('aspect.png', bbox_inches='tight')
+
+    filename = 'photos/Aspect_'+stringshort
+    plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
+
+    plt.gcf().clear()
+    #plt.show()
+
+def show_2yaxis(x,y1,y2, stringlabel):
+    fig,ax1 = plt.subplots()
+    ax2 = ax1.twinx()
+    ax1.scatter(x,y1, label = 'Adjacency Score', color='red')
+    ax2.scatter(x,y2, label = 'Aspect ratio Score', color='blue')
+    plt.legend()
+    #plt.yticks(range(20))
+    #plt.ylim(0, 20)
+    ax1.set_xlabel('Generation. ('+stringlabel+')')
+    ax1.set_ylabel('Adjacency score')
+    ax2.set_ylabel('Aspect ratio score')
+    plt.show()
+
+
+def prepare_plot_scatter(population, generation,x,y,gen_list):
     for obj in population:
         x.append(obj.adjacency_score)
         y.append(obj.aspect_ratio_score)
@@ -468,7 +568,7 @@ def prepare_plot(population, generation,x,y,gen_list):
         gen_list=[]
     return x,y,gen_list
 
-def show_plot():
+def show_plot_scatter():
     plt.legend()
     plt.xticks(range(10))
     plt.xlim(0, 10)
@@ -493,7 +593,11 @@ def generate(user_selections_obj,user_selections_rooms,generations):
     dominance(Pt,user_selections_obj)
     pareto_score(Pt)
     crowding(Pt)
-    mutation_ratio = 0.2
+    mutation_ratio = 0.05
+    plt.figure()
+    x=[]
+    y=[]
+    gen_list=[]
     for n in range(generations):
         print('Generation: ', current_generation+n)
         Qt, id = breeding(Pt,id, mutation_ratio)
@@ -504,7 +608,9 @@ def generate(user_selections_obj,user_selections_rooms,generations):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
+        #x,y,gen_list = prepare_plot(Pt,n,x,y,gen_list)
     #select_objects_for_render(Pt,selections)
+    #show_plot()
     save_population_to_database(Pt,generations+current_generation)
     print("Run a total of ", (generations+current_generation), ' generations')
     return Pt

@@ -1,102 +1,4 @@
-2018-11-22 08:54:01,975 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
-Traceback (most recent call last):
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
-    response = self.full_dispatch_request()
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
-    reraise(exc_type, exc_value, tb)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
-    raise value
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
-    return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 57, in generate_new_floorplans
-    Pt = generate(user_selections_obj,user_selections, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 476, in generate
-    evaluate_pop(Pt,user_selections_obj, user_base_aspect_dict)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 115, in evaluate_pop
-    print('max base: ', max_base)
-NameError: name 'max_base' is not defined
-2018-11-22 08:54:36,411 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-22 09:00:43,947 ERROR: Exception on /departments [GET] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
-Traceback (most recent call last):
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
-    response = self.full_dispatch_request()
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
-    reraise(exc_type, exc_value, tb)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
-    raise value
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
-    return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask_login\utils.py", line 261, in decorated_view
-    return func(*args, **kwargs)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 76, in departments
-    space_size = current_user.length * current_user.width
-TypeError: unsupported operand type(s) for *: 'NoneType' and 'NoneType'
-2018-11-22 09:36:06,449 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
-Traceback (most recent call last):
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
-    response = self.full_dispatch_request()
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
-    reraise(exc_type, exc_value, tb)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
-    raise value
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
-    return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 39, in generate_first_floorplans
-    Pt = initial_generate(user_selections, pop_size, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 417, in initial_generate
-    evaluate_pop(Pt,selections, selections) #correct this...
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 100, in evaluate_pop
-    individual.evaluate_aspect_ratio()
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 62, in evaluate_aspect_ratio
-    aspect_score += abs(self.aspect_base[room][0]-ideal_aspect[room])
-KeyError: 'Dining'
-2018-11-22 09:38:11,935 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-22 13:11:50,125 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-22 13:28:43,338 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-22 13:29:41,823 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
-Traceback (most recent call last):
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
-    response = self.full_dispatch_request()
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
-    reraise(exc_type, exc_value, tb)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
-    raise value
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
-    return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 41, in generate_first_floorplans
-    return jsonify(select_objects_for_render(Pt, user_selections))
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 541, in select_objects_for_render
-    print('Pareto: ', pareto_front, 'has size: ', len(pareto_front))
-TypeError: object of type 'int' has no len()
-2018-11-22 13:34:07,241 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-22 16:27:58,535 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-22 16:44:00,408 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-22 16:51:28,423 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-22 16:59:39,052 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-22 17:04:28,833 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-22 17:42:04,713 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-22 17:52:24,178 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-23 11:39:28,855 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-23 11:39:47,875 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-23 11:40:13,468 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-23 11:40:53,213 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-23 11:41:08,001 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+2018-11-23 16:02:43,298 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -112,9 +14,90 @@ Traceback (most recent call last):
     return self.view_functions[rule.endpoint](**req.view_args)
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 40, in generate_first_floorplans
     Pt = initial_generate(user_selections, pop_size, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 461, in initial_generate
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 516, in initial_generate
     crowding(Pt)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 206, in crowding
-    if len(pareto_front)>2: #If there's at least 3 solutions in the pareto front (calc. dist. to 2 nearest)
-NameError: name 'pareto_front' is not defined
-2018-11-23 11:41:52,099 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 246, in crowding
+    individual.crowding_score = individual.crowding_adjacency_score + individual.crowding_aspect_ratio_score
+TypeError: unsupported operand type(s) for +: 'float' and 'NoneType'
+2018-11-23 16:03:20,321 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-23 16:03:25,918 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+Traceback (most recent call last):
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
+    raise value
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 40, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 516, in initial_generate
+    crowding(Pt)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 246, in crowding
+    individual.crowding_score = individual.crowding_adjacency_score + individual.crowding_aspect_ratio_score
+TypeError: unsupported operand type(s) for +: 'float' and 'NoneType'
+2018-11-23 16:04:43,451 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-23 16:07:59,529 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-23 16:11:55,993 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-23 16:12:12,768 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-23 16:16:11,986 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-23 16:21:55,514 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-23 16:25:12,895 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-23 16:27:52,834 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-23 16:35:47,802 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-23 16:37:53,521 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-26 10:05:57,942 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-26 10:07:55,503 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-26 10:26:40,098 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-26 10:53:10,458 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-26 10:53:36,697 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-26 11:16:43,863 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-26 14:21:08,561 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-26 14:45:40,321 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-26 14:52:05,780 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+Traceback (most recent call last):
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
+    raise value
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 60, in generate_new_floorplans
+    Pt = generate(user_selections_obj,user_selections, generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 494, in generate
+    mutate(Qt, mutation_ratio)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 370, in mutate
+    population[index].dir_list[random_gene] = random.randint(0,1)
+IndexError: list assignment index out of range
+2018-11-26 14:53:53,030 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+Traceback (most recent call last):
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
+    raise value
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 60, in generate_new_floorplans
+    Pt = generate(user_selections_obj,user_selections, generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 494, in generate
+    mutate(Qt, mutation_ratio)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 370, in mutate
+    population[index].dir_list[random_gene] = random.randint(0,1)
+IndexError: list assignment index out of range
