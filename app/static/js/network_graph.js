@@ -1,5 +1,9 @@
 var nodes = [
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> viz_og_adjacency
 ];
 
 // create an array with edges
