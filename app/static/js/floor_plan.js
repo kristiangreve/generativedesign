@@ -1,4 +1,4 @@
-$(document).ready(generate_first_floorplans);
+// global variables
 var mypapers = [];
 var selected_rooms = [];
 var current_adjacency_department = [];
@@ -8,6 +8,7 @@ var room_selection_papers = [];
 $(document).ready(setup_canvases_as_projects);
 $(document).ready(setup_room_selection_canvas);
 
+
 function setup_canvases_as_projects(){
 	var canvases = jQuery.makeArray($(".floor_canvas"));
 	canvases.forEach(function(element){
@@ -15,6 +16,7 @@ function setup_canvases_as_projects(){
 		newpaper.setup(element);
 		mypapers.push(newpaper);
 	});
+	generate_first_floorplans();
 };
 
 function setup_room_selection_canvas(){
@@ -44,13 +46,24 @@ function update_room_selection_canvas() {
 	selection_paper.project.clear()
 	selection_paper.project.addLayer(layer)
 
-	console.log("max size for selection canvas: ", max_size);
+
 
 	var factor_x = parseInt(room_selection_canvas.style.width) / max_size[1];
 	var factor_y = parseInt(room_selection_canvas.style.height) / max_size[0];
 
 	var scale_factor = Math.min(factor_x,factor_y);
 	// var scale_factor = 1;
+
+
+	// outline for the floor plan
+	var outlineWidth = 1;
+	var base = new Point(0,0);
+	var dims = new Size(max_size[1]*scale_factor,max_size[0]*scale_factor)
+
+	var outline = new Rectangle(base,dims);
+	var path = new Path.Rectangle(outline);
+	path.strokeColor = 'black';
+	path.strokeWidth = outlineWidth;
 
 	console.log("rendering selections with x factor: ", scale_factor);
 
@@ -66,9 +79,8 @@ function update_room_selection_canvas() {
 
 		var text_name = new PointText(department.center);
 		text_name.fillColor = 'black';
-		text_name.fontSize = 10;
+		text_name.fontSize = 8;
 		text_name.justification = 'center';
-		text_name.fontWeight = 'bold';
 		text_name.content = element.name;
 
 
@@ -88,6 +100,7 @@ function parse_dim(float) {
 	return parseFloat(Math.round(float * 100) / 100).toFixed(2);
 }
 
+
 function plotPlan(plotCanvas,project_id,render_graphics) {
 	mypapers[project_id].activate();
 	mypapers[project_id].view.draw();
@@ -100,14 +113,12 @@ function plotPlan(plotCanvas,project_id,render_graphics) {
 	// global variable max size
 
 	max_size = render_graphics.max_sizes;
-	console.log("max size in regular plot: ", max_size);
-
 	var factor_x = parseInt(plotCanvas.style.width) / max_size[1];
 	var factor_y = parseInt(plotCanvas.style.height) / max_size[0];
 	var scale_factor = Math.min(factor_x,factor_y);
 
 	// outline for the floor plan
-	var outlineWidth = 3;
+	var outlineWidth = 2;
 	var base = new Point(0,0);
 	var dims = new Size(max_size[1]*scale_factor,max_size[0]*scale_factor)
 
@@ -126,117 +137,168 @@ function plotPlan(plotCanvas,project_id,render_graphics) {
 
 		path.strokeColor = 'black';
 		path.strokeWidth = 1;
-		path.fillColor = 'white';
+		path.fillColor = 'lightgrey';
 		path.name = name;
 		path.selected = false;
 		path.opacity = 0.5;
 
-		var text_name = new PointText(department.center);
+		var font_size_name = 12;
+		var center_point = new Point(department.center._x,department.center._y);
+		var text_name = new PointText(center_point);
 		text_name.fillColor = 'black';
-		text_name.fontSize = 10;
+		text_name.fontSize = font_size_name;
 		text_name.justification = 'center';
-		text_name.fontWeight = 'bold';
 		text_name.content = name;
 
-		var sign = new PointText(department.center);
-		sign.fontSize = 50;
-		sign.fillColor = 'white';
-		sign.justification = 'center';
-		sign.fontWeight = 'bold';
-		sign.content = "";
-
-
+		// Mouse over events //
 
 		path.onMouseEnter = function(event) {
-			if (this.selected == false){
-				this.fillColor = 'green';
-				sign.content = "+"
 
-			} else if (this.selected == true){
-				this.fillColor = 'red';
-				sign.content = "-"
+			if (current_adjacency_department == ""){
+				// iterate the list of selected rooms to see if this floor plan is in it
+				// first see if name is the same, then base point to compare
+				selected = false;
+				for (var i = 0; i < selected_rooms.length ; i++) {
+					if (selected_rooms[i].name == element.name) {
+						if (selected_rooms[i].base == element.base) {
+							selected = true;
+							break;
+						};
+					};
+				};
+
+				if (selected == false){
+					this.fillColor = 'green';
+				} else if (selected == true){
+					this.fillColor = 'red';
+				}
+			} else {
+				this.fillColor = 'orange';
 			}
-			if (current_adjacency_department != ""){
-				this.fillColor = 'yellow';
-			}
+
 		};
-
-		// path.onDoubleClick = function(event){
-		//	if (current_adjacency_department == this.name){
-		//		current_adjacency_department = ""
-		//	} else {
-		//		current_adjacency_department = this.name;
-		//		this.fillColor = 'blue';
-
-		// 	};
-
-
-		// };
 
 
 		path.onClick = function(event) {
+
 			var dict = {}
 			dict.name = element.name
 			dict.base = element.base
 			dict.dims = element.dims
-			// if it has not been clicked
 
-			if (this.selected == false){
-				this.selected = true;
-				this.fillColor = 'green';
-				selected_rooms.push(dict);
-				// current_adjacency_department = name;
-				console.log(selected_rooms)
+			if (current_adjacency_department == ""){
+				// iterate the list of selected rooms to see if this floor plan is in it
+				// first see if name is the same, then base point to compare
+				selected = false;
+				for (var i = 0; i < selected_rooms.length ; i++) {
+					if (selected_rooms[i].name == element.name) {
+						if (selected_rooms[i].base == element.base) {
+							selected = true;
+							// if it has been selected, remove it from the list of selections
+							selected_rooms.splice(i, 1);
+							break;
+						};
+					};
+				};
+				if (selected == false) {
+					// iterate selections to see if an element with identical name already exists
+					for (var i=0; i < selected_rooms.length ; i++) {
+						if (selected_rooms[i].name == element.name) {
+							selected_rooms.splice(i, 1);
+							break;
+						}
+					};
+					selected_rooms.push(dict);
+				};
 
-			// if it has been clicked
-		} else if (this.selected == true){
-				this.fillColor = 'white';
-				this.selected = false;
-				selected_rooms.splice(selected_rooms.indexOf(dict), 1 );
-				console.log(selected_rooms)
+				console.log(selected_rooms);
+			} else {
+
+				// add edge between nodes
+				edge_dict = {};
+				edge_dict.from = current_adjacency_department;
+				edge_dict.to = name;
+
+
+				if(current_adjacency_department != name){
+					edges.push(edge_dict);
+				};
+
+
+				// add "from node" to array
+				node_dict = {};
+				node_dict.id = current_adjacency_department;
+				node_dict.label = current_adjacency_department;
+				node_dict.fixed = true;
+				node_dict.shape = 'circle';
+				node_dict.color = '#d3d3d3';
+				// if it is not in the array already
+
+				already_in_array = false;
+				for (var i=0; i < nodes.length ; i++) {
+					console.log(nodes[i]);
+					if (nodes[i].id == node_dict.id) {
+						already_in_array = true;
+						break;
+					}
+				};
+
+				if (already_in_array == false){
+					nodes.push(node_dict);
+				}
+
+
+				// add "to node" to array
+				node_dict = {};
+				node_dict.id = name;
+				node_dict.label = name;
+				node_dict.fixed = true;
+				node_dict.shape = 'circle';
+				node_dict.color = '#d3d3d3';
+
+				already_in_array = false;
+				for (var i=0; i < nodes.length ; i++) {
+					if (nodes[i].id == node_dict.id) {
+						already_in_array = true;
+						break;
+					}
+				};
+
+				if (already_in_array == false){
+					nodes.push(node_dict);
+				}
+
+				console.log("edges: ", edges);
+				console.log("nodes: ", nodes);
+
+				update_adjacency_graph();
+
 			};
-
-			if (current_adjacency_department != ""){
-				this.fillColor = 'orange';
-			}
-
-			// update selection canvas with new rooms
 			update_room_selection_canvas();
 		};
 
-		path.onMouseLeave = function(event) {
-			// like_button.visible = false;
-			// if it has not been clicked
-			sign.content = "";
-			if (this.selected == false) {
-				this.fillColor = 'white';
-			} else if (this.selected == true) {
-				this.fillColor = 'green';
-			};
+		path.onDoubleClick = function(event){
+			// check if this department is currently the one being specified
 
-			if (current_adjacency_department == this.name) {
+			if (current_adjacency_department == this.name){
+				current_adjacency_department = "";
+			} else if (current_adjacency_department == ""){
+				current_adjacency_department = this.name;
 				this.fillColor = 'blue';
+			} else {
+				// if there is another department currently being specified
 			};
 		};
 
-		// for plotting dimensions
-		// var w = parse_dim(element.dims[1]);
-		// var h = parse_dim(element.dims[0]);
 
-		// var top_center = new Point(department.topCenter.x, department.topCenter.y+10)
-		// var text_width = new PointText(top_center);
-
-		// text_width.fillColor = 'black';
-		// text_width.fontSize = 8;
-		// text_width.justification = 'center';
-		// text_width.content = w;
-
-		// var line_to = new Path.Line(new Point(department.topLeft.x+4,department.topLeft.y+8), new Point(department.topCenter.x-2*w.length,department.topLeft.y+8));
-		// var line_from = new Path.Line(new Point(department.topCenter.x+2*w.length,department.topRight.y+8), new Point(department.topRight.x-4,department.topRight.y+8));
-
-		// line_to.strokeColor = 'grey';
-		// line_from.strokeColor = 'grey';
-
+		path.onMouseLeave = function(event) {
+			if (current_adjacency_department == this.name){
+				this.fillColor = 'blue';
+			} else {
+				// if there is another department currently being specified
+				this.fillColor = 'lightgrey';
+			};
+		};
 	});
 };
 

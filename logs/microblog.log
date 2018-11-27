@@ -1,0 +1,31 @@
+2018-11-27 12:33:40,325 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-27 12:34:44,754 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-27 12:36:16,275 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-27 12:38:45,263 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-27 12:41:54,222 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-27 12:43:30,807 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-27 13:39:58,631 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-27 13:45:06,163 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 55, in generate_new_floorplans
+    user_selections_obj.append(id_to_obj(Pt,user_selections))
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 407, in id_to_obj
+    if int(selected_room[0]) == obj.plan_id: #finds user selection in pop based on ID
+KeyError: 0
+2018-11-27 13:46:07,026 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-27 13:47:10,428 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-27 13:47:50,685 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-27 13:48:41,280 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-27 13:50:35,283 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]

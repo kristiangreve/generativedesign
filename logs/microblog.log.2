@@ -1,0 +1,108 @@
+2018-11-26 08:39:30,402 ERROR: Exception on / [GET] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 1193, in _execute_context
+    context)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/sqlalchemy/engine/default.py", line 509, in do_execute
+    cursor.execute(statement, parameters)
+sqlite3.OperationalError: no such table: user
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1811, in full_dispatch_request
+    rv = self.preprocess_request()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2087, in preprocess_request
+    rv = func()
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 21, in before_request
+    if current_user.is_authenticated:
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/werkzeug/local.py", line 347, in __getattr__
+    return getattr(self._get_current_object(), name)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/werkzeug/local.py", line 306, in _get_current_object
+    return self.__local()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask_login/utils.py", line 26, in <lambda>
+    current_user = LocalProxy(lambda: _get_user())
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask_login/utils.py", line 335, in _get_user
+    current_app.login_manager._load_user()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask_login/login_manager.py", line 359, in _load_user
+    return self.reload_user()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask_login/login_manager.py", line 321, in reload_user
+    user = self.user_callback(user_id)
+  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/models.py", line 87, in load_user
+    return User.query.get(int(id))
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 924, in get
+    ident, loading.load_on_pk_identity)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 1007, in _get_impl
+    return db_load_fn(self, primary_key_identity)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/sqlalchemy/orm/loading.py", line 250, in load_on_pk_identity
+    return q.one()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 2954, in one
+    ret = self.one_or_none()
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 2924, in one_or_none
+    ret = list(self)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 2995, in __iter__
+    return self._execute_and_instances(context)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 3018, in _execute_and_instances
+    result = conn.execute(querycontext.statement, self._params)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 948, in execute
+    return meth(self, multiparams, params)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/sqlalchemy/sql/elements.py", line 269, in _execute_on_connection
+    return connection._execute_clauseelement(self, multiparams, params)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 1060, in _execute_clauseelement
+    compiled_sql, distilled_params
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 1200, in _execute_context
+    context)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 1413, in _handle_dbapi_exception
+    exc_info
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/sqlalchemy/util/compat.py", line 265, in raise_from_cause
+    reraise(type(exception), exception, tb=exc_tb, cause=cause)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/sqlalchemy/util/compat.py", line 248, in reraise
+    raise value.with_traceback(tb)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 1193, in _execute_context
+    context)
+  File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/sqlalchemy/engine/default.py", line 509, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: user [SQL: 'SELECT user.id AS user_id, user.username AS user_username, user.email AS user_email, user.password_hash AS user_password_hash, user.about_me AS user_about_me, user.last_seen AS user_last_seen, user.length AS user_length, user.width AS user_width \nFROM user \nWHERE user.id = ?'] [parameters: (2,)] (Background on this error at: http://sqlalche.me/e/e3q8)
+2018-11-26 08:39:55,969 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 08:40:08,512 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 08:40:15,704 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 08:46:37,335 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 08:47:38,255 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 08:49:03,296 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 08:51:33,435 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 08:52:01,543 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 08:52:35,390 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 08:53:10,310 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 08:54:08,225 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 08:54:40,661 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 08:55:18,871 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 09:02:27,399 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 09:03:51,927 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 09:04:09,473 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 09:04:36,570 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 09:06:19,801 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 09:06:56,178 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 09:41:17,254 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 09:42:34,435 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 09:42:47,225 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 09:44:04,871 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 09:45:05,253 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 09:46:58,193 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 09:48:15,754 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 10:15:22,617 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 11:16:55,258 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 11:25:23,171 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 11:30:34,235 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 11:39:44,605 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 11:41:27,524 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 11:42:42,514 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 11:44:50,363 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 11:45:12,338 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
+2018-11-26 11:46:25,405 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
