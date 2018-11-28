@@ -339,40 +339,17 @@ def selection(pop_size, population):
         pareto_dict[i.pareto].append(i)
 
     new_gen = []
-    for pareto_counter in range(1,len(pareto_dict)-1):
-        if (len(new_gen)+len(pareto_dict[pareto_counter])) < pop_size:
-            for obj in pareto_dict[pareto_counter]:
-                new_gen.append(obj)
-        else:
-            #print('Pareto ', pareto_counter , ' cut. Total len: ', len(pareto_dict[pareto_counter]))
-            sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: (-x.crowding_score), reverse=False)
-            for obj in sorted_pareto:
-                if len(new_gen) < pop_size:
-                    new_gen.append(obj)
-            break
-    return new_gen
-
-def selection_debug(pop_size, population):
-    pareto_dict = defaultdict(list) #creates a dict for all pop and arranges according to pareto front
-
-    for i in population:
-        pareto_dict[i.pareto].append(i)
-    print('Pareto dict', pareto_dict.keys())
-    new_gen = []
     for pareto_counter in range(1,len(pareto_dict)+1):
-        print('Len of pareto', pareto_counter, ': ', (len(new_gen)+len(pareto_dict[pareto_counter])))
         if (len(new_gen)+len(pareto_dict[pareto_counter])) < pop_size:
             for obj in pareto_dict[pareto_counter]:
                 new_gen.append(obj)
         else:
             #print('Pareto ', pareto_counter , ' cut. Total len: ', len(pareto_dict[pareto_counter]))
             sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: (-x.crowding_score), reverse=False)
-            print('Adding from pareto:',pareto_counter)
             for obj in sorted_pareto:
                 if len(new_gen) < pop_size:
                     new_gen.append(obj)
             break
-    print('New gen: ', new_gen)
     return new_gen
 
 def mutate(population, mutation_rate):
@@ -451,25 +428,24 @@ def id_to_obj(population,user_selections):
                         user_selections_obj_list.append(obj)
     return user_selections_obj_list
 
-def initial_generate(selections,pop_size,generations,mutation):
+def initial_generate(selections,pop_size,generations):
     # delete all existing instances from database
     db.session.query(Plan).delete()
     db.session.commit()
     Pt, id = init_population(pop_size)
-    if len(Pt) == 0:
-        print('ERROR LOADING: LEN Pt = 0!')
     evaluate_pop(Pt,selections, selections) #correct this...
     save_population_to_database(Pt,0)
     dominance(Pt,selections)
     pareto_score(Pt)
     crowding(Pt)
-    mutation_ratio = mutation
+    #mutation_ratio = mutation
+    mutation_ratio = 0.01
     plt.figure()
     x1,x_b = [],[]
     y1,y2,y_b1,y_b2,y_b3= [],[],[],[],[]
     gen_list=[]
     start_time = time.time()
-    print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation)
+    print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation_ratio)
     for n in range(generations):
         #print('Generation: ', n)
         # add current max id to inputs
@@ -481,10 +457,6 @@ def initial_generate(selections,pop_size,generations,mutation):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
-        if len(Pt) == 0:
-            print('ERROR selection: LEN Pt = 0!')
-            print('Len Rt: ', len(Rt), 'len Qt', len(Qt))
-            Pt = selection_debug(pop_size,Rt)
         x1,y1,y2 = prepare_plot(Pt,n,x1,y1,y2)
         x_b,y_b1,y_b2,y_b3 = prepare_plot_best_of(Pt,n,x_b,y_b1,y_b2,y_b3)
     end_time = time.time()
@@ -495,7 +467,8 @@ def initial_generate(selections,pop_size,generations,mutation):
     #show_plot(x1,y1,y2, stringlabel,stringshort)
     #plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort)
     plt.close('all')
-    return Pt, [x1,y1,y2], [x_b,y_b1,y_b2,y_b3], time_ellapsed
+    return Pt
+    #return Pt, [x1,y1,y2], [x_b,y_b1,y_b2,y_b3], time_ellapsed
 
 def prepare_plot(population, generation,x,y1,y2):
     for obj in population:
@@ -634,7 +607,7 @@ def generate(user_selections_obj,user_selections_rooms,generations):
     dominance(Pt,user_selections_obj)
     pareto_score(Pt)
     crowding(Pt)
-    mutation_ratio = 0.05
+    mutation_ratio = 0.01
     plt.figure()
     x=[]
     y=[]
@@ -701,12 +674,12 @@ def select_objects_for_render(population,selections):
         for pareto_front in sorted(pareto_dict.keys()):
             if len(selection_list) == 0:
             #Best adjacency of which is most similar to dir/split/ordder of user selction
-                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score,x.aspect_base_score, x.aspect_ratio_score, x.dims_score, -x.crowding_score), reverse=False)
+                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_base_score, x.adjacency_score, x.aspect_ratio_score, x.dims_score, -x.crowding_score), reverse=False)
                 selection_list.append(adjacency_sorted[0])
 
             if len(selection_list)==1:
                 #Most similar dir/split/room_order
-                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_base_score, x.aspect_ratio_score, x.dims_score, x.adjacency_score, -x.crowding_score), reverse=False)
+                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score, x.aspect_base_score, x.aspect_ratio_score, x.dims_score, -x.crowding_score), reverse=False)
                 for obj in interactive_sorted:
                     if len(selection_list)==1:
                         if obj not in selection_list:

@@ -39,8 +39,8 @@ def generate_first_floorplans():
     user_selections = []
     user_selections_obj = []
     # generate first generation and return
-    pop_size = 50
-    generations = 100
+    pop_size = 75
+    generations = 50
     print("user selections: ",user_selections)
     Pt = initial_generate(user_selections, pop_size, generations)
     print("first floorplans rendered")
@@ -144,7 +144,7 @@ def index():
         current_user.width = form.width.data
         db.session.commit()
         return redirect(url_for('departments'))
-    performance_test_start()
+    #performance_test_start()
     return render_template('index.html', title='Home', form=form)
 
 @app.route('/departments', methods=['GET', 'POST'])
