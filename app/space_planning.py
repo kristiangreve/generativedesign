@@ -353,6 +353,7 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
 
     root.collect_areas(rooms_list)
 
+
     # node splitting list
 
     split_list = [node.get_info() for node in split_nodes]
@@ -361,7 +362,6 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
 
     for i, room_name in enumerate(room_names):
         room_dict[room_name] = i+1
-
 
 
     adjacency_list = []
@@ -374,6 +374,8 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
                     adjacency_list.append([room1, room2])
 
 
+    print(adjacency_list)
+    
     aspect_dict = {}
 
     for room in room_def:
