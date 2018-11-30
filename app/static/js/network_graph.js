@@ -1,16 +1,3 @@
-var nodes = [
-<<<<<<< HEAD
-
-=======
-	
->>>>>>> viz_og_adjacency
-];
-
-// create an array with edges
-var edges = [
-
-];
-
 // create a network
 var container = document.getElementById('mynetwork');
 
@@ -23,7 +10,6 @@ var options = {};
 
 function update_adjacency_graph(){
 	var network = new vis.Network(container, data, options);
+	console.log("adjacency graph updated")
 
 };
-
-$(document).ready(update_adjacency_graph);

@@ -353,6 +353,7 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
 
     root.collect_areas(rooms_list)
 
+
     # node splitting list
 
     split_list = [node.get_info() for node in split_nodes]

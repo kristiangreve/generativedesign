@@ -101,3 +101,4 @@ Traceback (most recent call last):
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 370, in mutate
     population[index].dir_list[random_gene] = random.randint(0,1)
 IndexError: list assignment index out of range
+>>>>>>> prototype_v3

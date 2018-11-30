@@ -119,9 +119,17 @@ def plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort):
 
 @app.route('/generate_new_floorplans/', methods = ['GET', 'POST'])
 def generate_new_floorplans():
-    generations = 10
+    generations = 5
+
     selected_rooms = json.loads(request.form['selected_rooms'])
-    print("rooms selected: ",selected_rooms)
+
+    # nodes = json.loads(request.form['nodes'])
+    # edges = json.loads(request.form['edges'])
+
+    # print("nodes: ", nodes)
+    # print("edges: ", edges)
+
+    print("selected rooms: ",selected_rooms)
 
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
     Pt = get_population_from_database(current_generation)
