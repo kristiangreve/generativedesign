@@ -1,11 +1,10 @@
+
 var mypapers = [];
 var selected_rooms_render = [];
 var previously_selected_rooms_render = [];
 var selected_rooms = [];
 var current_adjacency_department = [];
 var room_selection_papers = [];
-
-
 
 // setup canvases
 $(document).ready(setup_canvases_as_projects);
@@ -50,37 +49,6 @@ function render_floorplans(render_array) {
 function parse_dim(float) {
 	return parseFloat(Math.round(float * 100) / 100).toFixed(2);
 };
-
-//
-// // add "from node" to array
-// node_dict = {};
-// node_dict.id = current_adjacency_department;
-// node_dict.label = current_adjacency_department;
-// node_dict.fixed = true;
-// node_dict.shape = 'dot';
-// node_dict.color = 'lightgreen';
-// // if it is not in the array already
-//
-// already_in_array = false;
-// for (var i=0; i < nodes.length ; i++) {
-// 	console.log(nodes[i]);
-// 	if (nodes[i].id == node_dict.id) {
-// 		already_in_array = true;
-// 		break;
-// 	}
-// };
-//
-// if (already_in_array == false){
-// 	nodes.push(node_dict);
-// }
-//
-// // add "to node" to array
-// node_dict = {};
-// node_dict.id = name;
-// node_dict.label = name;
-// node_dict.fixed = true;
-// node_dict.shape = 'dot';
-// node_dict.color = 'lightgreen';
 
 function update_nodes() {
 var unique_nodes = [];
