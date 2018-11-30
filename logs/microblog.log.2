@@ -1,16 +1,4 @@
-<<<<<<< HEAD
-2018-11-27 11:14:14,919 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:20:08,097 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:27:36,168 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:30:58,109 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:36:22,463 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:38:22,917 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:39:28,872 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:42:39,207 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:42:47,249 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
-=======
 2018-11-27 16:08:24,799 ERROR: Exception on /generate_new_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
->>>>>>> prototype_v3
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -68,27 +56,6 @@ Traceback (most recent call last):
     return self.view_functions[rule.endpoint](**req.view_args)
   File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 42, in generate_first_floorplans
     Pt = initial_generate(user_selections, pop_size, generations)
-<<<<<<< HEAD
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 460, in initial_generate
-    show_plot(x,y1,y2, stringlabel,stringshort)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 488, in show_plot
-    plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\matplotlib\pyplot.py", line 697, in savefig
-    res = fig.savefig(*args, **kwargs)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\matplotlib\figure.py", line 1814, in savefig
-    self.canvas.print_figure(fname, **kwargs)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\matplotlib\backends\backend_qt5agg.py", line 172, in print_figure
-    super(FigureCanvasQTAggBase, self).print_figure(*args, **kwargs)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\matplotlib\backend_bases.py", line 2259, in print_figure
-    **kwargs)
-  File "C:\Users\jalke\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py", line 512, in print_png
-    filename_or_obj = open(filename_or_obj, 'wb')
-OSError: [Errno 22] Invalid argument: 'photos/Adjacency_P:30G:50M:0.050.png'
-2018-11-27 11:48:27,546 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:49:27,910 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 11:54:41,293 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-27 12:13:11,998 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-=======
   File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 437, in initial_generate
     evaluate_pop(Pt,selections, selections) #correct this...
   File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 107, in evaluate_pop
@@ -151,4 +118,3 @@ Traceback (most recent call last):
   File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 372, in get_layout
     room2 = room_dict[room2]
 KeyError: 'Office1'
->>>>>>> prototype_v3

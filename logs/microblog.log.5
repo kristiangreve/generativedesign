@@ -1,9 +1,5 @@
 <<<<<<< HEAD
-2018-11-23 16:02:43,298 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
-=======
-<<<<<<< HEAD
 2018-11-27 12:18:14,377 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
->>>>>>> prototype_v3
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -54,15 +50,6 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-<<<<<<< HEAD
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 60, in generate_new_floorplans
-    Pt = generate(user_selections_obj,user_selections, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 494, in generate
-    mutate(Qt, mutation_ratio)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 370, in mutate
-    population[index].dir_list[random_gene] = random.randint(0,1)
-IndexError: list assignment index out of range
-=======
   File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 55, in generate_new_floorplans
     user_selections_obj.append(id_to_obj(Pt,user_selections))
   File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 407, in id_to_obj
@@ -73,7 +60,6 @@ KeyError: 0
 2018-11-27 13:47:50,685 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 2018-11-27 13:48:41,280 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 2018-11-27 13:50:35,283 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
->>>>>>> viz_og_adjacency
 2018-11-27 14:51:24,195 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 2018-11-27 14:53:38,228 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
 2018-11-27 14:54:28,701 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]

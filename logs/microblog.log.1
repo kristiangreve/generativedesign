@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-2018-11-27 12:13:19,333 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
-=======
 2018-11-28 11:34:24,316 ERROR: Exception on /generate_first_floorplans/ [POST] [in /Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py:1761]
->>>>>>> prototype_v3
 Traceback (most recent call last):
   File "/Users/Kristian/anaconda3/envs/py35/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
     response = self.full_dispatch_request()
@@ -69,7 +65,6 @@ Traceback (most recent call last):
     return self.view_functions[rule.endpoint](**req.view_args)
   File "/Users/Kristian/Documents/DTU/Thesis/generative/app/routes.py", line 42, in generate_first_floorplans
     Pt = initial_generate(user_selections, pop_size, generations)
-<<<<<<< HEAD
   File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 459, in initial_generate
     x_b,y_b1,y_b2,y_b3 = prepare_plot_best_of(x_b,n,y_b1,y_b2,y_b3)
 TypeError: prepare_plot_best_of() missing 1 required positional argument: 'y_b3'
@@ -140,47 +135,3 @@ Traceback (most recent call last):
     x_b.append(n)
 NameError: name 'n' is not defined
 2018-11-27 12:18:08,157 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-=======
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 437, in initial_generate
-    evaluate_pop(Pt,selections, selections) #correct this...
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 107, in evaluate_pop
-    evaluate_layout(individual)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/generative.py", line 95, in evaluate_layout
-    get_layout(individual.definition, individual.room_def, individual.split_list, dir_pop, individual.room_order, individual.min_opening)
-  File "/Users/Kristian/Documents/DTU/Thesis/generative/app/space_planning.py", line 322, in get_layout
-    b = sum(room_areas) / a
-ZeroDivisionError: float division by zero
-2018-11-28 11:40:25,212 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-28 11:51:51,130 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-28 11:52:49,221 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-28 11:54:23,377 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-28 11:54:30,834 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-28 11:54:41,043 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-28 11:55:43,162 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-28 12:00:27,041 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-28 12:06:27,868 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-28 12:07:33,746 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-28 12:14:19,926 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-28 12:15:29,615 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-28 12:17:22,954 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-28 12:18:21,721 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-28 12:19:00,236 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-28 15:01:42,495 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-28 16:48:30,781 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-28 16:49:56,769 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-28 16:51:42,147 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-29 11:26:39,293 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-29 11:33:14,822 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-29 11:34:50,879 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-29 11:36:03,637 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-29 12:55:43,254 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-29 12:58:11,203 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-29 12:58:56,988 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-29 13:00:08,083 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-29 13:05:47,596 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-29 13:14:10,641 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-29 13:15:03,735 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-29 13:16:45,495 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-29 13:18:22,013 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
-2018-11-29 13:21:01,667 INFO: Microblog startup [in /Users/Kristian/Documents/DTU/Thesis/generative/app/__init__.py:46]
->>>>>>> prototype_v3
