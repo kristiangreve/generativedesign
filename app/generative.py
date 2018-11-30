@@ -27,6 +27,7 @@ class individual:
         self.departments = []
         self.aspect_base = {}
         self.ideal_aspect_score = None #To test performance towards Danils script, hardcored aspect ratios
+        self.all_adjacency_dict = None
 
         self.aspect_score = [0,0,0]
         self.base_score = [0,0,0]
@@ -91,7 +92,7 @@ Output: A list of len(size) of individual objects eachw with (dim) variables
 
 def evaluate_layout(individual):
     dir_pop = list(individual.dir_list) # copy the dir list because the passed parameter gets consumed in the get_layout function (pop)
-    max_sizes, dims_score, aspect_base, departments, edges_out, adjacency_score, aspect_score = \
+    max_sizes, dims_score, aspect_base, departments, edges_out, adjacency_score, aspect_score , all_adjacency_dict= \
     get_layout(individual.definition, individual.room_def, individual.split_list, dir_pop, individual.room_order, individual.min_opening)
 
     individual.max_sizes = max_sizes
@@ -100,6 +101,7 @@ def evaluate_layout(individual):
     individual.edges_out = edges_out
     individual.departments = departments
     individual.dims_score = dims_score
+    individual.all_adjacency_dict = all_adjacency_dict
 
 def evaluate_pop(generation,user_input_obj, user_input_dict_list):
     for individual in generation:
