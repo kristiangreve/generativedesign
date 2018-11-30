@@ -1,21 +1,4 @@
-2018-11-20 15:01:10,512 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-20 15:01:27,108 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-20 15:04:50,798 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-20 15:10:50,753 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-20 15:16:20,016 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-20 15:20:05,263 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-20 15:25:33,222 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-20 15:26:41,716 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-20 15:35:45,141 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-20 15:48:02,511 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-20 15:53:50,409 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-20 15:57:48,040 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-20 16:00:00,811 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-20 16:02:33,692 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-20 16:40:06,123 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-21 14:07:21,955 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-21 16:13:43,701 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-21 16:33:56,275 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+2018-11-23 16:02:43,298 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -29,14 +12,15 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 57, in generate_new_floorplans
-    Pt = generate(user_selections_obj,user_selections, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 473, in generate
-    evaluate_pop(Pt,user_selections_obj, user_base_aspect_dict)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 115, in evaluate_pop
-    individual.aspect_score[index] = individual.aspect_score[index] / max_aspect[index] #normalize score
-ZeroDivisionError: division by zero
-2018-11-21 16:34:17,196 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 40, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 516, in initial_generate
+    crowding(Pt)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 246, in crowding
+    individual.crowding_score = individual.crowding_adjacency_score + individual.crowding_aspect_ratio_score
+TypeError: unsupported operand type(s) for +: 'float' and 'NoneType'
+2018-11-23 16:03:20,321 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-23 16:03:25,918 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -50,14 +34,32 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 57, in generate_new_floorplans
-    Pt = generate(user_selections_obj,user_selections, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 473, in generate
-    evaluate_pop(Pt,user_selections_obj, user_base_aspect_dict)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 115, in evaluate_pop
-    individual.aspect_score[index] = individual.aspect_score[index] / max_aspect[index] #normalize score
-ZeroDivisionError: division by zero
-2018-11-21 16:34:33,433 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 40, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 516, in initial_generate
+    crowding(Pt)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 246, in crowding
+    individual.crowding_score = individual.crowding_adjacency_score + individual.crowding_aspect_ratio_score
+TypeError: unsupported operand type(s) for +: 'float' and 'NoneType'
+2018-11-23 16:04:43,451 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-23 16:07:59,529 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-23 16:11:55,993 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-23 16:12:12,768 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-23 16:16:11,986 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-23 16:21:55,514 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-23 16:25:12,895 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-23 16:27:52,834 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-23 16:35:47,802 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-23 16:37:53,521 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-26 10:05:57,942 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-26 10:07:55,503 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-26 10:26:40,098 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-26 10:53:10,458 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-26 10:53:36,697 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-26 11:16:43,863 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-26 14:21:08,561 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-26 14:45:40,321 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-26 14:52:05,780 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -71,14 +73,14 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 57, in generate_new_floorplans
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 60, in generate_new_floorplans
     Pt = generate(user_selections_obj,user_selections, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 473, in generate
-    evaluate_pop(Pt,user_selections_obj, user_base_aspect_dict)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 115, in evaluate_pop
-    individual.aspect_score[index] = individual.aspect_score[index] / max_aspect[index] #normalize score
-ZeroDivisionError: division by zero
-2018-11-21 16:35:34,191 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 494, in generate
+    mutate(Qt, mutation_ratio)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 370, in mutate
+    population[index].dir_list[random_gene] = random.randint(0,1)
+IndexError: list assignment index out of range
+2018-11-26 14:53:53,030 ERROR: Exception on /generate_new_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -92,12 +94,10 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 57, in generate_new_floorplans
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 60, in generate_new_floorplans
     Pt = generate(user_selections_obj,user_selections, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 473, in generate
-    evaluate_pop(Pt,user_selections_obj, user_base_aspect_dict)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 115, in evaluate_pop
-    individual.aspect_score[index] = individual.aspect_score[index] / max_aspect[index] #normalize score
-ZeroDivisionError: division by zero
-2018-11-22 08:49:57,315 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-22 08:53:03,115 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 494, in generate
+    mutate(Qt, mutation_ratio)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 370, in mutate
+    population[index].dir_list[random_gene] = random.randint(0,1)
+IndexError: list assignment index out of range

@@ -1,4 +1,4 @@
-2018-11-23 11:41:57,011 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+2018-11-26 16:38:21,900 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -12,15 +12,26 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 40, in generate_first_floorplans
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 42, in generate_first_floorplans
     Pt = initial_generate(user_selections, pop_size, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 461, in initial_generate
-    crowding(Pt)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 207, in crowding
-    sorted_pareto = sorted(pareto_dict[pareto_counter], key=getattr(objective), reverse=False)
-TypeError: getattr expected at least 2 arguments, got 1
-2018-11-23 11:42:54,929 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-23 11:43:17,650 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 433, in initial_generate
+    evaluate_pop(Pt,selections, selections) #correct this...
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 107, in evaluate_pop
+    individual.evaluate_aspect_ratio()
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 70, in evaluate_aspect_ratio
+    self.aspect_ratio_score = aspect_score
+NameError: name 'aspect_score' is not defined
+2018-11-26 16:38:50,983 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-26 16:45:35,802 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 09:51:45,382 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 10:21:38,971 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 10:23:48,760 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 10:26:31,237 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 10:31:43,141 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 10:33:43,826 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 10:35:05,179 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 10:36:45,639 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 10:36:56,000 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -34,15 +45,19 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 40, in generate_first_floorplans
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 42, in generate_first_floorplans
     Pt = initial_generate(user_selections, pop_size, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 462, in initial_generate
-    crowding(Pt)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 213, in crowding
-    crowd_dist = abs(individual-sorted_pareto[index-1]) + abs(individual-sorted_pareto[+1])
-TypeError: unsupported operand type(s) for -: 'individual' and 'individual'
-2018-11-23 11:45:08,181 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-23 11:45:15,000 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 454, in initial_generate
+    x,y = prepare_plot(Pt,n,x,y)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 462, in prepare_plot
+    x.append(n)
+NameError: name 'n' is not defined
+2018-11-27 10:37:11,522 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 10:43:25,814 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 10:44:35,350 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 10:45:51,338 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 11:02:25,696 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 11:02:34,139 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -56,15 +71,13 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 40, in generate_first_floorplans
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 42, in generate_first_floorplans
     Pt = initial_generate(user_selections, pop_size, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 462, in initial_generate
-    crowding(Pt)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 219, in crowding
-    setattr(individual,'crowding_'+objective,crowd_dist, (getattr(individual,objective)/max_crowd))
-TypeError: setattr expected 3 arguments, got 4
-2018-11-23 11:47:38,997 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-23 11:47:46,224 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 455, in initial_generate
+    x,y1,y2 = prepare_plot(Pt,n,x,y1,y2)
+TypeError: prepare_plot() takes 4 positional arguments but 5 were given
+2018-11-27 11:02:57,949 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 11:03:04,620 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -78,20 +91,15 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 40, in generate_first_floorplans
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 42, in generate_first_floorplans
     Pt = initial_generate(user_selections, pop_size, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 479, in initial_generate
-    Pt = selection(pop_size,Rt)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 380, in selection
-    sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: (-x.crowding_score), reverse=False)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 380, in <lambda>
-    sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: (-x.crowding_score), reverse=False)
-TypeError: bad operand type for unary -: 'list'
-2018-11-23 11:52:33,347 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-23 13:15:26,376 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-23 13:15:51,660 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-23 13:16:09,099 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-23 13:16:13,576 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 458, in initial_generate
+    show_plot(x,y, stringlabel)
+NameError: name 'y' is not defined
+2018-11-27 11:03:54,759 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 11:06:56,701 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 11:11:17,803 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 11:11:24,777 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -105,11 +113,10 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 40, in generate_first_floorplans
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 42, in generate_first_floorplans
     Pt = initial_generate(user_selections, pop_size, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 481, in initial_generate
-    Pt = selection(pop_size,Rt)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 379, in selection
-    print('Adj: ', obj.adjacency_score, ' crowding adj: ', obj.crowding_adjacency_score)
-AttributeError: 'individual' object has no attribute 'crowding_adjacency_score'
-2018-11-23 13:18:48,188 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 458, in initial_generate
+    show_plot(x,y1,y2, stringlabel)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 471, in show_plot
+    plt1.scatter(x,y1, label = 'Adjacency Score', color='red')
+NameError: name 'plt1' is not defined

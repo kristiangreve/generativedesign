@@ -27,6 +27,7 @@ class individual:
         self.departments = []
         self.aspect_base = {}
         self.ideal_aspect_score = None #To test performance towards Danils script, hardcored aspect ratios
+        self.all_adjacency_dict = None
 
         self.aspect_score = [0,0,0]
         self.base_score = [0,0,0]
@@ -91,7 +92,7 @@ Output: A list of len(size) of individual objects eachw with (dim) variables
 
 def evaluate_layout(individual):
     dir_pop = list(individual.dir_list) # copy the dir list because the passed parameter gets consumed in the get_layout function (pop)
-    max_sizes, dims_score, aspect_base, departments, edges_out, adjacency_score, aspect_score = \
+    max_sizes, dims_score, aspect_base, departments, edges_out, adjacency_score, aspect_score , all_adjacency_dict= \
     get_layout(individual.definition, individual.room_def, individual.split_list, dir_pop, individual.room_order, individual.min_opening)
 
     individual.max_sizes = max_sizes
@@ -100,6 +101,7 @@ def evaluate_layout(individual):
     individual.edges_out = edges_out
     individual.departments = departments
     individual.dims_score = dims_score
+    individual.all_adjacency_dict = all_adjacency_dict
 
 def evaluate_pop(generation,user_input_obj, user_input_dict_list):
     for individual in generation:
@@ -339,12 +341,12 @@ def selection(pop_size, population):
         pareto_dict[i.pareto].append(i)
 
     new_gen = []
-    for pareto_counter in range(1,len(pareto_dict)-1):
+    for pareto_counter in range(1,len(pareto_dict)+1):
         if (len(new_gen)+len(pareto_dict[pareto_counter])) < pop_size:
             for obj in pareto_dict[pareto_counter]:
                 new_gen.append(obj)
         else:
-            print('Pareto ', pareto_counter , ' cut. Total len: ', len(pareto_dict[pareto_counter]))
+            #print('Pareto ', pareto_counter , ' cut. Total len: ', len(pareto_dict[pareto_counter]))
             sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: (-x.crowding_score), reverse=False)
             for obj in sorted_pareto:
                 if len(new_gen) < pop_size:
@@ -433,19 +435,21 @@ def initial_generate(selections,pop_size,generations):
     db.session.query(Plan).delete()
     db.session.commit()
     Pt, id = init_population(pop_size)
-
     evaluate_pop(Pt,selections, selections) #correct this...
     save_population_to_database(Pt,0)
     dominance(Pt,selections)
     pareto_score(Pt)
     crowding(Pt)
-    mutation_ratio = 0.05
+    #mutation_ratio = mutation
+    mutation_ratio = 0.01
     plt.figure()
     x1,x_b = [],[]
     y1,y2,y_b1,y_b2,y_b3= [],[],[],[],[]
     gen_list=[]
+    start_time = time.time()
+    print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation_ratio)
     for n in range(generations):
-        print('Generation: ', n)
+        #print('Generation: ', n)
         # add current max id to inputs
         Qt,id = breeding(Pt, id, mutation_ratio)
         mutate(Qt, mutation_ratio)
@@ -457,12 +461,16 @@ def initial_generate(selections,pop_size,generations):
         Pt = selection(pop_size,Rt)
         x1,y1,y2 = prepare_plot(Pt,n,x1,y1,y2)
         x_b,y_b1,y_b2,y_b3 = prepare_plot_best_of(Pt,n,x_b,y_b1,y_b2,y_b3)
+    end_time = time.time()
+    time_ellapsed = end_time-start_time
     save_population_to_database(Pt,generations)
     stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation: '+str(mutation_ratio)
     stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
-    show_plot(x1,y1,y2, stringlabel,stringshort)
-    plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort)
+    #show_plot(x1,y1,y2, stringlabel,stringshort)
+    #plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort)
+    plt.close('all')
     return Pt
+    #return Pt, [x1,y1,y2], [x_b,y_b1,y_b2,y_b3], time_ellapsed
 
 def prepare_plot(population, generation,x,y1,y2):
     for obj in population:
@@ -489,24 +497,31 @@ def plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort):
     while os.path.exists('{}{:d}.png'.format(filename, i)):
         i += 1
     plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
+    plt.close()
 
 
 def prepare_plot_best_of(population, n,x_b,y_b1,y_b2,y_b3):
-    best_adj = population[0].adjacency_score
-    best_aspect = population[0].aspect_ratio_score
-    best_dims = population[0].dims_score
-    for obj in population:
-        if obj.adjacency_score < best_adj:
-            best_adj = obj.adjacency_score
-        if obj.aspect_ratio_score < best_aspect:
-            best_aspect = obj.aspect_ratio_score
-        if obj.dims_score < best_dims:
-            best_dims = obj.dims_score
-    y_b1.append(best_adj)
-    y_b2.append(best_aspect)
-    y_b3.append(best_dims)
-    x_b.append(n)
-    return x_b,y_b1,y_b2,y_b3
+    try:
+        best_adj = population[0].adjacency_score
+        best_aspect = population[0].aspect_ratio_score
+        best_dims = population[0].dims_score
+        for obj in population:
+            if obj.adjacency_score < best_adj:
+                best_adj = obj.adjacency_score
+            if obj.aspect_ratio_score < best_aspect:
+                best_aspect = obj.aspect_ratio_score
+            if obj.dims_score < best_dims:
+                best_dims = obj.dims_score
+        y_b1.append(best_adj)
+        y_b2.append(best_aspect)
+        y_b3.append(best_dims)
+        x_b.append(n)
+        return x_b,y_b1,y_b2,y_b3
+    except IndexError:
+        print('INDEX ERROR')
+        print('Len of pop: ', len(population))
+        print('Pop: ', population)
+
 
 
 def show_plot(x,y1,y2, stringlabel,stringshort):
@@ -540,6 +555,7 @@ def show_plot(x,y1,y2, stringlabel,stringshort):
     plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
 
     plt.gcf().clear()
+    plt.close()
     #plt.show()
 
 def show_2yaxis(x,y1,y2, stringlabel):
@@ -593,7 +609,7 @@ def generate(user_selections_obj,user_selections_rooms,generations):
     dominance(Pt,user_selections_obj)
     pareto_score(Pt)
     crowding(Pt)
-    mutation_ratio = 0.05
+    mutation_ratio = 0.01
     plt.figure()
     x=[]
     y=[]
@@ -660,12 +676,12 @@ def select_objects_for_render(population,selections):
         for pareto_front in sorted(pareto_dict.keys()):
             if len(selection_list) == 0:
             #Best adjacency of which is most similar to dir/split/ordder of user selction
-                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score,x.aspect_base_score, x.aspect_ratio_score, x.dims_score, -x.crowding_score), reverse=False)
+                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_base_score, x.adjacency_score, x.aspect_ratio_score, x.dims_score, -x.crowding_score), reverse=False)
                 selection_list.append(adjacency_sorted[0])
 
             if len(selection_list)==1:
                 #Most similar dir/split/room_order
-                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_base_score, x.aspect_ratio_score, x.dims_score, x.adjacency_score, -x.crowding_score), reverse=False)
+                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score, x.aspect_base_score, x.aspect_ratio_score, x.dims_score, -x.crowding_score), reverse=False)
                 for obj in interactive_sorted:
                     if len(selection_list)==1:
                         if obj not in selection_list:

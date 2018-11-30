@@ -1,4 +1,4 @@
-2018-11-23 14:38:10,293 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+2018-11-27 12:13:19,333 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -12,15 +12,13 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 40, in generate_first_floorplans
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 42, in generate_first_floorplans
     Pt = initial_generate(user_selections, pop_size, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 511, in initial_generate
-    crowding(Pt)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 241, in crowding
-    individual.crowding_score = individual.crowding_adjacency_score + individual.crowding_aspect_ratio_score
-TypeError: unsupported operand type(s) for +: 'float' and 'NoneType'
-2018-11-23 14:42:13,332 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-23 14:42:16,980 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 444, in initial_generate
+    x1,x_b=[]*2
+ValueError: not enough values to unpack (expected 2, got 0)
+2018-11-27 12:14:28,077 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 12:14:34,009 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -34,15 +32,15 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 40, in generate_first_floorplans
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 42, in generate_first_floorplans
     Pt = initial_generate(user_selections, pop_size, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 512, in initial_generate
-    crowding(Pt)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 242, in crowding
-    individual.crowding_score = individual.crowding_adjacency_score + individual.crowding_aspect_ratio_score
-TypeError: unsupported operand type(s) for +: 'float' and 'NoneType'
-2018-11-23 14:46:08,529 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-23 14:46:13,356 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 458, in initial_generate
+    x1,y1,y2 = prepare_plot(Pt,n,x1,y1,y2)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 469, in prepare_plot
+    x.append(generation)
+AttributeError: 'NoneType' object has no attribute 'append'
+2018-11-27 12:15:24,697 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 12:15:29,658 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -56,15 +54,13 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 40, in generate_first_floorplans
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 42, in generate_first_floorplans
     Pt = initial_generate(user_selections, pop_size, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 513, in initial_generate
-    crowding(Pt)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 243, in crowding
-    individual.crowding_score = individual.crowding_adjacency_score + individual.crowding_aspect_ratio_score
-TypeError: unsupported operand type(s) for +: 'float' and 'NoneType'
-2018-11-23 15:56:26,005 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-23 15:57:40,695 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 459, in initial_generate
+    x_b,y_b1,y_b2,y_b3 = prepare_plot_best_of(x_b,n,y_b1,y_b2,y_b3)
+TypeError: prepare_plot_best_of() missing 1 required positional argument: 'y_b3'
+2018-11-27 12:16:47,836 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 12:16:53,051 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -78,16 +74,15 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 40, in generate_first_floorplans
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 42, in generate_first_floorplans
     Pt = initial_generate(user_selections, pop_size, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 513, in initial_generate
-    crowding(Pt)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 243, in crowding
-    individual.crowding_score = individual.crowding_adjacency_score + individual.crowding_aspect_ratio_score
-TypeError: unsupported operand type(s) for +: 'float' and 'NoneType'
-2018-11-23 16:00:07,046 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-23 16:00:21,714 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
-2018-11-23 16:00:31,958 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 459, in initial_generate
+    x_b,y_b1,y_b2,y_b3 = prepare_plot_best_of(Pt,n,x_b,y_b1,y_b2,y_b3)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 496, in prepare_plot_best_of
+    if obj.aspect_score_ratio < best_aspect:
+AttributeError: 'individual' object has no attribute 'aspect_score_ratio'
+2018-11-27 12:17:24,656 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 12:17:30,439 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
 Traceback (most recent call last):
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
     response = self.full_dispatch_request()
@@ -101,11 +96,33 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 40, in generate_first_floorplans
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 42, in generate_first_floorplans
     Pt = initial_generate(user_selections, pop_size, generations)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 514, in initial_generate
-    crowding(Pt)
-  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 244, in crowding
-    individual.crowding_score = individual.crowding_adjacency_score + individual.crowding_aspect_ratio_score
-TypeError: unsupported operand type(s) for +: 'float' and 'NoneType'
-2018-11-23 16:02:35,695 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 459, in initial_generate
+    x_b,y_b1,y_b2,y_b3 = prepare_plot_best_of(Pt,n,x_b,y_b1,y_b2,y_b3)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 503, in prepare_plot_best_of
+    x_b.append(n)
+NameError: name 'x_b' is not defined
+2018-11-27 12:17:48,737 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
+2018-11-27 12:17:54,101 ERROR: Exception on /generate_first_floorplans/ [POST] [in C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py:1560]
+Traceback (most recent call last):
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\_compat.py", line 33, in reraise
+    raise value
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\jalke\Anaconda3\lib\site-packages\flask\app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\routes.py", line 42, in generate_first_floorplans
+    Pt = initial_generate(user_selections, pop_size, generations)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 459, in initial_generate
+    x_b,y_b1,y_b2,y_b3 = prepare_plot_best_of(Pt,n,x_b,y_b1,y_b2,y_b3)
+  File "C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\generative.py", line 503, in prepare_plot_best_of
+    x_b.append(n)
+NameError: name 'n' is not defined
+2018-11-27 12:18:08,157 INFO: Microblog startup [in C:\Users\jalke\Documents\Kandidat\Speciale\generativedesign\app\__init__.py:46]
