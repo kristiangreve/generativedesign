@@ -104,8 +104,6 @@ def evaluate_layout(individual):
     individual.dims_score = dims_score
     individual.all_adjacency_dict = all_adjacency_dict
 
-    print("definition of individual: ", individual.definition)
-
 def evaluate_pop(generation,user_input_obj, user_input_dict_list):
     for individual in generation:
         if individual.adjacency_score == None: #only call layout if the given object hasn't been evaluated yet
@@ -349,11 +347,9 @@ def selection(pop_size, population):
             for obj in pareto_dict[pareto_counter]:
                 new_gen.append(obj)
         else:
-<<<<<<< HEAD
+
             # print('Pareto ', pareto_counter , ' cut. Total len: ', len(pareto_dict[pareto_counter]))
-=======
-            #print('Pareto ', pareto_counter , ' cut. Total len: ', len(pareto_dict[pareto_counter]))
->>>>>>> master
+
             sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: (-x.crowding_score), reverse=False)
             for obj in sorted_pareto:
                 if len(new_gen) < pop_size:
@@ -456,11 +452,8 @@ def initial_generate(selections,pop_size,generations):
     start_time = time.time()
     print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation_ratio)
     for n in range(generations):
-<<<<<<< HEAD
-        # print('Generation: ', n)
-=======
+
         #print('Generation: ', n)
->>>>>>> master
         # add current max id to inputs
         Qt,id = breeding(Pt, id, mutation_ratio)
         mutate(Qt, mutation_ratio)
@@ -614,9 +607,7 @@ def generate(user_selections_obj,user_selections_rooms,generations):
     # load latest generation from database into objects
     Pt = get_population_from_database(current_generation)
 
-    print("printing definitions for the current generation")
-    for ind in Pt:
-        print(ind.definition)
+
 
 
     id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
@@ -659,15 +650,19 @@ def json_departments_from_db():
     department_list = []
     for department in departments:
         department_dict = {}
+        department_dict['window']=department.window
+        department_dict['transit']=department.transit
         department_dict['name']=department.name
         department_dict['area']=department.size
 
         adjacency = json.loads(department.adjacency)
-        if department.employees > 0:
+
+        if department.window == 1:
             adjacency.append("outside")
         department_dict['adjacency']=adjacency
 
         department_list.append(department_dict)
+
     return {"aspect":aspect, "rooms":department_list}
 
 def random_design(definition):
@@ -774,20 +769,16 @@ def update_definition(edges,nodes,generation):
         if to_id == None:
             rooms.append({"name": edge['to'], "adjacency": [edge['from']]})
 
-    print("updating definition with rooms: ", rooms)
 
     query = db.session.query(Plan).filter_by(generation=generation).first()
     definition = json.loads(query.definition)
 
     for i, room in enumerate(definition["rooms"]):
-        print(i,room)
         adjacency = next( (rm['adjacency'] for rm in rooms if rm['name'] == room['name']), None)
         if adjacency:
             definition['rooms'][i]['adjacency'] = adjacency
         else:
             definition['rooms'][i]['adjacency'] = []
-
-    print("definition after changes: ", definition)
 
     query = db.session.query(Plan).filter_by(generation=generation).all()
     for plan in query:

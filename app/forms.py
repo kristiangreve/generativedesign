@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, \
-    TextAreaField, IntegerField
+    TextAreaField, IntegerField, RadioField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, \
     Length
 from app.models import User
@@ -62,11 +62,22 @@ class PostForm(FlaskForm):
     post = TextAreaField('Say something', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
+
+class CompanyForm(FlaskForm):
+    company_name = TextAreaField('company_name', validators=[Length(min=0, max=140)], render_kw={"placeholder": "Name of your company"})
+    number_of_employees = IntegerField('number_of_employees', validators=[DataRequired()],render_kw={"placeholder": "Number of employees"})
+
+
+
 class DepartmentForm(FlaskForm):
-    name = TextAreaField('Department', validators=[Length(min=0, max=140)], render_kw={"placeholder": "Give the department a descriptive name"})
-    size = IntegerField('Size', validators=[DataRequired()],render_kw={"placeholder": "Size of department"})
-    employees = IntegerField('Number of employees',render_kw={"placeholder": "Number of employees if any"})
-    submit = SubmitField('Add department')
+    name = TextAreaField('Department', validators=[Length(min=0, max=140)], render_kw={"placeholder": "Name"})
+    employees = IntegerField('Employees',render_kw={"placeholder": "#"})
+    window = RadioField('Gender', choices = [('M','Male'),('F','Female')])
+
+    transit = BooleanField()
+    area = IntegerField('Area', validators=[DataRequired()],render_kw={"placeholder": "m^2"})
+
+    submit = SubmitField('Add')
 
 class EditDepartmentForm(FlaskForm):
     name = TextAreaField('Department name', validators=[Length(min=0, max=140)])

@@ -39,15 +39,9 @@ def generate_first_floorplans():
     user_selections = []
     user_selections_obj = []
     # generate first generation and return
-<<<<<<< HEAD
     pop_size = 50
     generations = 10
     #print("user selections: ",user_selections)
-=======
-    pop_size = 10
-    generations = 1
-    print("user selections: ",user_selections)
->>>>>>> master
     Pt = initial_generate(user_selections, pop_size, generations)
     #print("first floorplans rendered")
     return jsonify(select_objects_for_render(Pt, user_selections))
@@ -156,19 +150,68 @@ def index():
     #performance_test_start()
     return render_template('index.html', title='Home', form=form)
 
+
+        # try:
+        #     adjacents = json.loads(department.adjacency)
+        #     for adj in adjacents:
+        #         dep = Department.query.filter_by(name = adj).first()
+        #         dep_adjacents = json.loads(dep.adjacency)
+        #         dep_adjacents.remove(department.name)
+        #         dep.adjacency = json.dumps(dep_adjacents)
+        # except:
+        #     pass
+
+
 @app.route('/departments', methods=['GET', 'POST'])
 @login_required
 def departments():
     departments = current_user.departments
-    space_size = current_user.length * current_user.width
-    form = DepartmentForm()
+
+    # print(departments)
+    #form = DepartmentForm()
     space_left = current_user.length * current_user.width - sum([dep.size for dep in departments])
-    if form.validate_on_submit():
-        department = Department(name = form.name.data.capitalize(), size = form.size.data, employees = form.employees.data, owner = current_user)
-        db.session.add(department)
-        db.session.commit()
+
+
+    # form code:
+    window_room = 0
+    transit_room = 0
+
+    if request.method == 'POST':
+        if request.form.get('action') != 'add':
+
+            print("name of department: ",str(request.form.get('action')))
+            name_of_department = str(request.form.get('action')).capitalize()
+            dep = Department.query.filter_by(name = name_of_department).first()
+            print(dep)
+
+            db.session.delete(dep)
+            db.session.commit()
+
+        if request.form.get('action') == 'add':
+            if request.form.get('window_room'):
+                window_room = 1
+            if request.form.get('transit_room'):
+                transit_room = 1
+            name_of_department = str(request.form.get('name_of_department')).capitalize()
+
+            if request.form.get('number_of_employees'):
+                number_of_employees = int(request.form.get('number_of_employees'))
+            else:
+                number_of_employees = 0
+
+            # check if an area has been submitted, if not calculate area from number of employees
+            if request.form.get('area_of_department'):
+                area = int(request.form.get('area_of_department'))
+            else:
+                area = number_of_employees*7
+
+            dep = Department(name = name_of_department, size = area, employees = number_of_employees, transit = transit_room, window = window_room, owner = current_user)
+            db.session.add(dep)
+            db.session.commit()
+
         return redirect(url_for('departments'))
-    return render_template('departments.html', title='Add departments', form=form, departments=departments, space = space_left)
+
+    return render_template('departments.html', title='Departments', departments=departments, space = space_left)
 
 
 

@@ -374,10 +374,6 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
             if [room1, room2] not in adjacency_list and [room2, room1] not in adjacency_list:
                     adjacency_list.append([room1, room2])
 
-<<<<<<< HEAD
-
-=======
->>>>>>> master
     aspect_dict = {}
 
     for room in room_def:
