@@ -1,5 +1,5 @@
 import math, json, random
-
+from collections import defaultdict
 
 def remap(value, min1, max1, min2, max2):
     return float(min2) + (float(value) - float(min1)) * (float(max2) - float(min2)) / (float(max1) - float(min1))
@@ -359,10 +359,11 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
     split_list = [node.get_info() for node in split_nodes]
 
     room_dict = {"outside": 0}
+    id_room_dict = {0: "outside"}
 
     for i, room_name in enumerate(room_names):
         room_dict[room_name] = i+1
-
+        id_room_dict[i+1] = room_name
 
     adjacency_list = []
 
@@ -373,7 +374,10 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
             if [room1, room2] not in adjacency_list and [room2, room1] not in adjacency_list:
                     adjacency_list.append([room1, room2])
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
     aspect_dict = {}
 
     for room in room_def:
@@ -397,6 +401,14 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
 
     zone_edges = layout.get_face_edges()[1:]
     edges_neighbors = layout.get_edge_neighbors()
+
+
+    all_adjacency_dict = defaultdict(list)
+    for adjacency_pair in edges_neighbors:
+        if id_room_dict[adjacency_pair[1]] not in all_adjacency_dict[id_room_dict[adjacency_pair[0]]]:
+            all_adjacency_dict[id_room_dict[adjacency_pair[0]]].append(id_room_dict[adjacency_pair[1]])
+        if id_room_dict[adjacency_pair[0]] not in all_adjacency_dict[id_room_dict[adjacency_pair[1]]]:
+            all_adjacency_dict[id_room_dict[adjacency_pair[1]]].append(id_room_dict[adjacency_pair[0]])
 
 
     aspects = [a for i,a in enumerate(layout.get_face_aspects()[1:]) if aspect_bool[i]]
@@ -458,4 +470,4 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
         department_dict = {"base": base, "dims": dim, "name": name }
         departments.append(department_dict)
 
-    return max_sizes, dims_score, aspect_room_dict, departments, edges_out, adjacency_score, aspect_score
+    return max_sizes, dims_score, aspect_room_dict, departments, edges_out, adjacency_score, aspect_score, all_adjacency_dict
