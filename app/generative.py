@@ -82,6 +82,35 @@ class individual:
         #self.aspect_score = aspect_score
         self.base_score = base_score
 
+    def evaluate_access_score(self):
+        tmp_transit_score = 0
+        for adjacency_list in self.all_adjacency_dict.values():
+            for adjacent_room in adjacency_list:
+                if adjacent_room.transit == True:
+                    break
+            tmp_transit_score += 1 #If non of the adjacent rooms are transit rooms
+        self.access_score = tmp_transit_score
+
+    def evaluate_transit_connections(self,transit_dict, temp_list=[], score =0):
+        if len(transit_dict) == 0:
+            self.transit_connections_score = score-1
+        else:
+            if len(temp_list) == 0:
+                score += 1
+                seed_key, seed_value = transit_dict.popitem()
+                if seed_value:
+                    for element in seed_value:
+                        if element not in temp_list:
+                            temp_list.append(element)
+                else:
+                    return evaluate_transit_connections(self, transit_dict, temp_list, score)
+            path = temp_list.pop()
+            adjacent_list = transit_dict.pop(path,None)
+            if adjacent_list != None:
+                for element in adjacent_list:
+                    temp_list.append(element)
+            return evaluate_transit_connections(self, transit_dict, temp_list, score)
+
 
 """
 init_population:
@@ -102,12 +131,31 @@ def evaluate_layout(individual):
     individual.departments = departments
     individual.dims_score = dims_score
     individual.all_adjacency_dict = all_adjacency_dict
+    individual.transit_adjacency_list = transit_adjacent_list(individual)
+
+def transit_adjacent_list(individual):
+    transit_list = []
+    for room in individual.definition['rooms']:
+        if room['transit'] == True:
+            transit_list.append(room)
+    transit_adjacency_dict = defaultdict()
+    for room,adjacency_list in individual.all_adjacency_dict:
+        if room in transit_list:
+            adjacent_transits = [adjacent_room for adjacent_room in adjacency_list if adjacent_room in transit_list]
+            transit_adjacency_dict[room] = adjacent_transits
+    return transit_list
 
 def evaluate_pop(generation,user_input_obj, user_input_dict_list):
     for individual in generation:
         if individual.adjacency_score == None: #only call layout if the given object hasn't been evaluated yet
             evaluate_layout(individual)
             individual.evaluate_aspect_ratio()
+            individual.evaluate_access_score()
+            individual.evaluate_transit_connections(individual.transit_adjacency_list.copy(),[])
+
+
+
+
         if len(user_input_obj)>0: # if user input exists
             if len(user_input_obj)>2: #if more than 3 user inputs, only take into account last 3 selections
                 user_input_obj = user_input_obj[-3:] #slice any elements before last 3 off
