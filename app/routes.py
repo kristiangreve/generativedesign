@@ -10,7 +10,7 @@ from app.email import send_password_reset_email
 import json
 from operator import itemgetter
 from app.generative import json_departments_from_db, random_design, generate, get_population_from_database, \
-initial_generate, select_objects_for_render, evaluate_layout, id_to_obj
+initial_generate, select_objects_for_render, evaluate_layout, id_to_obj, update_definition
 from app.space_planning import get_layout
 
 user_selections = []
@@ -37,32 +37,27 @@ def generate_first_floorplans():
     user_selections_obj = []
     # generate first generation and return
     pop_size = 50
-    generations = 5
-    print("user selections: ",user_selections)
+    generations = 10
+    #print("user selections: ",user_selections)
     Pt = initial_generate(user_selections, pop_size, generations)
-    print("first floorplans rendered")
+    #print("first floorplans rendered")
     return jsonify(select_objects_for_render(Pt, user_selections))
 
 @app.route('/generate_new_floorplans/', methods = ['GET', 'POST'])
 def generate_new_floorplans():
-    generations = 5
-
+    generations = 10
     selected_rooms = json.loads(request.form['selected_rooms'])
-
-    # nodes = json.loads(request.form['nodes'])
-    # edges = json.loads(request.form['edges'])
-
-    # print("nodes: ", nodes)
-    # print("edges: ", edges)
-
-    print("selected rooms: ",selected_rooms)
-
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
+    nodes = json.loads(request.form['nodes'])
+    edges = json.loads(request.form['edges'])
+
+    update_definition(edges,nodes,current_generation)
+
     Pt = get_population_from_database(current_generation)
 
     if len(selected_rooms)>0:
         user_selections.append(selected_rooms)
-        print("User selection sum: ", user_selections)
+        #print("User selection sum: ", user_selections)
         user_selections_obj.append(id_to_obj(Pt,user_selections))
     # create new generation based on choices
     Pt = generate(user_selections_obj,user_selections, generations)

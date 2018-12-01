@@ -314,8 +314,8 @@ class Node:
         else:
             return str(self.id)
 
-def get_layout(definition, room_def, split_list, dir_list, room_order, min_opening):
 
+def get_layout(definition, room_def, split_list, dir_list, room_order, min_opening):
     # load room data set and check for errors
     room_areas = [room["area"] for room in room_def]
     a = math.sqrt(definition["aspect"] * sum(room_areas))
@@ -374,8 +374,6 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
                     adjacency_list.append([room1, room2])
 
 
-    print(adjacency_list)
-    
     aspect_dict = {}
 
     for room in room_def:

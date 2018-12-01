@@ -90,6 +90,7 @@ Output: A list of len(size) of individual objects eachw with (dim) variables
 """
 
 def evaluate_layout(individual):
+
     dir_pop = list(individual.dir_list) # copy the dir list because the passed parameter gets consumed in the get_layout function (pop)
     max_sizes, dims_score, aspect_base, departments, edges_out, adjacency_score, aspect_score = \
     get_layout(individual.definition, individual.room_def, individual.split_list, dir_pop, individual.room_order, individual.min_opening)
@@ -100,6 +101,8 @@ def evaluate_layout(individual):
     individual.edges_out = edges_out
     individual.departments = departments
     individual.dims_score = dims_score
+
+    print("definition of individual: ", individual.definition)
 
 def evaluate_pop(generation,user_input_obj, user_input_dict_list):
     for individual in generation:
@@ -344,7 +347,7 @@ def selection(pop_size, population):
             for obj in pareto_dict[pareto_counter]:
                 new_gen.append(obj)
         else:
-            print('Pareto ', pareto_counter , ' cut. Total len: ', len(pareto_dict[pareto_counter]))
+            # print('Pareto ', pareto_counter , ' cut. Total len: ', len(pareto_dict[pareto_counter]))
             sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: (-x.crowding_score), reverse=False)
             for obj in sorted_pareto:
                 if len(new_gen) < pop_size:
@@ -445,7 +448,7 @@ def initial_generate(selections,pop_size,generations):
     y1,y2,y_b1,y_b2,y_b3= [],[],[],[],[]
     gen_list=[]
     for n in range(generations):
-        print('Generation: ', n)
+        # print('Generation: ', n)
         # add current max id to inputs
         Qt,id = breeding(Pt, id, mutation_ratio)
         mutate(Qt, mutation_ratio)
@@ -519,7 +522,7 @@ def show_plot(x,y1,y2, stringlabel,stringshort):
     plt.ylabel('Adjacency score',fontsize=15)
 
     filename = 'photos/Adjacency_'+stringshort
-    print(filename)
+    # print(filename)
     i = 0
     while os.path.exists('{}{:d}.png'.format(filename, i)):
         i += 1
@@ -580,10 +583,18 @@ def show_plot_scatter():
 
 
 def generate(user_selections_obj,user_selections_rooms,generations):
+
     # query for max generation value in database
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
+
     # load latest generation from database into objects
     Pt = get_population_from_database(current_generation)
+
+    print("printing definitions for the current generation")
+    for ind in Pt:
+        print(ind.definition)
+
+
     id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
     pop_size=len(Pt)
 
@@ -598,8 +609,9 @@ def generate(user_selections_obj,user_selections_rooms,generations):
     x=[]
     y=[]
     gen_list=[]
+
     for n in range(generations):
-        print('Generation: ', current_generation+n)
+        # print('Generation: ', current_generation+n)
         Qt, id = breeding(Pt,id, mutation_ratio)
         mutate(Qt, mutation_ratio)
         evaluate_pop(Qt,user_selections_obj, user_base_aspect_dict)
@@ -612,8 +624,10 @@ def generate(user_selections_obj,user_selections_rooms,generations):
     #select_objects_for_render(Pt,selections)
     #show_plot()
     save_population_to_database(Pt,generations+current_generation)
-    print("Run a total of ", (generations+current_generation), ' generations')
+    # print("Run a total of ", (generations+current_generation), ' generations')
     return Pt
+
+# function for creating room definition
 
 def json_departments_from_db():
     departments = current_user.departments
@@ -623,10 +637,12 @@ def json_departments_from_db():
         department_dict = {}
         department_dict['name']=department.name
         department_dict['area']=department.size
+
         adjacency = json.loads(department.adjacency)
         if department.employees > 0:
             adjacency.append("outside")
         department_dict['adjacency']=adjacency
+
         department_list.append(department_dict)
     return {"aspect":aspect, "rooms":department_list}
 
@@ -660,12 +676,15 @@ def select_objects_for_render(population,selections):
         for pareto_front in sorted(pareto_dict.keys()):
             if len(selection_list) == 0:
             #Best adjacency of which is most similar to dir/split/ordder of user selction
-                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_base_score, x.aspect_ratio_score, x.dims_score, x.adjacency_score, -x.crowding_score), reverse=False)
+                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score, x.aspect_ratio_score, x.aspect_base_score, x.dims_score, -x.crowding_score), reverse=False)
                 selection_list.append(adjacency_sorted[0])
+                print("data on the plan on top: ")
+                print(adjacency_sorted[0].adjacency_score)
+                print(adjacency_sorted[0].aspect_ratio_score)
 
             if len(selection_list)==1:
                 #Most similar dir/split/room_order
-                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score, x.aspect_ratio_score, x.aspect_base_score, x.dims_score, -x.crowding_score), reverse=False)
+                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_ratio_score, x.aspect_base_score, x.dims_score, x.adjacency_score, -x.crowding_score), reverse=False)
                 for obj in interactive_sorted:
                     if len(selection_list)==1:
                         if obj not in selection_list:
@@ -699,9 +718,9 @@ def select_objects_for_render(population,selections):
                 break
 
     for index, obj in enumerate(selection_list):
-        print('Obj:', index, ' : ', obj)
-        #print('aspect/base', obj.aspect_base_score)
-        #print('interactive', obj.interactive_score)
+        # print('Obj:', index, ' : ', obj)
+        # print('aspect/base', obj.aspect_base_score)
+        # print('interactive', obj.interactive_score)
         for i,elem in enumerate(obj.aspect_score): #... this works...
             obj.aspect_score[i] = round(elem,3)
 
@@ -709,13 +728,51 @@ def select_objects_for_render(population,selections):
             obj.base_score[i] = round(elemt,3)
 
 
-        print('Adj: ', obj.adjacency_score, 'user: ', round(obj.aspect_base_score,2),'user_aspect: ', obj.aspect_score, 'user_base: ', obj.base_score, 'aspect: ', round(obj.aspect_ratio_score,2), ' dims: ', obj.dims_score, 'Crowd: ', round(obj.crowding_score,2), 'CrowdAdj: ', round(obj.crowding_adjacency_score,2), 'CrowdRatio: ', round(obj.crowding_aspect_ratio_score,2))
+        # print('Adj: ', obj.adjacency_score, 'user: ', round(obj.aspect_base_score,2),'user_aspect: ', obj.aspect_score, 'user_base: ', obj.base_score, 'aspect: ', round(obj.aspect_ratio_score,2), ' dims: ', obj.dims_score, 'Crowd: ', round(obj.crowding_score,2), 'CrowdAdj: ', round(obj.crowding_adjacency_score,2), 'CrowdRatio: ', round(obj.crowding_aspect_ratio_score,2))
     return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2]),object_to_visuals(selection_list[3])]
     #selection_list = [object_to_visuals(x) for x in selection_list]
     #return selection_list
 
 def object_to_visuals(object):
     return {"max_sizes": object.max_sizes,"departments":object.departments,"adjacency_score":object.adjacency_score,"id":object.plan_id}
+
+def update_definition(edges,nodes,generation):
+    rooms = []
+    for edge in edges:
+        from_id = next( (i for i,room in enumerate(rooms) if room['name'] == edge['from']), None)
+        to_id = next( (i for i,room in enumerate(rooms) if room['name'] == edge['to']), None)
+        if from_id != None:
+            rooms[from_id]['adjacency'].append(edge['to'])
+        if to_id != None:
+            rooms[to_id]['adjacency'].append(edge['from'])
+        if from_id == None:
+            rooms.append({"name": edge['from'], "adjacency": [edge['to']]})
+        if to_id == None:
+            rooms.append({"name": edge['to'], "adjacency": [edge['from']]})
+
+    print("updating definition with rooms: ", rooms)
+
+    query = db.session.query(Plan).filter_by(generation=generation).first()
+    definition = json.loads(query.definition)
+
+    for i, room in enumerate(definition["rooms"]):
+        print(i,room)
+        adjacency = next( (rm['adjacency'] for rm in rooms if rm['name'] == room['name']), None)
+        if adjacency:
+            definition['rooms'][i]['adjacency'] = adjacency
+        else:
+            definition['rooms'][i]['adjacency'] = []
+
+    print("definition after changes: ", definition)
+
+    query = db.session.query(Plan).filter_by(generation=generation).all()
+    for plan in query:
+        plan.definition = json.dumps(definition)
+        plan.room_def = definition["rooms"]
+    db.session.commit()
+
+
+
 
 def get_population_from_database(generation):
     query = db.session.query(Plan).filter_by(generation=generation).all()
