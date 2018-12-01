@@ -24,6 +24,8 @@ class User(UserMixin, db.Model):
     length = db.Column(db.Integer)
     width = db.Column(db.Integer)
 
+    number_of_employees = db.Column(db.Integer)
+
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     departments = db.relationship('Department', backref='owner', lazy='dynamic')
     plans = db.relationship('Plan', backref='owner', lazy='dynamic')
@@ -93,6 +95,10 @@ class Department(db.Model):
     name = db.Column(db.String(140))
     employees = db.Column(db.Integer)
     size = db.Column(db.Integer)
+
+    transit = db.Column(db.Integer,default=0)
+    window = db.Column(db.Integer,default=0)
+
     adjacency = db.Column(db.String(),default="[]")
     def __repr__(self):
         return '<Department {}>'.format(self.name)

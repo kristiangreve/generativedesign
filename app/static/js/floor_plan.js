@@ -5,9 +5,14 @@ var previously_selected_rooms_render = [];
 var selected_rooms = [];
 var current_adjacency_department = [];
 var room_selection_papers = [];
-
+var current_group = [];
+var specified_rooms = [];
+var render_array = [];
+var group_id = 0;
 // setup canvases
 $(document).ready(setup_canvases_as_projects);
+
+
 // $(document).ready(setup_room_selection_canvas);
 
 function setup_canvases_as_projects(){
@@ -32,13 +37,13 @@ function generate_first_floorplans() {
 		pop_size:0,
 		generations:0
 	}).done(function(response) {
-		render_floorplans(response);
+		render_array = response;
+		render_floorplans(render_array);
 	});
 };
 
 function render_floorplans(render_array) {
 	canvases = jQuery.makeArray($(".floor_canvas"));
-
 	for( var i = 0; i< canvases.length; i++){
 		canvases[i].setAttribute('plan_id',render_array[i]['id']);
 		plotPlan(canvases[i],i,render_array[i]);
@@ -51,27 +56,37 @@ function parse_dim(float) {
 };
 
 function update_nodes() {
-var unique_nodes = [];
-edges.forEach(function(element){
-	unique_nodes.push(element.to);
-	unique_nodes.push(element.from);
-});
+	var unique_nodes = [];
+	edges.forEach(function(element){
+		unique_nodes.push(element.to);
+		unique_nodes.push(element.from);
+	});
 
-unique_nodes = Array.from(new Set(unique_nodes));
-nodes = [];
-unique_nodes.forEach(function(element){
-	node_dict = {};
-	node_dict.id = element;
-	node_dict.label = element;
-	node_dict.fixed = true;
-	node_dict.shape = 'dot';
-	node_dict.color = 'lightgreen';
-	nodes.push(node_dict)
-})
-console.log("nodes: ",nodes);
+	unique_nodes = Array.from(new Set(unique_nodes));
+	nodes = [];
+	unique_nodes.forEach(function(element){
+		node_dict = {};
+		node_dict.id = element;
+		node_dict.label = element;
+		node_dict.shape = 'dot';
+		node_dict.color = 'lightgreen';
+		nodes.push(node_dict)
+	})
+	console.log("nodes: ",nodes);
 
 };
 
+function add_nodes(group,group_id){
+	group.forEach(function(element){
+		node_dict = {};
+		node_dict.group = group_id;
+		node_dict.id = element;
+		node_dict.label = element;
+		node_dict.color = 'lightgreen';
+		nodes.push(node_dict)
+	});
+	update_adjacency_graph();
+};
 
 function is_adjacent(department1,department2) {
 	var edgeIndex =	edges.findIndex(function(element) {
@@ -97,7 +112,6 @@ function remove_adjacent(department1,department2) {
 	update_nodes();
 	update_adjacency_graph();
 };
-
 
 function plotPlan(plotCanvas,project_id,render_graphics) {
 	mypapers[project_id].activate();
@@ -127,7 +141,6 @@ function plotPlan(plotCanvas,project_id,render_graphics) {
 		var base = new Point(element.base[0]*scale_factor,element.base[1]*scale_factor);
 		var dims = new Size(element.dims[1]*scale_factor,element.dims[0]*scale_factor);
 		var name = element.name;
-
 		var department = new Rectangle(base,dims);
 		var path = new Path.Rectangle(department);
 
@@ -142,6 +155,7 @@ function plotPlan(plotCanvas,project_id,render_graphics) {
 		var center_point = new Point(department.center._x,department.center._y);
 		var text_name = new PointText(center_point);
 		text_name.fillColor = 'black';
+
 		text_name.fontSize = font_size_name;
 		text_name.justification = 'center';
 		text_name.content = name;
@@ -149,60 +163,47 @@ function plotPlan(plotCanvas,project_id,render_graphics) {
 		// Mouse over events //
 
 		path.onMouseEnter = function(event) {
-			// if no department is currently being specified for adajcencies:
-			if (current_adjacency_department == ""){
-				this.fillColor = 'blue';
-				// if another department is currently being specified for adjacencies:
-			} else if (current_adjacency_department == this.name) {
-				this.fillColor = 'blue';
-			} else {
-				// check if it has already been specified as adjacent to that department
-				if (is_adjacent(current_adjacency_department,this.name) > -1) {
-					this.fillColor = 'red';
-				} else {
-					this.fillColor = 'green';
-				};
-			};
+			this.fillColor = 'lightgreen';
 		};
 
-
 		path.onClick = function(event) {
-			// if no department is currently being specified for adajcencies:
-			if (current_adjacency_department == ""){
-				current_adjacency_department = this.name;
-				console.log("current_adjacency_department: ", current_adjacency_department)
-				// if this is the department currently being specified for adjacencies:
-			} else if (current_adjacency_department == this.name){
-				current_adjacency_department = "";
-				console.log("current_adjacency_department: ", current_adjacency_department)
-				// if another department is currently being specified for adjacencies:
+			// if it is in the current group, remove
+			index = current_group.indexOf(this.name)
+			console.log("index: ",index);
+			if (index > -1){
+				current_group.splice(index,1);
+				this.fillColor = 'lightgrey';
 			} else {
-				// check if it has already been specified as adjacent to that department
-				if (is_adjacent(current_adjacency_department,this.name) > -1) {
-					this.fillColor = 'lightgrey';
-					remove_adjacent(current_adjacency_department,this.name);
-					console.log("adj removed, edges now: ", edges)
-				} else {
-					this.fillColor = 'green';
-					add_adjacent(current_adjacency_department,this.name);
-					console.log("adj added, edges now: ", edges)
-				};
-			}
+				current_group.push(this.name);
+				this.fillColor = 'green';
+			};
+			console.log(current_group);
 		};
 
 		path.onMouseLeave = function(event) {
-			if (current_adjacency_department == this.name){
-				this.fillColor = 'blue';
-			} else if (is_adjacent(current_adjacency_department,this.name) > -1) {
-				this.fillColor = 'green'
+			index = current_group.indexOf(this.name)
+			// if it is in the group
+			if (index > -1){
+				this.fillColor = 'green';
 			} else {
 				this.fillColor = 'lightgrey';
 			};
 		};
 
-
 	});
 };
+
+// on click on group group_button
+$("#group_button").click(function(){
+	console.log(current_group);
+	add_nodes(current_group,group_id)
+	group_id++;
+	current_group = [];
+	render_floorplans(render_array);
+
+});
+
+
 
 // on click on confirm button
 $("#confirm_button").click(function(){

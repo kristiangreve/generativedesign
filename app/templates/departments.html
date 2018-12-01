@@ -2,30 +2,180 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
+<p></p>
 <div class="container">
+  <div class="row">
+    <div class="col-md-10">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Company info</h5>
+
+          <p></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p></p>
+
+
 <div class="row">
-  <div class="col-md-4">
-    {{ wtf.quick_form(form) }}
+  <div class="col-md-10">
+    <div class="card">
+      <div class="card-body">
+        <p></p>
+        <table style="width:100%">
+          <col width="20%">
+          <col width="10%">
+          <col width="10%">
+          <col width="10%">
+          <col width="10%">
+          <col width="20%">
+          <tr>
+            <td>
+              <b>Name</b>
+            </td>
+            <td>
+              <b>Employees</b>
+            </td>
+            <td>
+              <b>Window</b>
+            </td>
+            <td>
+              <b>Transit</b>
+            </td>
+            <td>
+              <b>Area</b>
+            </td>
+            <td>
+            </td>
+          </tr>
+
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+  <p></p>
+  <div class="row">
+    <div class="col-md-10">
+      <div class="card">
+        <div class="card-body">
+          <form method="post">
+            <table style="width:100%">
+              <col width="20%">
+              <col width="10%">
+              <col width="10%">
+              <col width="10%">
+              <col width="10%">
+              <col width="20%">
+
+              <tr>
+                <td>
+                  <div class="form">
+                    <input name = "name_of_department" id="name_of_department" type="text" class="form-control">
+                  </div>
+                </td>
+
+                <td>
+                  <div class="form">
+                    <input name = "number_of_employees" id="number_of_employees" type="text" class="form-control">
+                  </div>
+                </td>
+                <td>
+                  <div class="form-check">
+                    <input name = "window_room" id="window_room" type="checkbox" class="form-check-input">
+
+                  </div>
+                </td>
+                <td>
+                  <div class="form-check">
+                    <input name = "transit_room" id="transit_room" type="checkbox" class="form-check-input">
+
+                  </div>
+                </td>
+                <td>
+                  <div class="form">
+                    <input name = "area_of_department" id="area_of_department" type="text" class="form-control">
+                  </div>
+                </td>
+                <td>
+                  <button type="submit" name="action" value = "add" class="btn btn-primary">Add</button>
+                </td>
+              </tr>
+            </table>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+<p></p>
+
+  {% for department in departments|reverse %}
+
+  <p></p>
+  <div class="row">
+    <div class="col-md-10">
+      <div class="card">
+        <div class="card-body">
+
+            <table style="width:100%">
+              <col width="20%">
+              <col width="10%">
+              <col width="10%">
+              <col width="10%">
+              <col width="10%">
+              <col width="20%">
+              <tr>
+                <td>
+                  {{ department.name }}
+                </td>
+                <td>
+                  {{ department.employees }}
+                </td>
+
+                  {% if department.window == 1%}
+                  <td>
+                  Yes
+                  </td>
+                  {% else %}
+                  <td>
+                  No
+                  </td>
+                  {% endif%}
+
+                  {% if department.transit == 1%}
+                  <td>
+                  Yes
+                  </td>
+                  {% else %}
+                  <td>
+                  No
+                  </td>
+                  {% endif%}
+
+                <td>
+                  {{ department.size }}
+                </td>
+                <td>
+                  <form method="post">
+                    <button type="submit" name="action" value = "{{ department.name }}" class="btn btn-primary">Remove</button>
+                  </form>
+                </td>
+              </tr>
+
+            </table>
+
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="col-md-4">
+  {% endfor %}
 
-    <table class="table table-hover" width=100%>
-      <thead>
-        <th width=30%>Name</th>
-        <th width=30%>Size</th>
-        <th align="right"></th>
-      </thead>
-      {% for department in departments %}
-      <tbody>
-        <tr>
-          {% include '_department.html' %}
-        </tr>
-      </tbody>
-      {% endfor %}
 
-    </table>
-  </div>
-  </div>
 
   {% endblock %}
