@@ -28,10 +28,13 @@ class individual:
         self.aspect_base = {}
         self.ideal_aspect_score = None #To test performance towards Danils script, hardcored aspect ratios
         self.all_adjacency_dict = None
+        self.transit_adjacency_list = None
 
         self.aspect_score = [0,0,0]
         self.base_score = [0,0,0]
         self.aspect_base_score = 0
+        self.access_score = None
+        self.transit_connections_score = None
 
         self.pareto = None
         self.dominated_count = 0
@@ -85,15 +88,14 @@ class individual:
     def evaluate_access_score(self):
         tmp_transit_score = 0
         for adjacency_list in self.all_adjacency_dict.values():
-            for adjacent_room in adjacency_list:
-                if adjacent_room.transit == True:
-                    break
-            tmp_transit_score += 1 #If non of the adjacent rooms are transit rooms
+            if not any(i in adjacency_list for i in self.transit_adjacency_list):
+                tmp_transit_score += 1 #If non of the adjacent rooms are transit rooms
         self.access_score = tmp_transit_score
+        #print('Obj: ', self, ' access score: ', self.access_score)
 
     def evaluate_transit_connections(self,transit_dict, temp_list=[], score =0):
         if len(transit_dict) == 0:
-            self.transit_connections_score = score-1
+            self.transit_connections_score = score
         else:
             if len(temp_list) == 0:
                 score += 1
@@ -103,13 +105,13 @@ class individual:
                         if element not in temp_list:
                             temp_list.append(element)
                 else:
-                    return evaluate_transit_connections(self, transit_dict, temp_list, score)
+                    return self.evaluate_transit_connections(transit_dict, temp_list, score)
             path = temp_list.pop()
             adjacent_list = transit_dict.pop(path,None)
             if adjacent_list != None:
                 for element in adjacent_list:
                     temp_list.append(element)
-            return evaluate_transit_connections(self, transit_dict, temp_list, score)
+            return self.evaluate_transit_connections(transit_dict, temp_list, score)
 
 
 """
@@ -132,27 +134,28 @@ def evaluate_layout(individual):
     individual.departments = departments
     individual.dims_score = dims_score
     individual.all_adjacency_dict = all_adjacency_dict
-    individual.transit_adjacency_list = transit_adjacent_list(individual)
+    individual.transit_adjacency_list, individual.transit_adjacency_dict = transit_adjacent_list_dict(individual)
 
-def transit_adjacent_list(individual):
+def transit_adjacent_list_dict(individual):
     transit_list = []
     for room in individual.definition['rooms']:
         if room['transit'] == True:
-            transit_list.append(room)
+            transit_list.append(room['name'])
     transit_adjacency_dict = defaultdict()
-    for room,adjacency_list in individual.all_adjacency_dict:
+    for room,adjacency_list in individual.all_adjacency_dict.items():
         if room in transit_list:
             adjacent_transits = [adjacent_room for adjacent_room in adjacency_list if adjacent_room in transit_list]
             transit_adjacency_dict[room] = adjacent_transits
-    return transit_list
+    return transit_list, transit_adjacency_dict
 
 def evaluate_pop(generation,user_input_obj, user_input_dict_list):
     for individual in generation:
         if individual.adjacency_score == None: #only call layout if the given object hasn't been evaluated yet
             evaluate_layout(individual)
             individual.evaluate_aspect_ratio()
+        if individual.access_score == None:
             individual.evaluate_access_score()
-            individual.evaluate_transit_connections(individual.transit_adjacency_list.copy(),[])
+            individual.evaluate_transit_connections((individual.transit_adjacency_dict),[])
 
 
 
@@ -500,7 +503,7 @@ def initial_generate(selections,pop_size,generations):
     start_time = time.time()
     print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation_ratio)
     for n in range(generations):
-
+        print('Generation: ', n )
         #print('Generation: ', n)
         # add current max id to inputs
         Qt,id = breeding(Pt, id, mutation_ratio)
@@ -743,7 +746,7 @@ def select_objects_for_render(population,selections):
         for pareto_front in sorted(pareto_dict.keys()):
             if len(selection_list) == 0:
             #Best adjacency of which is most similar to dir/split/ordder of user selction
-                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score, x.aspect_ratio_score, x.aspect_base_score, x.dims_score, -x.crowding_score), reverse=False)
+                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.access_score, x.transit_connections_score, x.adjacency_score, x.aspect_ratio_score, x.aspect_base_score, x.dims_score, -x.crowding_score), reverse=False)
                 selection_list.append(adjacency_sorted[0])
                 print("data on the plan on top: ")
                 print(adjacency_sorted[0].adjacency_score)
@@ -751,7 +754,7 @@ def select_objects_for_render(population,selections):
 
             if len(selection_list)==1:
                 #Most similar dir/split/room_order
-                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_ratio_score, x.aspect_base_score, x.dims_score, x.adjacency_score, -x.crowding_score), reverse=False)
+                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.transit_connections_score, x.access_score, x.adjacency_score, x.aspect_ratio_score, x.aspect_base_score, x.dims_score, x.adjacency_score, -x.crowding_score), reverse=False)
                 for obj in interactive_sorted:
                     if len(selection_list)==1:
                         if obj not in selection_list:
@@ -794,8 +797,8 @@ def select_objects_for_render(population,selections):
         for i,elemt in enumerate(obj.base_score): #for some fucked up reason doesn't work
             obj.base_score[i] = round(elemt,3)
 
-
-        # print('Adj: ', obj.adjacency_score, 'user: ', round(obj.aspect_base_score,2),'user_aspect: ', obj.aspect_score, 'user_base: ', obj.base_score, 'aspect: ', round(obj.aspect_ratio_score,2), ' dims: ', obj.dims_score, 'Crowd: ', round(obj.crowding_score,2), 'CrowdAdj: ', round(obj.crowding_adjacency_score,2), 'CrowdRatio: ', round(obj.crowding_aspect_ratio_score,2))
+        print('Lack of access: ', obj.access_score, 'Broken transit groups: ', obj.transit_connections_score)
+        print('Adj: ', obj.adjacency_score, 'user: ', round(obj.aspect_base_score,2),'user_aspect: ', obj.aspect_score, 'user_base: ', obj.base_score, 'aspect: ', round(obj.aspect_ratio_score,2), ' dims: ', obj.dims_score, 'Crowd: ', round(obj.crowding_score,2), 'CrowdAdj: ', round(obj.crowding_adjacency_score,2), 'CrowdRatio: ', round(obj.crowding_aspect_ratio_score,2))
     return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2]),object_to_visuals(selection_list[3])]
     #selection_list = [object_to_visuals(x) for x in selection_list]
     #return selection_list

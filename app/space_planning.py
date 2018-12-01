@@ -361,6 +361,7 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
     room_dict = {"outside": 0}
     id_room_dict = {0: "outside"}
 
+
     for i, room_name in enumerate(room_names):
         room_dict[room_name] = i+1
         id_room_dict[i+1] = room_name
@@ -405,7 +406,7 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
             all_adjacency_dict[id_room_dict[adjacency_pair[0]]].append(id_room_dict[adjacency_pair[1]])
         if id_room_dict[adjacency_pair[0]] not in all_adjacency_dict[id_room_dict[adjacency_pair[1]]]:
             all_adjacency_dict[id_room_dict[adjacency_pair[1]]].append(id_room_dict[adjacency_pair[0]])
-
+    all_adjacency_dict.pop('outside', None) #removes 0, outside as a room
 
     aspects = [a for i,a in enumerate(layout.get_face_aspects()[1:]) if aspect_bool[i]]
 
