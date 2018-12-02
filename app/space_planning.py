@@ -445,16 +445,16 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
         elif list(reversed(adjacency)) in edges_neighbors and edge_lengths[edges_neighbors.index(list(reversed(adjacency)))] >= min_opening and not (room_transit_dict[adjacency[0]]==room_transit_dict[adjacency[1]]==1):
             connecting_edges.append(edges_neighbors.index(list(reversed(adjacency))))
             if room_transit_dict[adjacency[0]] == 0:
-                added_openings.add(adjacency[0])
-            else:
                 added_openings.add(adjacency[1])
+            else:
+                added_openings.add(adjacency[0])
         else:
             adjacency_score += 1
             for zone_index in adjacency:
                 adjacency_violations[zone_index] += 1
 
     connecting_transit_edges = []
-    print('Init Openings set: ', added_openings)
+    #print('Init Openings set: ', added_openings)
     for neighbor_pair in edges_neighbors:
         #Remove walls between 2 adjacent transit rooms
         if room_transit_dict[neighbor_pair[0]]==room_transit_dict[neighbor_pair[1]]==1:
@@ -464,25 +464,12 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
         elif room_transit_dict[neighbor_pair[0]] != room_transit_dict[neighbor_pair[1]] \
         and edge_lengths[edges_neighbors.index(neighbor_pair)] >= min_opening\
         and edges_neighbors.index(neighbor_pair) not in connecting_edges:
-            if room_transit_dict[neighbor_pair[0]] == 0: #and neighbor_pair[0] not in added_openings:
-
-                if neighbor_pair[0] in added_openings:
-                    print('Neigh[0] =',neighbor_pair[0], ' room: ', id_room_dict[neighbor_pair[0]])
-                else:
-                    print('Not in!')
-                    print('Neigh[0] =',neighbor_pair[0], ' room: ', id_room_dict[neighbor_pair[0]])
-                    connecting_edges.append(edges_neighbors.index(neighbor_pair))
-                    added_openings.add(neighbor_pair[0])
-            elif room_transit_dict[neighbor_pair[1]] == 0:# and neighbor_pair[1] not in added_openings:
-
-                if neighbor_pair[1] in added_openings:
-                    print('Neigh[0] =',neighbor_pair[1], ' room: ', id_room_dict[neighbor_pair[1]])
-                else:
-                    print('Not in!')
-                    print('Neigh[0] =',neighbor_pair[0], ' room: ', id_room_dict[neighbor_pair[0]])
-                    connecting_edges.append(edges_neighbors.index(neighbor_pair))
-                    added_openings.add(neighbor_pair[1])
-    print('Openings set: ', added_openings)
+            if room_transit_dict[neighbor_pair[0]] == 0 and neighbor_pair[0] not in added_openings:
+                connecting_edges.append(edges_neighbors.index(neighbor_pair))
+                added_openings.add(neighbor_pair[0])
+            elif room_transit_dict[neighbor_pair[1]] == 0 and neighbor_pair[1] not in added_openings:
+                connecting_edges.append(edges_neighbors.index(neighbor_pair))
+                added_openings.add(neighbor_pair[1])
 
 
     connecting_edge_new = [] #New list structure, 0 equals full wall, 1 equals door opening, 2 equals no wall
