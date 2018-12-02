@@ -126,6 +126,8 @@ def evaluate_layout(individual):
     individual.all_adjacency_dict = all_adjacency_dict
     individual.transit_adjacency_list, individual.transit_adjacency_dict = transit_adjacent_list_dict(individual)
 
+
+
 def transit_adjacent_list_dict(individual):
     transit_list = []
     for room in individual.definition['rooms']:
@@ -360,17 +362,17 @@ def breeding(population, id, mutation_rate):
             child1,child2 = crossover(parent1,parent2) #
             children_test = [child1,child2]
             parent_test = [parent1,parent2]
-            #for child in children_test:
-            #    for parent in parent_test:
-            #        if child.aspect_ratio_score == parent.aspect_ratio_score:
-            #            similar_counter +=1
+            # for child in children_test:
+            #     for parent in parent_test:
+            #         if child.aspect_ratio_score == parent.aspect_ratio_score:
+            #             similar_counter +=1
             id+=1
             child1.plan_id = id
             id+=1
             child2.plan_id = id
             children.append(child1)
             children.append(child2)
-    #print(similar_counter , ' similar kids bred!')
+    # print(similar_counter , ' similar kids bred!')
     return children, id
 
 def selection(pop_size, population):
@@ -720,15 +722,12 @@ def select_objects_for_render(population,selections):
         for pareto_front in sorted(pareto_dict.keys()):
             if len(selection_list) == 0:
             #Best adjacency of which is most similar to dir/split/ordder of user selction
-                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.access_score, x.transit_connections_score, x.adjacency_score, x.aspect_ratio_score, x.dims_score, -x.crowding_score), reverse=False)
+                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.access_score, x.transit_connections_score, x.dims_score, x.adjacency_score, x.aspect_ratio_score, -x.crowding_score), reverse=False)
                 selection_list.append(adjacency_sorted[0])
-                print("data on the plan on top: ")
-                print(adjacency_sorted[0].adjacency_score)
-                print(adjacency_sorted[0].aspect_ratio_score)
 
             if len(selection_list)==1:
                 #Most similar dir/split/room_order
-                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.transit_connections_score, x.access_score, x.adjacency_score, x.aspect_ratio_score, x.dims_score, x.adjacency_score, -x.crowding_score), reverse=False)
+                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.transit_connections_score, x.access_score, x.adjacency_score,x.dims_score, x.aspect_ratio_score, -x.crowding_score), reverse=False)
                 for obj in interactive_sorted:
                     if len(selection_list)==1:
                         if obj not in selection_list:
@@ -751,28 +750,14 @@ def select_objects_for_render(population,selections):
                 #        if obj != selection_list[2]:
                             selection_list.append(obj)
 
-
-                ############## show last selected
-                #if len(selections)>0:
-                #    selection_list.append(selections[-1])
-                #else:
-                #    selection_list.append(selection_list[2])
-
             if len(selection_list)==4:
                 break
 
-    for index, obj in enumerate(selection_list):
-        # for i,elem in enumerate(obj.aspect_score): #... this works...
-        #     obj.aspect_score[i] = round(elem,3)
-        #
-        # for i,elemt in enumerate(obj.base_score): #for some fucked up reason doesn't work
-        #     obj.base_score[i] = round(elemt,3)
-
+    for index, obj in enumerate(selection_list[:-3]):
+        print('Edges: ', obj.edges_out)
         print('Lack of access: ', obj.access_score, 'Broken transit groups: ', obj.transit_connections_score)
         print('Adj: ', obj.adjacency_score, 'aspect: ', round(obj.aspect_ratio_score,2), ' dims: ', obj.dims_score, 'Crowd: ', round(obj.crowding_score,2), 'CrowdAdj: ', round(obj.crowding_adjacency_score,2), 'CrowdRatio: ', round(obj.crowding_aspect_ratio_score,2))
     return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2]),object_to_visuals(selection_list[3])]
-    #selection_list = [object_to_visuals(x) for x in selection_list]
-    #return selection_list
 
 def object_to_visuals(object):
     return {"max_sizes": object.max_sizes,"departments":object.departments,"adjacency_score":object.adjacency_score,"id":object.plan_id}
