@@ -35,8 +35,8 @@ def floor_plan():
 @app.route('/generate_first_floorplans/', methods = ['POST'])
 def generate_first_floorplans():
     # generate first generation and return
-    pop_size = 50
-    generations = 50
+    pop_size = 4
+    generations = 1
     #print("user selections: ",user_selections)
     Pt = initial_generate(pop_size, generations)
     #print("first floorplans rendered")
