@@ -73,16 +73,21 @@ function plotPlan(plotCanvas,project_id,render_graphics) {
 	var scale_factor = Math.min(factor_x,factor_y);
 
 	// outline for the floor plan
-	var outlineWidth = 2;
+
 	var base = new Point(0,0);
 	var dims = new Size(max_size[1]*scale_factor,max_size[0]*scale_factor)
 
-	var outline = new Rectangle(base,dims);
-	var path = new Path.Rectangle(outline);
-	path.strokeColor = 'black';
-	path.strokeWidth = outlineWidth;
-
 	var departments = render_graphics.departments;
+	var walls = render_graphics.walls;
+
+	walls.forEach(function(element) {
+		console.log("wall: ", element);
+		var from = new Point(element[0][0]*scale_factor,element[0][1]*scale_factor)
+		var to  = new Point(element[1][0]*scale_factor,element[1][1]*scale_factor)
+		var path = new Path.Line(from, to);
+		path.strokeColor = 'black';
+		path.strokeWidth = 1;
+	});
 
 	departments.forEach(function(element) {
 		var base = new Point(element.base[0]*scale_factor,element.base[1]*scale_factor);
@@ -90,9 +95,6 @@ function plotPlan(plotCanvas,project_id,render_graphics) {
 		var name = element.name;
 		var department = new Rectangle(base,dims);
 		var path = new Path.Rectangle(department);
-
-		path.strokeColor = 'black';
-		path.strokeWidth = 1;
 		path.fillColor = 'lightgrey';
 		path.name = name;
 		path.selected = false;
@@ -145,6 +147,16 @@ function plotPlan(plotCanvas,project_id,render_graphics) {
 		};
 
 	});
+
+	var outlineWidth = 5;
+	var outline = new Rectangle(base,dims);
+	var path = new Path.Rectangle(outline);
+	path.strokeColor = 'black';
+	path.strokeWidth = outlineWidth;
+	var onpath = new Path.Rectangle(outline);
+	onpath.strokeColor = 'white';
+	onpath.strokeWidth = outlineWidth-2;
+
 };
 
 // function update_nodes_old() {
@@ -225,13 +237,13 @@ function compare_and_add(current_department,array1,array2){
 
 function add_adjacent(department1,department2) {
 	if (is_adjacent(department1,department2) == -1){
-	edge_dict = {};
-	edge_dict.to = department1;
-	edge_dict.from = department2;
-	if(department1 != department2){
-		edges.push(edge_dict);
+		edge_dict = {};
+		edge_dict.to = department1;
+		edge_dict.from = department2;
+		if(department1 != department2){
+			edges.push(edge_dict);
+		};
 	};
-};
 };
 
 $("#group_button").click(function(){
@@ -248,7 +260,6 @@ $("#group_button").click(function(){
 	groups.push(group_dict);
 	console.log(groups);
 	group_id++;
-
 
 	current_group = [];
 

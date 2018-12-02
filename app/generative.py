@@ -445,11 +445,11 @@ def initial_generate(selections,pop_size,generations):
     crowding(Pt)
     #mutation_ratio = mutation
     mutation_ratio = 0.01
-    plt.figure()
-    x1,x_b = [],[]
-    y1,y2,y_b1,y_b2,y_b3= [],[],[],[],[]
+    #plt.figure()
+    #x1,x_b = [],[]
+    #y1,y2,y_b1,y_b2,y_b3= [],[],[],[],[]
     gen_list=[]
-    start_time = time.time()
+    #start_time = time.time()
     print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation_ratio)
     for n in range(generations):
 
@@ -463,16 +463,16 @@ def initial_generate(selections,pop_size,generations):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
-        x1,y1,y2 = prepare_plot(Pt,n,x1,y1,y2)
-        x_b,y_b1,y_b2,y_b3 = prepare_plot_best_of(Pt,n,x_b,y_b1,y_b2,y_b3)
-    end_time = time.time()
-    time_ellapsed = end_time-start_time
+        #x1,y1,y2 = prepare_plot(Pt,n,x1,y1,y2)
+        #x_b,y_b1,y_b2,y_b3 = prepare_plot_best_of(Pt,n,x_b,y_b1,y_b2,y_b3)
+    #end_time = time.time()
+    #time_ellapsed = end_time-start_time
     save_population_to_database(Pt,generations)
-    stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation: '+str(mutation_ratio)
-    stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
+    #stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation: '+str(mutation_ratio)
+    #stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
     #show_plot(x1,y1,y2, stringlabel,stringshort)
     #plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort)
-    plt.close('all')
+    #plt.close('all')
     return Pt
     #return Pt, [x1,y1,y2], [x_b,y_b1,y_b2,y_b3], time_ellapsed
 
@@ -753,7 +753,7 @@ def select_objects_for_render(population,selections):
     #return selection_list
 
 def object_to_visuals(object):
-    return {"max_sizes": object.max_sizes,"departments":object.departments,"adjacency_score":object.adjacency_score, "id":object.plan_id, "all_adjacency_dict":object.all_adjacency_dict}
+    return {"walls": object.edges_out, "max_sizes": object.max_sizes,"departments":object.departments,"adjacency_score":object.adjacency_score, "id":object.plan_id, "all_adjacency_dict":object.all_adjacency_dict}
 
 def update_definition(edges,nodes,generation):
     rooms = []
@@ -781,7 +781,7 @@ def update_definition(edges,nodes,generation):
             definition['rooms'][i]['adjacency'] = []
 
     query = db.session.query(Plan).filter_by(generation=generation).all()
-    
+
     for plan in query:
         plan.definition = json.dumps(definition)
         plan.room_def = definition["rooms"]

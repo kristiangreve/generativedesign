@@ -98,7 +98,7 @@ class Department(db.Model):
 
     transit = db.Column(db.Integer,default=0)
     window = db.Column(db.Integer,default=0)
-    
+
     adjacency = db.Column(db.String(),default="[]")
     def __repr__(self):
         return '<Department {}>'.format(self.name)
