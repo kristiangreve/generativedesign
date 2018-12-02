@@ -50,13 +50,16 @@ class Edge:
 
     def get_geo(self, connecting_edge, min_opening):
 
-        if connecting_edge:
+        if connecting_edge == 1:
             l = self.get_length()
 
             p3 = self.get_pt(((l - min_opening)/2.0)/l)
             p4 = self.get_pt(((l + min_opening)/2.0)/l)
 
+            #return [[self.points[0], self.points[0]], [self.points[1],self.points[1]]]
             return [[self.points[0], p3], [p4,self.points[1]]]
+        elif connecting_edge == 2:
+            return [[self.points[0], self.points[0]], [self.points[1],self.points[1]]]
         else:
             return [self.points]
 
@@ -236,7 +239,7 @@ class Layout:
 
     def get_edge_geo(self, connecting_edge, min_opening):
         edges_out = []
-        for i,edge in enumerate(self.edges):
+        for i,edge in enumerate(self.edges): #self.edges = all edges in the layout
             edges_out += edge.get_geo(connecting_edge[i], min_opening)
         return edges_out
 
@@ -399,14 +402,13 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
     zone_edges = layout.get_face_edges()[1:]
     edges_neighbors = layout.get_edge_neighbors()
 
-
     all_adjacency_dict = defaultdict(list)
     for adjacency_pair in edges_neighbors:
         if id_room_dict[adjacency_pair[1]] not in all_adjacency_dict[id_room_dict[adjacency_pair[0]]]:
             all_adjacency_dict[id_room_dict[adjacency_pair[0]]].append(id_room_dict[adjacency_pair[1]])
         if id_room_dict[adjacency_pair[0]] not in all_adjacency_dict[id_room_dict[adjacency_pair[1]]]:
             all_adjacency_dict[id_room_dict[adjacency_pair[1]]].append(id_room_dict[adjacency_pair[0]])
-    all_adjacency_dict.pop('outside', None) #removes 0, outside as a room
+
 
     aspects = [a for i,a in enumerate(layout.get_face_aspects()[1:]) if aspect_bool[i]]
 
@@ -422,22 +424,67 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
 
     adjacency_score = 0
     connecting_edges = []
+
     adjacency_violations = [0] * (num_zones + 1)
 
+    room_transit_dict = {}
+    for room in room_def: #Used to check if a given adjacency is between 2 transit rooms
+        room_transit_dict[room_dict[room['name']]] = room['transit']
+    room_transit_dict[0] = 0
+
+    added_openings = set() #List to keep track of rooms that have gotten a doorway added
+
     for adjacency in adjacency_list:
-        if adjacency in edges_neighbors and edge_lengths[edges_neighbors.index(adjacency)] >= min_opening:
+        #Adjacent rooms, that are meant to be adjacent. and are NOT both transit = door)
+        if adjacency in edges_neighbors and edge_lengths[edges_neighbors.index(adjacency)] >= min_opening and not (room_transit_dict[adjacency[0]]==room_transit_dict[adjacency[1]]==1):
             connecting_edges.append(edges_neighbors.index(adjacency))
-        elif list(reversed(adjacency)) in edges_neighbors and edge_lengths[edges_neighbors.index(list(reversed(adjacency)))] >= min_opening:
+            added_openings.add(adjacency[0])
+            added_openings.add(adjacency[1])
+        elif list(reversed(adjacency)) in edges_neighbors and edge_lengths[edges_neighbors.index(list(reversed(adjacency)))] >= min_opening and not (room_transit_dict[adjacency[0]]==room_transit_dict[adjacency[1]]==1):
             connecting_edges.append(edges_neighbors.index(list(reversed(adjacency))))
+            added_openings.add(adjacency[0])
+            added_openings.add(adjacency[1])
         else:
             adjacency_score += 1
             for zone_index in adjacency:
                 adjacency_violations[zone_index] += 1
 
-    connecting_edge = [edge in connecting_edges for edge in range(len(edges_neighbors))]
+    connecting_transit_edges = []
+
+    for neighbor_pair in edges_neighbors:
+        #Remove walls between 2 adjacent transit rooms
+        if room_transit_dict[neighbor_pair[0]]==room_transit_dict[neighbor_pair[1]]==1:
+            connecting_transit_edges.append(edges_neighbors.index(neighbor_pair))
+            
+        #Add door opening to non transit rooms, that have not been added through predefined adjacencies, if the room is in fact adjacent to a transit room
+        elif room_transit_dict[neighbor_pair[0]] != room_transit_dict[neighbor_pair[1]] \
+        and edge_lengths[edges_neighbors.index(neighbor_pair)] >= min_opening\
+        and edges_neighbors.index(neighbor_pair) not in connecting_edges:
+            if room_transit_dict[neighbor_pair[0]] == 0 and neighbor_pair[0] not in added_openings:
+                connecting_edges.append(edges_neighbors.index(neighbor_pair))
+                added_openings.add(neighbor_pair[0])
+            elif room_transit_dict[neighbor_pair[1]] == 0 and neighbor_pair[1] not in added_openings:
+                connecting_edges.append(edges_neighbors.index(neighbor_pair))
+                added_openings.add(neighbor_pair[1])
+
+
+
+    connecting_edge_new = [] #New list structure, 0 equals full wall, 1 equals door opening, 2 equals no wall
+    for i in range(len(edges_neighbors)):
+        if i in connecting_edges:
+            connecting_edge_new.append(1)
+        elif i in connecting_transit_edges:
+            connecting_edge_new.append(2)
+        else:
+            connecting_edge_new.append(0)
+
+    #connecting_edge = [edge in connecting_edges for edge in range(len(edges_neighbors))]
+
     adjacency_violations = adjacency_violations[1:]
 
-    edges_out = layout.get_edge_geo(connecting_edge, min_opening)
+    edges_out = layout.get_edge_geo(connecting_edge_new, min_opening)
+
+
 
     # addded to extract faces
     dims = [face.get_dims() for face in layout.faces][1:]
@@ -466,5 +513,7 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
     for base,dim,name in zip(base,dims,room_names):
         department_dict = {"base": base, "dims": dim, "name": name }
         departments.append(department_dict)
+
+    all_adjacency_dict.pop('outside', None) #removes 0, outside as a room
 
     return max_sizes, dims_score, aspect_room_dict, departments, edges_out, adjacency_score, aspect_score, all_adjacency_dict
