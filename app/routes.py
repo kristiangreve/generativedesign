@@ -37,8 +37,7 @@ def generate_first_floorplans():
     # generate first generation and return
     pop_size = 50
     generations = 25
-    #print("user selections: ",user_selections)
-    Pt = initial_generate(pop_size, generations)
+    Pt = initial_generate([],pop_size, generations)
     #print("first floorplans rendered")
     return jsonify(select_objects_for_render(Pt, []))
 

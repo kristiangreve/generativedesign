@@ -144,8 +144,7 @@ function plotPlan(plotCanvas,project_id,render_graphics) {
 		var department = new Rectangle(base,dims);
 		var path = new Path.Rectangle(department);
 
-		path.strokeColor = 'black';
-		path.strokeWidth = 1;
+		path.strokeWidth = 0;
 		path.fillColor = 'lightgrey';
 		path.name = name;
 		path.selected = false;
@@ -200,6 +199,7 @@ $("#group_button").click(function(){
 	group_id++;
 	current_group = [];
 	render_floorplans(render_array);
+
 
 });
 
