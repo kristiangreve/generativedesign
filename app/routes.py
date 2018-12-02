@@ -10,14 +10,18 @@ from app.email import send_password_reset_email
 import json
 from operator import itemgetter
 from app.generative import json_departments_from_db, random_design, generate, get_population_from_database, \
-initial_generate, select_objects_for_render, evaluate_layout, id_to_obj, update_definition
+initial_generate, select_objects_for_render, evaluate_layout, id_to_obj, update_definition, evaluate_pop
 from app.space_planning import get_layout
 import statistics
 import matplotlib.pyplot as plt
 import os
 
+
 user_selections = []
 user_selections_obj = []
+user_input_obj = []
+user_input_dict_list = []
+user_groups = []
 
 @app.before_request
 def before_request():
@@ -25,117 +29,145 @@ def before_request():
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
 
-@app.route('/floor_plan/', methods=['GET', 'POST'])
+@app.route('/floor_plan', methods=['GET', 'POST'])
 @login_required
 def floor_plan():
-    departments = current_user.departments
-    return render_template('floor_plan.html',departments=departments)
+    return render_template('floor_plan.html')
 
-# AJAX functions
-@app.route('/generate_first_floorplans/', methods = ['POST'])
-def generate_first_floorplans():
-    # generate first generation and return
+@app.route('/get_floorplans', methods = ['GET','POST'])
+@login_required
+def get_floorplans():
     pop_size = 50
-    generations = 25
-    #print("user selections: ",user_selections)
-    Pt = initial_generate(pop_size, generations)
-    #print("first floorplans rendered")
-    return jsonify(select_objects_for_render(Pt, []))
+    generations = 5
 
-def performance_test(pop,gen,mut):
-    global user_selections #If not declared global it doesnt edit the global list but simply creates a local new list with same name
-    global user_selections_obj
-    user_selections = []
-    user_selections_obj = []
-    # generate first generation and return
-    pop_size = pop
-    generations = gen
-    mutation_rate = mut
-    print("user selections: ",user_selections)
-    Pt,plt1,plt2, time = initial_generate(user_selections, pop_size, generations, mutation_rate)
-    print("first floorplans rendered")
-    #return jsonify(select_objects_for_render(Pt, user_selections))
-    return plt1,plt2, time
-
-def performance_test_start():
-    pop_size = [25,50,100]
-    generations = [25,100,200]
-    mut_rate = [0.01, 0.05, 0.1, 0.2]
-
-    for pop in pop_size:
-        for gen in generations:
-            for mut in mut_rate:
-                plt1 = []
-                plt2 = []
-                time = []
-                for i in range(5):
-                    plt1_temp,plt2_temp,time_temp = performance_test(pop,gen,mut)
-                    plt1.append(plt1_temp[1:])
-                    plt2.append(plt2_temp[1:])
-                    time.append(round(time_temp,2))
-                    plt2x = plt2_temp[0]
-                y1_list, y2_list, y3_list = [],[],[]
-                for plot_list in plt2:
-                    for index, y_lists in enumerate(plot_list):
-                        if index == 0:
-                            y1_list.append(y_lists)
-                        elif index == 1:
-                            y2_list.append(y_lists)
-                        elif index == 2:
-                            y3_list.append(y_lists)
-                avg_time = round((sum(time)/len(time)),2)
-
-                y_1_average = [statistics.mean(k) for k in zip(*y1_list)]
-                y_2_average = [statistics.mean(k) for k in zip(*y2_list)]
-                y_3_average = [statistics.mean(k) for k in zip(*y3_list)]
-
-                stringlabel = 'Avg. Runtime: '+str(avg_time)+' Pop size:'+str(pop)+' #of gen: '+str(gen)+' mutation: '+str(mut)
-                stringshort = 'P'+str(pop)+'-G'+str(gen)+'-M'+str(mut)+'_'
-                plot_multiple(plt2x, y_1_average,y_2_average,y_3_average,stringlabel, stringshort)
-
-def plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort):
-    plt.figure(figsize=(30,15), dpi=80)
-    y_plots = [y_b1,y_b2,y_b3]
-    labels = ['Avg. #Broken adjacencies','Avg. Aspect ratio deviation','Avg. #Broken min. dimensions']
-    colors = ['red','blue','green']
-    #plt.plot(x_b, y_b1,'b', x_b, y_b2,'g',  x_b, y_b3, 'r')
-    for y_val, label,color in zip(y_plots, labels,colors):
-         plt.plot(x_b, y_val, label=label, color=color)
-    plt.legend(fontsize=20)
-    plt.ylim(0, 10)
-    plt.yticks(range(10))
-    plt.xlabel('Generation. ('+stringlabel+')',fontsize=15)
-
-    filename = 'photos/avg_BestOf_'+stringshort
-    i = 0
-    while os.path.exists('{}{:d}.png'.format(filename, i)):
-        i += 1
-    plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
-
-
-@app.route('/generate_new_floorplans/', methods = ['GET', 'POST'])
-def generate_new_floorplans():
-    generations = 10
-    selected_rooms = json.loads(request.form['selected_rooms'])
-    current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
-    nodes = json.loads(request.form['nodes'])
-    edges = json.loads(request.form['edges'])
+    mode = request.form['mode']
+    print("mode: ", mode)
+    # restart mode restarts the generation from 0
 
     update_definition(edges,nodes,current_generation)
 
-    Pt = get_population_from_database(current_generation)
+    if mode == 'restart':
+        Pt = initial_generate(pop_size, generations)
+    # new mode creates a new generation
+    elif mode == 'new':
+        Pt = generate(user_selections_obj,user_selections, generations)
+    # current mode just returns the latest current generation
+    elif mode == 'current':
+        Pt = generate([],[], 0)
+    return jsonify(select_objects_for_render(Pt, []))
 
-    if len(selected_rooms)>0:
-        user_selections.append(selected_rooms)
-        #print("User selection sum: ", user_selections)
-        user_selections_obj.append(id_to_obj(Pt,user_selections))
-    # create new generation based on choices
-    Pt = generate(user_selections_obj,user_selections, generations)
-    return jsonify(select_objects_for_render(Pt,user_selections_obj))
+
+#
+#
+# @app.route('/generate_new_floorplans/', methods = ['GET', 'POST'])
+# def generate_new_floorplans():
+#     generations = 10
+#     selected_rooms = json.loads(request.form['selected_rooms'])
+#     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
+#     nodes = json.loads(request.form['nodes'])
+#     edges = json.loads(request.form['edges'])
+#
+#     update_definition(edges,nodes,current_generation)
+#
+#     Pt = get_population_from_database(current_generation)
+#
+#     if len(selected_rooms)>0:
+#         user_selections.append(selected_rooms)
+#         #print("User selection sum: ", user_selections)
+#         user_selections_obj.append(id_to_obj(Pt,user_selections))
+#     # create new generation based on choices
+#     Pt = generate(user_selections_obj,user_selections, generations)
+#     return jsonify(select_objects_for_render(Pt,user_selections_obj))
+#
+#
+# @app.route('/generate_first_floorplans/', methods = ['GET','POST'])
+# def generate_first_floorplans():
+#     # generate first generation and return
+#     pop_size = 50
+#     generations = 25
+#     #print("user selections: ",user_selections)
+#     Pt = initial_generate(pop_size, generations)
+#     #print("first floorplans rendered")
+#     return jsonify(select_objects_for_render(Pt, []))
+
+#
+#
+# def performance_test(pop,gen,mut):
+#     global user_selections #If not declared global it doesnt edit the global list but simply creates a local new list with same name
+#     global user_selections_obj
+#     user_selections = []
+#     user_selections_obj = []
+#     # generate first generation and return
+#     pop_size = pop
+#     generations = gen
+#     mutation_rate = mut
+#     print("user selections: ",user_selections)
+#     Pt,plt1,plt2, time = initial_generate(user_selections, pop_size, generations, mutation_rate)
+#     print("first floorplans rendered")
+#     #return jsonify(select_objects_for_render(Pt, user_selections))
+#     return plt1,plt2, time
+#
+# def performance_test_start():
+#     pop_size = [25,50,100]
+#     generations = [25,100,200]
+#     mut_rate = [0.01, 0.05, 0.1, 0.2]
+#
+#     for pop in pop_size:
+#         for gen in generations:
+#             for mut in mut_rate:
+#                 plt1 = []
+#                 plt2 = []
+#                 time = []
+#                 for i in range(5):
+#                     plt1_temp,plt2_temp,time_temp = performance_test(pop,gen,mut)
+#                     plt1.append(plt1_temp[1:])
+#                     plt2.append(plt2_temp[1:])
+#                     time.append(round(time_temp,2))
+#                     plt2x = plt2_temp[0]
+#                 y1_list, y2_list, y3_list = [],[],[]
+#                 for plot_list in plt2:
+#                     for index, y_lists in enumerate(plot_list):
+#                         if index == 0:
+#                             y1_list.append(y_lists)
+#                         elif index == 1:
+#                             y2_list.append(y_lists)
+#                         elif index == 2:
+#                             y3_list.append(y_lists)
+#                 avg_time = round((sum(time)/len(time)),2)
+#
+#                 y_1_average = [statistics.mean(k) for k in zip(*y1_list)]
+#                 y_2_average = [statistics.mean(k) for k in zip(*y2_list)]
+#                 y_3_average = [statistics.mean(k) for k in zip(*y3_list)]
+#
+#                 stringlabel = 'Avg. Runtime: '+str(avg_time)+' Pop size:'+str(pop)+' #of gen: '+str(gen)+' mutation: '+str(mut)
+#                 stringshort = 'P'+str(pop)+'-G'+str(gen)+'-M'+str(mut)+'_'
+#                 plot_multiple(plt2x, y_1_average,y_2_average,y_3_average,stringlabel, stringshort)
+#
+# def plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort):
+#     plt.figure(figsize=(30,15), dpi=80)
+#     y_plots = [y_b1,y_b2,y_b3]
+#     labels = ['Avg. #Broken adjacencies','Avg. Aspect ratio deviation','Avg. #Broken min. dimensions']
+#     colors = ['red','blue','green']
+#     #plt.plot(x_b, y_b1,'b', x_b, y_b2,'g',  x_b, y_b3, 'r')
+#     for y_val, label,color in zip(y_plots, labels,colors):
+#          plt.plot(x_b, y_val, label=label, color=color)
+#     plt.legend(fontsize=20)
+#     plt.ylim(0, 10)
+#     plt.yticks(range(10))
+#     plt.xlabel('Generation. ('+stringlabel+')',fontsize=15)
+#
+#     filename = 'photos/avg_BestOf_'+stringshort
+#     i = 0
+#     while os.path.exists('{}{:d}.png'.format(filename, i)):
+#         i += 1
+#     plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
+#
+
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 @login_required
+
 def index():
     form = EditFloorPlanForm()
     if form.validate_on_submit():
@@ -163,8 +195,6 @@ def index():
 def departments():
     departments = current_user.departments
 
-    # print(departments)
-    #form = DepartmentForm()
     space_left = current_user.length * current_user.width - sum([dep.size for dep in departments])
 
 
@@ -174,15 +204,11 @@ def departments():
 
     if request.method == 'POST':
         if request.form.get('action') != 'add':
-
             print("name of department: ",str(request.form.get('action')))
             name_of_department = str(request.form.get('action')).capitalize()
             dep = Department.query.filter_by(name = name_of_department).first()
-            print(dep)
-
             db.session.delete(dep)
             db.session.commit()
-
         if request.form.get('action') == 'add':
             if request.form.get('window_room'):
                 window_room = 1
@@ -204,48 +230,46 @@ def departments():
             dep = Department(name = name_of_department, size = area, employees = number_of_employees, transit = transit_room, window = window_room, owner = current_user)
             db.session.add(dep)
             db.session.commit()
-
         return redirect(url_for('departments'))
-
     return render_template('departments.html', title='Departments', departments=departments, space = space_left)
 
 
-
-@app.route('/delete_department/<department>', methods=['GET'])
-@login_required
-def delete_department(department):
-    department = Department.query.filter_by(name = department).first()
-    try:
-        adjacents = json.loads(department.adjacency)
-        for adj in adjacents:
-            dep = Department.query.filter_by(name = adj).first()
-            dep_adjacents = json.loads(dep.adjacency)
-            dep_adjacents.remove(department.name)
-            dep.adjacency = json.dumps(dep_adjacents)
-    except:
-        pass
-    db.session.delete(department)
-    db.session.commit()
-    return redirect(url_for('departments'))
-
-
-@app.route('/edit_department/<department>', methods=['GET', 'POST'])
-@login_required
-def edit_department(department):
-    departments = current_user.departments
-    department = Department.query.filter_by(name = department).first_or_404()
-    form = EditDepartmentForm()
-    if form.validate_on_submit():
-        department.name = form.name.data.capitalize()
-        department.size = form.size.data
-        department.employees = form.employees.data
-        db.session.commit()
-        return redirect(url_for('departments'))
-    elif request.method == 'GET':
-        form.size.data = department.size
-        form.name.data = department.name.capitalize()
-        form.employees.data = department.employees
-    return render_template('edit_department.html', title='Edit department', form=form, departments=departments)
+#
+# @app.route('/delete_department/<department>', methods=['GET'])
+# @login_required
+# def delete_department(department):
+#     department = Department.query.filter_by(name = department).first()
+#     try:
+#         adjacents = json.loads(department.adjacency)
+#         for adj in adjacents:
+#             dep = Department.query.filter_by(name = adj).first()
+#             dep_adjacents = json.loads(dep.adjacency)
+#             dep_adjacents.remove(department.name)
+#             dep.adjacency = json.dumps(dep_adjacents)
+#     except:
+#         pass
+#     db.session.delete(department)
+#     db.session.commit()
+#     return redirect(url_for('departments'))
+#
+#
+# @app.route('/edit_department/<department>', methods=['GET', 'POST'])
+# @login_required
+# def edit_department(department):
+#     departments = current_user.departments
+#     department = Department.query.filter_by(name = department).first_or_404()
+#     form = EditDepartmentForm()
+#     if form.validate_on_submit():
+#         department.name = form.name.data.capitalize()
+#         department.size = form.size.data
+#         department.employees = form.employees.data
+#         db.session.commit()
+#         return redirect(url_for('departments'))
+#     elif request.method == 'GET':
+#         form.size.data = department.size
+#         form.name.data = department.name.capitalize()
+#         form.employees.data = department.employees
+#     return render_template('edit_department.html', title='Edit department', form=form, departments=departments)
 
 @app.route('/adjacency', methods=['GET', 'POST'])
 @login_required
@@ -454,7 +478,6 @@ def follow(username):
     db.session.commit()
     flash('You are following {}!'.format(username))
     return redirect(url_for('user', username=username))
-
 
 @app.route('/unfollow/<username>')
 @login_required

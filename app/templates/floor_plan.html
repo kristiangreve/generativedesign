@@ -16,65 +16,57 @@
     height: auto;
   }
   .network {
-    height: 400px;
+    height: 300px;
     width: 100%;
-}
+  }
+  .subnetwork {
+    height: 200px;
+    width: 100%;
+  }
+
 </style>
-<button id = "confirm_button" type="button" class="btn btn-primary">Generate</button>
 
+<p></p>
 <div class="row">
   <div class="col-md-7">
     <div class="card">
       <div class="card-body">
+        <h5 class="card-title">Suggested floor plan</h5>
         <canvas class="floor_canvas" id="canvas_1" width="300" height="100"></canvas>
-        <h5 class="card-title">Floor plan 1</h5>
-        <button id = "group_button" type="button" class="btn btn-primary">Add group</button>
       </div>
     </div>
   </div>
-
   <div class="col-md-5">
     <div class="card">
       <div class="card-body">
-        <div class="network" id="mynetwork"></div>
-        <h5 class="card-title">Liked adjacencies</h5>
+        <h5 class="card-title">Groups</h5>
+        <div class="network" id="group_network"></div>
       </div>
     </div>
   </div>
 </div>
-<div class="row">
-  <br />
-</div>
-
+<p></p>
 <div class="row">
   <div class="col-md-7">
     <div class="card">
       <div class="card-body">
-        <canvas class="floor_canvas" id="canvas_2" width="300" height="100"></canvas>
-        <h5 class="card-title">Floor plan 2</h5>
+        <h5 class="card-title">Add group</h5>
+        <input name = "name_of_group" id="name_of_group" type="text" class="form-control">
+        <button id="add_group_button" class="btn btn-primary">New group</button>
       </div>
     </div>
   </div>
-  <div class="col-md-5">
+  <div class="col-md-5" id = 'groups'>
   </div>
-</div>
-
-
-<div class="col-md-7" style="display: none;">
-  <div class="card">
-    <div class="card-body">
-      <canvas id="canvas_plot"></canvas>
+  <div class="col-md-7" style="display: none;">
+    <div class="card">
+      <div class="card-body">
+        <canvas id="canvas_plot"></canvas>
+      </div>
     </div>
   </div>
-</div>
 
-<script type="text/javascript">
-  nodes = [];
-  edges = [];
-
-  // create a network
-  var container = document.getElementById('mynetwork');
-  function update_adjacency_graph(){
+  <script type="text/javascript">
 
     var options = {
       "nodes": {
@@ -88,7 +80,7 @@
       "interaction": {
         "dragNodes": false,
         "dragView": false,
-        "selectable": false,
+
         "selectConnectedEdges": false,
         "hoverConnectedEdges": false,
         "zoomView": false
@@ -106,18 +98,80 @@
       }
     }
 
-    var data = {
-      nodes: nodes,
-      edges: edges
+    // create a net
+
+
+    // burde tage et id som input måske
+    function update_network(group){
+      var adding = false;
+      var from_node = 0;
+      var to_node = 0;
+
+      var data = {
+        nodes: group.nodes,
+        edges: group.edges
+      };
+      var container = document.getElementById(group.name);
+      var network = new vis.Network(container, data, options);
+
+      network.on("selectEdge", function (params) {
+        console.log('selected edge:', params.edges[0]);
+        console.log('edges of group', group.edges);
+        var index =	group.edges.findIndex(function(element) {
+          return (element.id == params.edges[0]);
+        });
+        group.edges.splice(index,1);
+        update_network(group);
+      });
+
+      network.on("selectNode", function (params) {
+        console.log('selectNode Event:', params);
+        if(adding == false){
+          adding = true;
+          from_node = params.nodes[0];
+        } else {
+          adding = false;
+          to_node = params.nodes[0];
+
+          var index =	group.edges.findIndex(function(el) {
+            return (el.to == from_node && el.from == to_node ||
+            el.to == to_node && el.from == from_node)
+          });
+
+          if (from_node != to_node){
+            group.edges.push({from:from_node,to:to_node});
+            console.log("group edges",group.edges);
+            update_network(group);
+          }
+        }
+      });
+
     };
-    console.log("adjacency graph updated");
-    console.log(data);
-  	var network = new vis.Network(container, data, options);
-    //network.setOptions(options);
-  };
 
-</script>
+    function update_group_network(groups){
+      group_nodes = [];
+      group_edges = [];
+      var container = document.getElementById('group_network');
 
-<script type="text/paperscript" canvas='canvas_plot' src = "{{ url_for('static', filename='js/floor_plan.js') }}"></script>
+      groups.forEach(function(element) {
+        node_dict = {};
+        node_dict.id = element.name;
+        node_dict.label = element.name;
+        node_dict.color = 'lightgreen';
+        group_nodes.push(node_dict)
+      });
 
-{% endblock %}
+      console.log(group_nodes)
+
+      var data = {
+        nodes: group_nodes,
+        edges: group_edges
+      };
+      var network = new vis.Network(container, data, options);
+    };
+
+  </script>
+
+  <script type="text/paperscript" canvas='canvas_plot' src = "{{ url_for('static', filename='js/floor_plan.js') }}"></script>
+
+  {% endblock %}
