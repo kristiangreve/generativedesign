@@ -753,7 +753,7 @@ def select_objects_for_render(population,selections):
     #return selection_list
 
 def object_to_visuals(object):
-    return {"max_sizes": object.max_sizes,"departments":object.departments,"adjacency_score":object.adjacency_score,"id":object.plan_id}
+    return {"max_sizes": object.max_sizes,"departments":object.departments,"adjacency_score":object.adjacency_score, "id":object.plan_id, "all_adjacency_dict":object.all_adjacency_dict}
 
 def update_definition(edges,nodes,generation):
     rooms = []
@@ -781,13 +781,11 @@ def update_definition(edges,nodes,generation):
             definition['rooms'][i]['adjacency'] = []
 
     query = db.session.query(Plan).filter_by(generation=generation).all()
+    
     for plan in query:
         plan.definition = json.dumps(definition)
         plan.room_def = definition["rooms"]
     db.session.commit()
-
-
-
 
 def get_population_from_database(generation):
     query = db.session.query(Plan).filter_by(generation=generation).all()

@@ -27,7 +27,7 @@
     <div class="card">
       <div class="card-body">
         <canvas class="floor_canvas" id="canvas_1" width="300" height="100"></canvas>
-        <h5 class="card-title">Floor plan 1</h5>
+
         <button id = "group_button" type="button" class="btn btn-primary">Add group</button>
       </div>
     </div>
@@ -36,8 +36,8 @@
   <div class="col-md-5">
     <div class="card">
       <div class="card-body">
+        <h5 class="card-title">Groups</h5>
         <div class="network" id="mynetwork"></div>
-        <h5 class="card-title">Liked adjacencies</h5>
       </div>
     </div>
   </div>
@@ -51,7 +51,6 @@
     <div class="card">
       <div class="card-body">
         <canvas class="floor_canvas" id="canvas_2" width="300" height="100"></canvas>
-        <h5 class="card-title">Floor plan 2</h5>
       </div>
     </div>
   </div>
@@ -74,44 +73,44 @@
 
   // create a network
   var container = document.getElementById('mynetwork');
+  var options = {
+    "nodes": {
+      "shape": "dot"
+    },
+    "edges": {
+      "smooth": {
+        "forceDirection": "none"
+      }
+    },
+    "interaction": {
+      "dragNodes": false,
+      "dragView": false,
+      "selectable": false,
+      "selectConnectedEdges": false,
+      "hoverConnectedEdges": false,
+      "zoomView": false
+    },
+    "physics": {
+      "forceAtlas2Based": {
+        "gravitationalConstant": -10,
+        "springLength": 5,
+        "springConstant": 0.1,
+        "avoidOverlap": 1
+      },
+      "minVelocity": 0.75,
+      "solver": "forceAtlas2Based",
+      "timestep": 1
+    }
+  };
+
   function update_adjacency_graph(){
 
-    var options = {
-      "nodes": {
-        "shape": "dot"
-      },
-      "edges": {
-        "smooth": {
-          "forceDirection": "none"
-        }
-      },
-      "interaction": {
-        "dragNodes": false,
-        "dragView": false,
-        "selectable": false,
-        "selectConnectedEdges": false,
-        "hoverConnectedEdges": false,
-        "zoomView": false
-      },
-      "physics": {
-        "forceAtlas2Based": {
-          "gravitationalConstant": -20,
-          "springLength": 10,
-          "springConstant": 0.05,
-          "avoidOverlap": 1
-        },
-        "minVelocity": 0.75,
-        "solver": "forceAtlas2Based",
-        "timestep": 1
-      }
-    }
+
 
     var data = {
       nodes: nodes,
       edges: edges
     };
-    console.log("adjacency graph updated");
-    console.log(data);
   	var network = new vis.Network(container, data, options);
     //network.setOptions(options);
   };

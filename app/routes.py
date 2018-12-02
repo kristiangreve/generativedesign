@@ -18,6 +18,7 @@ import os
 
 user_selections = []
 user_selections_obj = []
+groups = []
 
 @app.before_request
 def before_request():
@@ -43,8 +44,37 @@ def generate_first_floorplans():
     generations = 10
     #print("user selections: ",user_selections)
     Pt = initial_generate(user_selections, pop_size, generations)
-    #print("first floorplans rendered")
     return jsonify(select_objects_for_render(Pt, user_selections))
+
+
+@app.route('/update_groups/', methods = ['GET', 'POST'])
+def update_groups():
+    groups = json.loads(request.form['groups'])
+    return render_template('floor_plan.html',groups=groups)
+
+
+@app.route('/generate_new_floorplans/', methods = ['GET', 'POST'])
+def generate_new_floorplans():
+    generations = 10
+    selected_rooms = json.loads(request.form['selected_rooms'])
+    current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
+    nodes = json.loads(request.form['nodes'])
+    edges = json.loads(request.form['edges'])
+
+    groups = json.loads(request.form['groups'])
+
+    print("groups: ", groups)
+    update_definition(edges,nodes,current_generation)
+
+    Pt = get_population_from_database(current_generation)
+
+    if len(selected_rooms)>0:
+        user_selections.append(selected_rooms)
+        #print("User selection sum: ", user_selections)
+        user_selections_obj.append(id_to_obj(Pt,user_selections))
+    # create new generation based on choices
+    Pt = generate(user_selections_obj,user_selections, generations)
+    return jsonify(select_objects_for_render(Pt,user_selections_obj))
 
 def performance_test(pop,gen,mut):
     global user_selections #If not declared global it doesnt edit the global list but simply creates a local new list with same name
@@ -117,25 +147,7 @@ def plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort):
     plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
 
 
-@app.route('/generate_new_floorplans/', methods = ['GET', 'POST'])
-def generate_new_floorplans():
-    generations = 10
-    selected_rooms = json.loads(request.form['selected_rooms'])
-    current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
-    nodes = json.loads(request.form['nodes'])
-    edges = json.loads(request.form['edges'])
 
-    update_definition(edges,nodes,current_generation)
-
-    Pt = get_population_from_database(current_generation)
-
-    if len(selected_rooms)>0:
-        user_selections.append(selected_rooms)
-        #print("User selection sum: ", user_selections)
-        user_selections_obj.append(id_to_obj(Pt,user_selections))
-    # create new generation based on choices
-    Pt = generate(user_selections_obj,user_selections, generations)
-    return jsonify(select_objects_for_render(Pt,user_selections_obj))
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
@@ -167,8 +179,6 @@ def index():
 def departments():
     departments = current_user.departments
 
-    # print(departments)
-    #form = DepartmentForm()
     space_left = current_user.length * current_user.width - sum([dep.size for dep in departments])
 
 
