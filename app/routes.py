@@ -36,96 +36,11 @@ def floor_plan():
 @login_required
 def get_floorplans():
     pop_size = 50
-<<<<<<< HEAD
-    generations = 50
-    #print("user selections: ",user_selections)
-    Pt = initial_generate(pop_size, generations)
-    #print("first floorplans rendered")
-    return jsonify(select_objects_for_render(Pt, []))
-
-def performance_test(pop,gen,mut):
-    global user_selections #If not declared global it doesnt edit the global list but simply creates a local new list with same name
-    global user_selections_obj
-    user_selections = []
-    user_selections_obj = []
-    # generate first generation and return
-    pop_size = pop
-    generations = gen
-    mutation_rate = mut
-    print("user selections: ",user_selections)
-    Pt,plt1,plt2, time = initial_generate(user_selections, pop_size, generations, mutation_rate)
-    print("first floorplans rendered")
-    #return jsonify(select_objects_for_render(Pt, user_selections))
-    return plt1,plt2, time
-
-def performance_test_start():
-    pop_size = [25,50,100]
-    generations = [25,100,200]
-    mut_rate = [0.01, 0.05, 0.1, 0.2]
-
-    for pop in pop_size:
-        for gen in generations:
-            for mut in mut_rate:
-                plt1 = []
-                plt2 = []
-                time = []
-                for i in range(5):
-                    plt1_temp,plt2_temp,time_temp = performance_test(pop,gen,mut)
-                    plt1.append(plt1_temp[1:])
-                    plt2.append(plt2_temp[1:])
-                    time.append(round(time_temp,2))
-                    plt2x = plt2_temp[0]
-                y1_list, y2_list, y3_list = [],[],[]
-                for plot_list in plt2:
-                    for index, y_lists in enumerate(plot_list):
-                        if index == 0:
-                            y1_list.append(y_lists)
-                        elif index == 1:
-                            y2_list.append(y_lists)
-                        elif index == 2:
-                            y3_list.append(y_lists)
-                avg_time = round((sum(time)/len(time)),2)
-
-                y_1_average = [statistics.mean(k) for k in zip(*y1_list)]
-                y_2_average = [statistics.mean(k) for k in zip(*y2_list)]
-                y_3_average = [statistics.mean(k) for k in zip(*y3_list)]
-
-                stringlabel = 'Avg. Runtime: '+str(avg_time)+' Pop size:'+str(pop)+' #of gen: '+str(gen)+' mutation: '+str(mut)
-                stringshort = 'P'+str(pop)+'-G'+str(gen)+'-M'+str(mut)+'_'
-                plot_multiple(plt2x, y_1_average,y_2_average,y_3_average,stringlabel, stringshort)
-
-def plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort):
-    plt.figure(figsize=(30,15), dpi=80)
-    y_plots = [y_b1,y_b2,y_b3]
-    labels = ['Avg. #Broken adjacencies','Avg. Aspect ratio deviation','Avg. #Broken min. dimensions']
-    colors = ['red','blue','green']
-    #plt.plot(x_b, y_b1,'b', x_b, y_b2,'g',  x_b, y_b3, 'r')
-    for y_val, label,color in zip(y_plots, labels,colors):
-         plt.plot(x_b, y_val, label=label, color=color)
-    plt.legend(fontsize=20)
-    plt.ylim(0, 10)
-    plt.yticks(range(10))
-    plt.xlabel('Generation. ('+stringlabel+')',fontsize=15)
-
-    filename = 'photos/avg_BestOf_'+stringshort
-    i = 0
-    while os.path.exists('{}{:d}.png'.format(filename, i)):
-        i += 1
-    plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
-
-
-@app.route('/generate_new_floorplans/', methods = ['GET', 'POST'])
-def generate_new_floorplans():
-=======
->>>>>>> v08
     generations = 10
 
     mode = request.form['mode']
-
     user_groups = json.loads(request.form['user_groups'])
-
     edges_of_user_groups = json.loads(request.form['edges_of_user_groups'])
-
 
     print("groups", user_groups)
     print("edges of groups", edges_of_user_groups)
