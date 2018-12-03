@@ -16,12 +16,10 @@ import statistics
 import matplotlib.pyplot as plt
 import os
 
-
 user_selections = []
 user_selections_obj = []
 user_input_obj = []
 user_input_dict_list = []
-user_groups = []
 
 @app.before_request
 def before_request():
@@ -38,13 +36,14 @@ def floor_plan():
 @login_required
 def get_floorplans():
     pop_size = 50
-    generations = 5
+    generations = 10
 
     mode = request.form['mode']
-    print("mode: ", mode)
-    # restart mode restarts the generation from 0
+    groups = request.form['groups']
+    edges_of_groups = request.form['edges_of_groups']
 
-    update_definition(edges,nodes,current_generation)
+    print("groups", groups)
+    print("edges of groups", edges_of_groups)
 
     if mode == 'restart':
         Pt = initial_generate(pop_size, generations)
@@ -57,8 +56,6 @@ def get_floorplans():
     return jsonify(select_objects_for_render(Pt, []))
 
 
-#
-#
 # @app.route('/generate_new_floorplans/', methods = ['GET', 'POST'])
 # def generate_new_floorplans():
 #     generations = 10
@@ -90,8 +87,6 @@ def get_floorplans():
 #     #print("first floorplans rendered")
 #     return jsonify(select_objects_for_render(Pt, []))
 
-#
-#
 # def performance_test(pop,gen,mut):
 #     global user_selections #If not declared global it doesnt edit the global list but simply creates a local new list with same name
 #     global user_selections_obj
@@ -161,7 +156,6 @@ def get_floorplans():
 #     while os.path.exists('{}{:d}.png'.format(filename, i)):
 #         i += 1
 #     plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
-#
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -194,11 +188,7 @@ def index():
 @login_required
 def departments():
     departments = current_user.departments
-
     space_left = current_user.length * current_user.width - sum([dep.size for dep in departments])
-
-
-    # form code:
     window_room = 0
     transit_room = 0
 
@@ -220,21 +210,17 @@ def departments():
                 number_of_employees = int(request.form.get('number_of_employees'))
             else:
                 number_of_employees = 0
-
             # check if an area has been submitted, if not calculate area from number of employees
             if request.form.get('area_of_department'):
                 area = int(request.form.get('area_of_department'))
             else:
                 area = number_of_employees*7
-
             dep = Department(name = name_of_department, size = area, employees = number_of_employees, transit = transit_room, window = window_room, owner = current_user)
             db.session.add(dep)
             db.session.commit()
         return redirect(url_for('departments'))
     return render_template('departments.html', title='Departments', departments=departments, space = space_left)
 
-
-#
 # @app.route('/delete_department/<department>', methods=['GET'])
 # @login_required
 # def delete_department(department):
@@ -251,7 +237,7 @@ def departments():
 #     db.session.delete(department)
 #     db.session.commit()
 #     return redirect(url_for('departments'))
-#
+
 #
 # @app.route('/edit_department/<department>', methods=['GET', 'POST'])
 # @login_required

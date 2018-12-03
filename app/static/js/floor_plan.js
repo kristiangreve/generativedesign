@@ -6,10 +6,11 @@ var current_adjacency_department = [];
 var room_selection_papers = [];
 var current_group = [];
 var specified_rooms = [];
+
 var render_array = [];
 var group_id = 0;
 var groups = [];
-var group_adjacencies = [];
+var edges_of_groups = [];
 
 // setup canvases
 $(document).ready(setup_canvases);
@@ -24,23 +25,20 @@ function setup_canvases(){
 	});
 };
 
-function get_floorplans(mode){
+function get_floorplans(mode,groups,edges_of_groups){
 	$.post('/get_floorplans',{
-		mode:mode
+		mode:mode,
+		groups:groups,
+		edges_of_groups:edges_of_groups
 	}).done(function(response) {
 		render_array = response;
 		render_floorplans(render_array);
 	});
 };
 
-function remove_group_card(group_name) {
-	var myNode = document.getElementById("group_name");
-	while (myNode.firstChild) {
-	    myNode.removeChild(myNode.firstChild);
-	}
-}
 
 function add_group_card(group_name) {
+
   // create a new div element
 	var newRow = document.createElement("div");
 	newRow.setAttribute('class', 'row');
@@ -64,13 +62,17 @@ function add_group_card(group_name) {
 	newCol.appendChild(newCard);
 	newRow.appendChild(newCol);
 
-  var group_location = document.getElementById("groups");
-
-	group_location.appendChild(newRow)
-
-
+  var group_location = document.getElementById('groups');
+	var paragraph = document.createElement("p");
+	group_location.insertBefore(paragraph, group_location.childNodes[0])
+	group_location.insertBefore(newRow, group_location.childNodes[0])
 };
 
+// button onclick handlers
+$("#generate_button").click(function(){
+	var mode = 'new';
+	get_floorplans(mode,groups,edges_of_groups)
+});
 
 $("#add_group_button").click(function(){
 	console.log("group added: ", current_group)
@@ -81,21 +83,21 @@ $("#add_group_button").click(function(){
 
 	// add a card for the group
 	add_group_card(name);
-	group_dict = {};
-	group_dict.name = name;
-	group_dict.rooms = current_group;
-
+	group_dict = {name:name,rooms:current_group};
 	init_group_adjacents(group_dict);
-	update_network(group_dict);
 	groups.push(group_dict);
+
+	// find index of element in groups array
+	var index =	groups.findIndex(function(group) {
+		return (group.name == name)
+	});
+	console.log
+	// pass that array to the opdate network function
+	update_network(groups[index]);
 	current_group = [];
 	console.log("groups", groups);
-	update_group_network(groups);
+	update_group_network(groups,edges_of_groups);
 	render_floorplans(render_array);
-
-
-
-
 });
 
 function init_group_adjacents(group){
@@ -103,13 +105,8 @@ function init_group_adjacents(group){
 	group.nodes = []
 
 	group.rooms.forEach(function(element){
-
-		node_dict = {};
-		node_dict.id = element.name;
-		node_dict.label = element.name;
-		node_dict.color = 'lightgreen';
+		node_dict = {id: element.name, label: element.name, group: group.name};
 		group.nodes.push(node_dict);
-
 		compare_and_add(group,element);
 	});
 };
@@ -120,11 +117,11 @@ function compare_and_add(group,element) {
 	group.rooms.forEach(function(room){
 		adajcent_rooms.forEach(function(adj_room){
 			if (room.name == adj_room){
-				var edgeIndex =	group.edges.findIndex(function(el) {
+				var index =	group.edges.findIndex(function(el) {
 					return (el.to == room.name && el.from == element.name ||
 						el.to == element.name && el.from == room.name)
 					});
-					if (edgeIndex == -1){
+					if (index == -1){
 						edge_dict = {};
 						edge_dict.from = element.name;
 						edge_dict.to = room.name;
@@ -144,7 +141,9 @@ function render_floorplans(render_array) {
 	};
 };
 
-
+function parse_dim(float) {
+	return parseFloat(Math.round(float * 100) / 100).toFixed(0);
+};
 
 
 
@@ -181,14 +180,21 @@ function plotPlan(plotCanvas,project_id,render_graphics) {
 		path.selected = false;
 		path.opacity = 0.5;
 
-		var font_size_name = 12;
+		var font_size = 12;
 		var center_point = new Point(department.center._x,department.center._y);
 		var text_name = new PointText(center_point);
 		text_name.fillColor = 'black';
-
-		text_name.fontSize = font_size_name;
+		text_name.fontSize = font_size;
 		text_name.justification = 'center';
 		text_name.content = name;
+
+		var area_point = new Point(department.center._x,department.center._y+font_size);
+		var text_area = new PointText(area_point);
+		text_area.fillColor = 'black';
+		text_area.fontSize = font_size;
+		text_area.justification = 'center';
+		text_area.content = parse_dim(element.dims[1]*element.dims[0]);
+
 
 		// mouseevents
 		path.onMouseEnter = function(event) {
@@ -244,169 +250,4 @@ function plotPlan(plotCanvas,project_id,render_graphics) {
 	var onpath = new Path.Rectangle(outline);
 	onpath.strokeColor = 'white';
 	onpath.strokeWidth = outlineWidth-2;
-
 };
-
-// function update_nodes_old() {
-// 	var unique_nodes = [];
-// 	edges.forEach(function(element){
-// 		unique_nodes.push(element.to);
-// 		unique_nodes.push(element.from);
-// 	});
-// 	unique_nodes = Array.from(new Set(unique_nodes));
-// 	nodes = [];
-// 	unique_nodes.forEach(function(element){
-// 		node_dict = {};
-// 		node_dict.id = element;
-// 		node_dict.label = element;
-// 		node_dict.color = 'lightgreen';
-// 		nodes.push(node_dict)
-// 	})
-// };
-//
-// function update_nodes() {
-// 	var unique_nodes = [];
-// 	edges.forEach(function(element){
-// 		unique_nodes.push(element.to);
-// 		unique_nodes.push(element.from);
-// 	});
-// 	unique_nodes = Array.from(new Set(unique_nodes));
-// 	nodes = [];
-// 	unique_nodes.forEach(function(element){
-// 		node_dict = {};
-// 		node_dict.id = element;
-// 		node_dict.label = element;
-// 		node_dict.color = 'lightgreen';
-// 		nodes.push(node_dict)
-// 	})
-// };
-// function is_adjacent(department1,department2) {
-// 	var edgeIndex =	edges.findIndex(function(element) {
-// 		return (element.to == department2 && element.from == department1 || element.to == department1 && element.from == department2);
-// 	});
-// 	return edgeIndex;
-// };
-// function remove_adjacent(department1,department2) {
-// 	edgeIndex = is_adjacent(department1,department2);
-// 	edges.splice(edgeIndex, 1);
-// };
-
-//
-// function add_nodes(){
-// 	// iterate groups array
-// 	groups.forEach(function(group){
-// 		console.log("nodes: ", nodes);
-// 		console.log("group: ", group);
-// 		// iterate each group in that array
-// 		group.departments.forEach(function(department){
-// 			var index =	nodes.findIndex(function(node) {
-// 				return (node.id == department.name);
-// 			});
-// 			node_dict = {};
-// 			node_dict.group = group.group_id;
-// 			node_dict.id = department.name;
-// 			node_dict.label = department.name;
-// 			if (index == -1){
-// 				nodes.push(node_dict);
-// 			};
-// 		});
-// 	});
-// }
-
-//
-// function compare_and_add(current_department,array1,array2){
-// 	array1.forEach(function(element1){
-// 		array2.forEach(function(element2){
-// 			if (element1.name == element2){
-// 				add_adjacent(current_department,element2);
-// 			};
-// 		});
-// 	});
-// };
-//
-// function add_adjacent(department1,department2) {
-// 	if (is_adjacent(department1,department2) == -1){
-// 		edge_dict = {};
-// 		edge_dict.to = department1;
-// 		edge_dict.from = department2;
-// 		if(department1 != department2){
-// 			edges.push(edge_dict);
-// 		};
-// 	};
-// };
-
-// $("#group_button").click(function(){
-// 	current_group.forEach(function(element){
-// 		// compare the other group members to the currently adajcent rooms:
-// 		var adajcent_rooms = render_array[element.render_id].all_adjacency_dict[element.name];
-// 		current_department = element.name;
-// 		compare_and_add(current_department,current_group,adajcent_rooms);
-// 	});
-//
-// 	group_dict = {}
-// 	group_dict.group_id = group_id;
-// 	group_dict.departments = current_group;
-// 	groups.push(group_dict);
-// 	console.log(groups);
-// 	group_id++;
-//
-// 	current_group = [];
-// 	add_nodes();
-// 	update_adjacency_graph();
-// 	render_floorplans(render_array);
-// });
-//
-// // on click on confirm button
-// $("#confirm_button").click(function(){
-// 	// register what generation and index the solution had
-// 	var plan_id = $(this).attr('plan_id');
-// 	// make ajax call to generate new floor plans
-// 	$.post('/generate_new_floorplans/',{
-// 		selected_rooms: JSON.stringify(selected_rooms),
-// 		nodes: JSON.stringify(nodes),
-// 		edges: JSON.stringify(edges),
-// 		groups: JSON.stringify(groups)
-// 	}).done(function(response) {
-// 		render_floorplans(response);
-// 		for (var i=0; i < selected_rooms_render.length ; i++) {
-// 			selected_rooms_render[i].color = 'grey';
-// 			update_room_selection_canvas();
-//
-// 		};
-//
-// 	});
-// });
-
-
-// function setup_room_selection_canvas(){
-// 	room_selection_canvas = document.getElementById("selection_canvas");
-// 	var room_selection_paper = new paper.PaperScope();
-// 	room_selection_paper.setup(room_selection_canvas);
-// 	room_selection_papers.push(room_selection_paper);
-// };
-// function generate_first_floorplans() {
-// 	$.post('/generate_first_floorplans/',{
-// 		pop_size:0,
-// 		generations:0
-// 	}).done(function(response) {
-// 		render_array = response;
-// 		render_floorplans(render_array);
-// 	});
-// };
-// // function to shorten floats to two decimals
-// function parse_dim(float) {
-// 	return parseFloat(Math.round(float * 100) / 100).toFixed(2);
-// };
-
-//
-// // function ajax call to add a group
-// function manage_groups(action, name, group){
-// 	$.post('/manage_groups',{
-// 		action: action,
-// 		name: name,
-// 		group: JSON.stringify(group)
-// 	}).done(function(response) {
-// 		console.log("response from manage: ", response)
-// 		location = location.href
-// 	});
-// };
