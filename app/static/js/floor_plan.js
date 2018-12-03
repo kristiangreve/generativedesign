@@ -13,8 +13,13 @@ var groups = [];
 var edges_of_groups = [];
 
 // setup canvases
-$(document).ready(setup_canvases);
-$(document).ready(get_floorplans('restart'));
+$(document).ready(
+	setup_canvases
+);
+
+$(document).ready(
+	get_floorplans('restart', [], [])
+);
 
 function setup_canvases(){
 	var canvases = jQuery.makeArray($(".floor_canvas"));
@@ -25,11 +30,11 @@ function setup_canvases(){
 	});
 };
 
-function get_floorplans(mode,groups,edges_of_groups){
+function get_floorplans(mode, user_groups, edges_of_user_groups){
 	$.post('/get_floorplans',{
-		mode:mode,
-		groups:groups,
-		edges_of_groups:edges_of_groups
+		mode: mode,
+		user_groups: JSON.stringify(user_groups),
+		edges_of_user_groups: JSON.stringify(edges_of_user_groups)
 	}).done(function(response) {
 		render_array = response;
 		render_floorplans(render_array);

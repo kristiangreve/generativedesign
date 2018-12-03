@@ -39,11 +39,14 @@ def get_floorplans():
     generations = 10
 
     mode = request.form['mode']
-    groups = request.form['groups']
-    edges_of_groups = request.form['edges_of_groups']
 
-    print("groups", groups)
-    print("edges of groups", edges_of_groups)
+    user_groups = json.loads(request.form['user_groups'])
+
+    edges_of_user_groups = json.loads(request.form['edges_of_user_groups'])
+
+
+    print("groups", user_groups)
+    print("edges of groups", edges_of_user_groups)
 
     if mode == 'restart':
         Pt = initial_generate(pop_size, generations)
