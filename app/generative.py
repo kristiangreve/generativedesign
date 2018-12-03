@@ -777,24 +777,33 @@ def select_objects_for_render(population,selections):
 def object_to_visuals(object):
     return {"walls": object.edges_out, "max_sizes": object.max_sizes,"departments":object.departments,"adjacency_score":object.adjacency_score, "id":object.plan_id, "all_adjacency_dict":object.all_adjacency_dict}
 
-def update_definition(edges,nodes,generation):
+def update_definition(groups):
+    # build list of room dicts from the edges of each group
     rooms = []
-    for edge in edges:
-        from_id = next( (i for i,room in enumerate(rooms) if room['name'] == edge['from']), None)
-        to_id = next( (i for i,room in enumerate(rooms) if room['name'] == edge['to']), None)
-        if from_id != None:
-            rooms[from_id]['adjacency'].append(edge['to'])
-        if to_id != None:
-            rooms[to_id]['adjacency'].append(edge['from'])
-        if from_id == None:
-            rooms.append({"name": edge['from'], "adjacency": [edge['to']]})
-        if to_id == None:
-            rooms.append({"name": edge['to'], "adjacency": [edge['from']]})
+    for group in groups:
+        for edge in group['edges']:
+            # check if any of the rooms already have a dict in the list
+            from_id = next( (i for i, room in enumerate(rooms) if room['name'] == edge['from']), None)
+            to_id = next( (i for i, room in enumerate(rooms) if room['name'] == edge['to']), None)
 
+            # if they have one already append to that
+            if from_id != None:
+                rooms[from_id]['adjacency'].append(edge['to'])
+            if to_id != None:
+                rooms[to_id]['adjacency'].append(edge['from'])
 
-    query = db.session.query(Plan).filter_by(generation=generation).first()
-    definition = json.loads(query.definition)
+            # if not, create a new dict and add the other one to it as adjacent
+            if from_id == None:
+                rooms.append({"name": edge['from'], "adjacency": [edge['to']]})
+            if to_id == None:
+                rooms.append({"name": edge['to'], "adjacency": [edge['from']]})
 
+        # get the most recent definition from the database
+        current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
+        query = db.session.query(Plan).filter_by(generation=current_generation).first()
+        definition = json.loads(query.definition)
+
+    # replace the adjacencies of each room in the definition with the ones specified by edges
     for i, room in enumerate(definition["rooms"]):
         adjacency = next( (rm['adjacency'] for rm in rooms if rm['name'] == room['name']), None)
         if adjacency:
@@ -802,13 +811,15 @@ def update_definition(edges,nodes,generation):
         else:
             definition['rooms'][i]['adjacency'] = []
 
-    query = db.session.query(Plan).filter_by(generation=generation).all()
+
+    print("definition from interactive: ", definition)
+
+    # change the definition of all plans in the latest generation to have the new adjacency
+    query = db.session.query(Plan).filter_by(generation=current_generation).all()
     for plan in query:
         plan.definition = json.dumps(definition)
         plan.room_def = definition["rooms"]
     db.session.commit()
-
-
 
 def get_population_from_database(generation):
     query = db.session.query(Plan).filter_by(generation=generation).all()

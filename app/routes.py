@@ -45,11 +45,14 @@ def get_floorplans():
     print("groups", user_groups)
     print("edges of groups", edges_of_user_groups)
 
+
     if mode == 'restart':
         Pt = initial_generate(pop_size, generations)
     # new mode creates a new generation
     elif mode == 'new':
+        update_definition(user_groups)
         Pt = generate(user_selections_obj,user_selections, generations)
+        
     # current mode just returns the latest current generation
     elif mode == 'current':
         Pt = generate([],[], 0)
