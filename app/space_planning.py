@@ -435,19 +435,27 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
     added_openings = set() #List to keep track of rooms that have gotten a doorway added
 
     for adjacency in adjacency_list:
+        # #For debugging:
+        # if adjacency in edges_neighbors and edge_lengths[edges_neighbors.index(adjacency)] >= min_opening or (list(reversed(adjacency)) in edges_neighbors and edge_lengths[edges_neighbors.index(list(reversed(adjacency)))] >= min_opening):
+        #     if id_room_dict[adjacency[0]] != 'outside' and id_room_dict[adjacency[1]] != 'outside':
+        #         print(id_room_dict[adjacency[0]], ' adj to ', id_room_dict[adjacency[1]])
+
         #Adjacent rooms, that are meant to be adjacent. and are NOT both transit = door)
+
         if adjacency in edges_neighbors and edge_lengths[edges_neighbors.index(adjacency)] >= min_opening and not (room_transit_dict[adjacency[0]]==room_transit_dict[adjacency[1]]==1):
-            connecting_edges.append(edges_neighbors.index(adjacency))
-            if room_transit_dict[adjacency[0]] == 0: #Only add the non-transit room to list
+            connecting_edges.append(edges_neighbors.index(adjacency)) #Discovery: Also make doors to outside, you just cant see it due to the outer frame... If we don't include them here, the adj score will be bugged
+            if room_transit_dict[adjacency[0]] == 0 and id_room_dict[adjacency[1]] != 'outside' : #Only add the non-transit room to list, and don't include outside adjacency
                 added_openings.add(adjacency[0])
-            else:
+            #else:
+            if room_transit_dict[adjacency[1]] == 0 and id_room_dict[adjacency[0]] != 'outside':
                 added_openings.add(adjacency[1])
         elif list(reversed(adjacency)) in edges_neighbors and edge_lengths[edges_neighbors.index(list(reversed(adjacency)))] >= min_opening and not (room_transit_dict[adjacency[0]]==room_transit_dict[adjacency[1]]==1):
             connecting_edges.append(edges_neighbors.index(list(reversed(adjacency))))
-            if room_transit_dict[adjacency[0]] == 0:
-                added_openings.add(adjacency[1])
-            else:
-                added_openings.add(adjacency[0])
+            if room_transit_dict[list(reversed(adjacency))[0]] == 0 and id_room_dict[adjacency[0]] != 'outside':
+                added_openings.add(list(reversed(adjacency))[0]) #reversed index
+            #else:
+            if room_transit_dict[list(reversed(adjacency))[1]] == 0 and id_room_dict[adjacency[1]] != 'outside':
+                added_openings.add(list(reversed(adjacency))[1])  #reversed index
         else:
             adjacency_score += 1
             for zone_index in adjacency:
