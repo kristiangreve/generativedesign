@@ -761,6 +761,10 @@ def select_objects_for_render(population,selections):
             if len(selection_list)==4:
                 break
 
+    print('GET LAYOUT!')
+    dir_pop = list(selection_list[0].dir_list)
+    get_layout(selection_list[0].definition, selection_list[0].room_def, selection_list[0].split_list, dir_pop, selection_list[0].room_order, selection_list[0].min_opening)
+
     for index, obj in enumerate(selection_list):
         # for i,elem in enumerate(obj.aspect_score): #... this works...
         #     obj.aspect_score[i] = round(elem,3)
@@ -768,8 +772,8 @@ def select_objects_for_render(population,selections):
         # for i,elemt in enumerate(obj.base_score): #for some fucked up reason doesn't work
         #     obj.base_score[i] = round(elemt,3)
 
-        print('Lack of access: ', obj.access_score, 'Broken transit groups: ', obj.transit_connections_score)
-        print('Adj: ', obj.adjacency_score, 'aspect: ', round(obj.aspect_ratio_score,2), ' dims: ', obj.dims_score, 'Crowd: ', round(obj.crowding_score,2), 'CrowdAdj: ', round(obj.crowding_adjacency_score,2), 'CrowdRatio: ', round(obj.crowding_aspect_ratio_score,2))
+        print('Flow: ', obj.flow_score, 'Access: ', obj.access_score, 'Transit: ', obj.transit_connections_score)
+        print('Dims: ', obj.dims_score, 'Adj: ', obj.adjacency_score, 'aspect: ', round(obj.aspect_ratio_score,2), 'Crowd: ', round(obj.crowding_score,2), 'CrowdAdj: ', round(obj.crowding_adjacency_score,2), 'CrowdRatio: ', round(obj.crowding_aspect_ratio_score,2))
     return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2]),object_to_visuals(selection_list[3])]
     #selection_list = [object_to_visuals(x) for x in selection_list]
     #return selection_list
