@@ -126,6 +126,7 @@ def evaluate_layout(individual):
     individual.all_adjacency_dict = all_adjacency_dict
     individual.transit_adjacency_list, individual.transit_adjacency_dict = transit_adjacent_list_dict(individual)
 
+
 def transit_adjacent_list_dict(individual):
     transit_list = []
     for room in individual.definition['rooms']:
@@ -633,7 +634,6 @@ def show_plot_scatter():
 
 
 def generate(user_selections_obj,user_selections_rooms,generations):
-
     # query for max generation value in database
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
 
@@ -807,7 +807,6 @@ def update_definition(edges,nodes,generation):
         plan.definition = json.dumps(definition)
         plan.room_def = definition["rooms"]
     db.session.commit()
-
 
 
 
