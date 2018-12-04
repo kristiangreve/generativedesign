@@ -502,7 +502,7 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
     max_sizes = [face.get_dims() for face in layout.faces][0]
     base = [face.get_base_point() for face in layout.faces][1:]
     departments = [element for element in zip(base,dims,room_names)]
-
+    # print("departments: ",departments)
     # Checks whether the  minimum dimensions of any room is lower than the minimum legal width
     # If any dimension is smaller than allowed, add one to the dims (dimensions) score. Lower score = better
     min_dimension = 2 #min room dimension
@@ -521,9 +521,13 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
 
     departments = []
 
-    for base,dim,name in zip(base,dims,room_names):
-        department_dict = {"base": base, "dims": dim, "name": name }
+    transit = []
+    for room in room_names:
+        transit.append(next(element['transit'] for element in room_def if element['name'] == room))
+    for base,dim,name,transit in zip(base,dims,room_names,transit):
+        department_dict = {"base": base, "dims": dim, "name": name, "transit": transit }
         departments.append(department_dict)
+
 
     all_adjacency_dict.pop('outside', None) #removes 0, outside as a room
 

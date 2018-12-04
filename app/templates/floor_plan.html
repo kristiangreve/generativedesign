@@ -73,11 +73,10 @@
   </div>
 
   <script type="text/javascript">
-
     var options = {
       "nodes": {
         "shape": "dot"
-      },
+        },
       "edges": {
         "smooth": {
           "forceDirection": "none"
@@ -104,16 +103,19 @@
       }
     }
 
-    options.groups = {
-    myGroup: {color:{background:'red'}, borderWidth:3}
-  }
 
-    // create a net
+    function update_groups_for_network(groups){
+      options.groups = {};
+      var colors = ['LightSeaGreen','LightCyan','LightSkyBlue','LightSteelBlue','LightBlue','LightCoral']
+      groups.forEach(function(group) {
+        options.groups[group.name] = {
+                  color: {background:colors[0],border:"black"}
+                };
+        colors.splice(0,1);
+      });
+    }
 
-
-    // burde tage et id som input måske
     function update_network(group){
-
       var adding = false;
       var from_node = 0;
       var to_node = 0;
@@ -127,8 +129,6 @@
       var network = new vis.Network(container, data, options);
 
       network.on("selectEdge", function (params) {
-        console.log('selected edge:', params.edges[0]);
-        console.log('edges of group', group.edges);
         var index =	group.edges.findIndex(function(edge) {
           return (edge.id == params.edges[0]);
         });
@@ -152,13 +152,13 @@
           if (index == -1){
             if (from_node != to_node){
               group.edges.push({from:from_node,to:to_node});
-              console.log("group edges",group.edges);
               update_network(group);
             };
           };
         }
       });
     };
+
 
     function update_group_network(groups,edges_of_groups){
       var adding = false;
@@ -199,10 +199,9 @@
             return (el.to == from_node && el.from == to_node ||
             el.to == to_node && el.from == from_node)
           });
-          console.log("clicked, index: ",index)
+
           if(index == -1){
             if (from_node != to_node){
-              console.log("clicked, index: ",index)
 
               edges_of_groups.push({from:from_node,to:to_node});
 

@@ -775,7 +775,7 @@ def select_objects_for_render(population,selections):
     #return selection_list
 
 def object_to_visuals(object):
-    return {"walls": object.edges_out, "max_sizes": object.max_sizes,"departments":object.departments,"adjacency_score":object.adjacency_score, "id":object.plan_id, "all_adjacency_dict":object.all_adjacency_dict}
+    return {"walls": object.edges_out, "max_sizes": object.max_sizes, "departments": object.departments, "adjacency_score": object.adjacency_score, "id":object.plan_id, "all_adjacency_dict":object.all_adjacency_dict}
 
 def update_definition(groups):
     # build list of room dicts from the edges of each group
@@ -799,9 +799,9 @@ def update_definition(groups):
                 rooms.append({"name": edge['to'], "adjacency": [edge['from']]})
 
         # get the most recent definition from the database
-        current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
-        query = db.session.query(Plan).filter_by(generation=current_generation).first()
-        definition = json.loads(query.definition)
+    current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
+    query = db.session.query(Plan).filter_by(generation=current_generation).first()
+    definition = json.loads(query.definition)
 
     # replace the adjacencies of each room in the definition with the ones specified by edges
     for i, room in enumerate(definition["rooms"]):

@@ -80,28 +80,32 @@ $("#generate_button").click(function(){
 });
 
 $("#add_group_button").click(function(){
-	console.log("group added: ", current_group)
 
 	// get name from field and delete it
-	name = document.getElementById("name_of_group").value;
+	group_name = document.getElementById("name_of_group").value;
 	document.getElementById("name_of_group").value = "";
 
 	// add a card for the group
-	add_group_card(name);
-	group_dict = {name:name,rooms:current_group};
+	add_group_card(group_name);
+	group_dict = {name:group_name, rooms:current_group};
 	init_group_adjacents(group_dict);
 	groups.push(group_dict);
 
+	current_group.forEach(function(element){
+		specified_rooms.push({name:element.name, group:group_name});
+	});
+
+	update_groups_for_network(groups);
+	update_group_network(groups,edges_of_groups);
+
 	// find index of element in groups array
 	var index =	groups.findIndex(function(group) {
-		return (group.name == name)
+		return (group.name == group_name)
 	});
-	console.log
+
 	// pass that array to the opdate network function
 	update_network(groups[index]);
 	current_group = [];
-	console.log("groups", groups);
-	update_group_network(groups,edges_of_groups);
 	render_floorplans(render_array);
 });
 
@@ -109,10 +113,17 @@ function init_group_adjacents(group){
 	group.edges = []
 	group.nodes = []
 
-	group.rooms.forEach(function(element){
-		node_dict = {id: element.name, label: element.name, group: group.name};
+	group.rooms.forEach(function(room){
+		console.log(room.transit)
+		// if it is a transit element, add a thick border
+		if (room.transit == 0){
+			var border = 1
+		}else{
+			var border = 3
+		}
+		node_dict = {id: room.name, label: room.name, group: group.name, borderWidth: border};
 		group.nodes.push(node_dict);
-		compare_and_add(group,element);
+		compare_and_add(group,room);
 	});
 };
 
@@ -159,7 +170,6 @@ function plotPlan(plotCanvas,project_id,render_graphics) {
 	mypapers[project_id].project.clear()
 	mypapers[project_id].project.addLayer(layer)
 	var render_id = render_graphics.id;
-	console.log("id of canvas: ", render_id);
 
 	max_size = render_graphics.max_sizes;
 	var factor_x = parseInt(plotCanvas.style.width) / max_size[1];
@@ -180,7 +190,19 @@ function plotPlan(plotCanvas,project_id,render_graphics) {
 		var name = element.name;
 		var department = new Rectangle(base,dims);
 		var path = new Path.Rectangle(department);
-		path.fillColor = 'lightgrey';
+		var fillColor = 'lightgrey'
+		// find index of room in specified rooms:
+		var index =	specified_rooms.findIndex(function(el) {
+			return (el.name == name);
+		});
+
+		// if it is found in specified rooms:
+		if (index > -1) {
+				var group_name = specified_rooms[index].group;
+				fillColor = options.groups[group_name].color.background;
+		};
+
+		path.fillColor = fillColor;
 		path.name = name;
 		path.selected = false;
 		path.opacity = 0.5;
@@ -193,12 +215,13 @@ function plotPlan(plotCanvas,project_id,render_graphics) {
 		text_name.justification = 'center';
 		text_name.content = name;
 
-		var area_point = new Point(department.center._x,department.center._y+font_size);
-		var text_area = new PointText(area_point);
-		text_area.fillColor = 'black';
-		text_area.fontSize = font_size;
-		text_area.justification = 'center';
-		text_area.content = parse_dim(element.dims[1]*element.dims[0]);
+		var type_point = new Point(department.center._x,department.center._y+font_size);
+		var text_type = new PointText(type_point);
+		text_type.fillColor = 'grey';
+		text_type.fontSize = font_size;
+		text_type.fontWeight = 'italic'
+		text_type.justification = 'center';
+		text_type.content = parse_dim(element.dims[1]*element.dims[0]).concat(" m2");
 
 
 		// mouseevents
@@ -215,14 +238,13 @@ function plotPlan(plotCanvas,project_id,render_graphics) {
 				this.fillColor = 'lightgrey';
 			} else {
 				var department_dict = {};
-				department_dict.name = this.name;
+				department_dict.name = element.name;
 				department_dict.plan_id = render_id;
 				department_dict.render_id = project_id;
-				console.log("canvas id: ", department_dict.plan_id)
+				department_dict.transit = element.transit;
 				current_group.push(department_dict);
 				this.fillColor = 'green';
 			};
-			console.log(current_group);
 		};
 
 		path.onMouseLeave = function(event) {
@@ -233,7 +255,7 @@ function plotPlan(plotCanvas,project_id,render_graphics) {
 			if (index > -1){
 				this.fillColor = 'green';
 			} else {
-				this.fillColor = 'lightgrey';
+				this.fillColor = fillColor;
 			};
 		};
 
