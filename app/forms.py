@@ -43,7 +43,6 @@ class ResetPasswordForm(FlaskForm):
         'Repeat Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Request Password Reset')
 
-
 class EditProfileForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     about_me = TextAreaField('About me', validators=[Length(min=0, max=140)])
@@ -58,39 +57,9 @@ class EditProfileForm(FlaskForm):
             if user is not None:
                 raise ValidationError('Please use a different username.')
 
-class PostForm(FlaskForm):
-    post = TextAreaField('Say something', validators=[DataRequired()])
-    submit = SubmitField('Submit')
-
-
 class CompanyForm(FlaskForm):
-    company_name = TextAreaField('company_name', validators=[Length(min=0, max=140)], render_kw={"placeholder": "Name of your company"})
-    number_of_employees = IntegerField('number_of_employees', validators=[DataRequired()],render_kw={"placeholder": "Number of employees"})
-
-
-
-class DepartmentForm(FlaskForm):
-    name = TextAreaField('Department', validators=[Length(min=0, max=140)], render_kw={"placeholder": "Name"})
-    employees = IntegerField('Employees',render_kw={"placeholder": "#"})
-    window = RadioField('Gender', choices = [('M','Male'),('F','Female')])
-
-    transit = BooleanField()
-    area = IntegerField('Area', validators=[DataRequired()],render_kw={"placeholder": "m^2"})
-
-    submit = SubmitField('Add')
-
-class EditDepartmentForm(FlaskForm):
-    name = TextAreaField('Department name', validators=[Length(min=0, max=140)])
-    size = IntegerField('Size', validators=[DataRequired()])
-    employees = IntegerField('Number of employees')
-    submit = SubmitField('Commit changes')
-
-class EditFloorPlanForm(FlaskForm):
-    length = IntegerField('Length', validators=[DataRequired()])
-    width = IntegerField('Width', validators=[DataRequired()])
-    submit = SubmitField('Submit')
-
-class AdjecentForm(FlaskForm):
-    adjecent = BooleanField('')
-    dep1 = StringField('Username')
-    dep2 = StringField('Username')
+    company_name = TextAreaField('Name', validators=[Length(min=0, max=140)], render_kw={"placeholder": "Name of your company"})
+    number_of_employees = IntegerField('Employees', validators=[DataRequired()],render_kw={"placeholder": "Number of employees"})
+    space_length = IntegerField('Length', validators=[DataRequired()],render_kw={"placeholder": "Length of the space"})
+    space_width = IntegerField('Width', validators=[DataRequired()],render_kw={"placeholder": "Width of the space"})
+    submit = SubmitField('Save')

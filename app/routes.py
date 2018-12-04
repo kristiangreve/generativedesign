@@ -3,8 +3,8 @@ from flask import render_template, flash, redirect, url_for, request, jsonify, s
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, \
-    ResetPasswordRequestForm, ResetPasswordForm, DepartmentForm, EditDepartmentForm, EditFloorPlanForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, \
+    ResetPasswordRequestForm, ResetPasswordForm, CompanyForm
 from app.models import User, Post, Department, Plan
 from app.email import send_password_reset_email
 import json
@@ -26,6 +26,22 @@ def before_request():
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
+
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
+@login_required
+def index():
+    form = CompanyForm()
+    if form.validate_on_submit():
+        current_user.length = form.space_length.data
+        current_user.width = form.space_width.data
+        current_user.username = form.company_name.data
+        current_user.number_of_employees = form.number_of_employees.data
+        db.session.commit()
+        return redirect(url_for('departments'))
+    #performance_test_start()
+    return render_template('index.html', title='Company information', form=form)
+
 
 @app.route('/floor_plan', methods=['GET', 'POST'])
 @login_required
@@ -52,7 +68,7 @@ def get_floorplans():
     elif mode == 'new':
         update_definition(user_groups)
         Pt = generate(user_selections_obj,user_selections, generations)
-        
+
     # current mode just returns the latest current generation
     elif mode == 'current':
         Pt = generate([],[], 0)
@@ -161,19 +177,6 @@ def get_floorplans():
 #     plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
 
 
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/index', methods=['GET', 'POST'])
-@login_required
-
-def index():
-    form = EditFloorPlanForm()
-    if form.validate_on_submit():
-        current_user.length = form.length.data
-        current_user.width = form.width.data
-        db.session.commit()
-        return redirect(url_for('departments'))
-    #performance_test_start()
-    return render_template('index.html', title='Home', form=form)
 
 
         # try:
@@ -190,8 +193,19 @@ def index():
 @app.route('/departments', methods=['GET', 'POST'])
 @login_required
 def departments():
+    number_of_employees = current_user.number_of_employees
+    number_of_bathrooms = 0
+
+    # add one bathroom per 10 employees, if 11, 2 is added.
+    while(number_of_employees > 0):
+        number_of_bathrooms+=1
+        number_of_employees-=10
+
+    # suggested bathrooms
+    suggested_departments = [{"name": "Bathroom "+str(i),"size":6} for i in range(number_of_bathrooms)]
+
+
     departments = current_user.departments
-    space_left = current_user.length * current_user.width - sum([dep.size for dep in departments])
     window_room = 0
     transit_room = 0
 
@@ -208,7 +222,6 @@ def departments():
             if request.form.get('transit_room'):
                 transit_room = 1
             name_of_department = str(request.form.get('name_of_department')).capitalize()
-
             if request.form.get('number_of_employees'):
                 number_of_employees = int(request.form.get('number_of_employees'))
             else:
@@ -222,7 +235,7 @@ def departments():
             db.session.add(dep)
             db.session.commit()
         return redirect(url_for('departments'))
-    return render_template('departments.html', title='Departments', departments=departments, space = space_left)
+    return render_template('departments.html', title='Departments', departments=departments, suggested_departments = suggested_departments)
 
 # @app.route('/delete_department/<department>', methods=['GET'])
 # @login_required

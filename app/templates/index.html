@@ -2,17 +2,18 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-<h1>Input dimensions</h1>
-{% if form %}
-<div class="row">
-  <div class="col-md-4">
-    {{ wtf.quick_form(form) }}
-    <br>
-    {% endif %}
-    {% for post in posts %}
-    {% include '_post.html' %}
-    {% endfor %}
-
+<div class="container">
+  <p></p>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Company information</h5>
+          <p class="card-text">Please supply basic information about your company</p>
+          {{ wtf.quick_form(form) }}
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}

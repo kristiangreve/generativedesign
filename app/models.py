@@ -23,7 +23,6 @@ class User(UserMixin, db.Model):
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     length = db.Column(db.Integer)
     width = db.Column(db.Integer)
-
     number_of_employees = db.Column(db.Integer)
 
     posts = db.relationship('Post', backref='author', lazy='dynamic')
