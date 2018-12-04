@@ -28,7 +28,7 @@ class individual:
         self.departments = []
         self.aspect_base = {}
         self.all_adjacency_dict = None
-        self.transit_adjacency_list = None
+        self.transit_room_def = None
 
         self.aspect_score = [0,0,0]
         self.base_score = [0,0,0]
@@ -36,6 +36,7 @@ class individual:
         self.access_score = None
         self.transit_connections_score = None
         self.flow_score = None
+        self.group_adj_score = None
 
         self.pareto = None
         self.dominated_count = 0
@@ -79,16 +80,16 @@ class individual:
         tmp_access_score = 0
         # /// If we want the option to do groups with NO transit rooms in ///
         # for this_room, adjacency_list in self.all_adjacency_dict.items():
-        #     if not any(i in adjacency_list for i in self.transit_adjacency_list) and this_room not in self.transit_adjacency_list: #If non of the adjacent rooms are transit rooms
+        #     if not any(i in adjacency_list for i in self.transit_room_def) and this_room not in self.transit_room_def: #If non of the adjacent rooms are transit rooms
         #         adjacency_list= [x for x in self.all_adjacency_dict[this_room] if x in adjacency_definition[this_room] and 'outside' not in x]
         #         if len(adjacency_list)>0:
-        #             print('Adj list: ', adjacency_list, 'transit: ', self.transit_adjacency_list)
-        #             if any(i in adjacency_list for i in self.transit_adjacency_list):
+        #             print('Adj list: ', adjacency_list, 'transit: ', self.transit_room_def)
+        #             if any(i in adjacency_list for i in self.transit_room_def):
         #                 print('!SPECIAL!: ', this_room, 'Adj def list: ', adjacency_list)
         #         else:
         #             tmp_access_score += 1
         for this_room, adjacency_list in self.all_adjacency_dict.items():
-            if not any(i in adjacency_list for i in self.transit_adjacency_list) and this_room not in self.transit_adjacency_list: #If non of the adjacent rooms are transit rooms
+            if not any(i in adjacency_list for i in self.transit_room_def) and this_room not in self.transit_room_def: #If non of the adjacent rooms are transit rooms
                 tmp_access_score += 1
 
 
@@ -115,6 +116,18 @@ class individual:
                     temp_list.append(element)
             return self.evaluate_transit_connections(transit_dict, temp_list, score)
 
+    def evaluate_group_adjacency(self, group_transit_dict):
+
+        group_adj_score = 0
+        for group_adj in group_transit_dict:
+            for room_group1 in group_adj['group1']:
+                if not any(room in group_adj['group2'] for room in self.all_adjacency_dict[room_group1]):
+                    print('Broken grp adj!')
+                    group_adj_score += 1
+        self.group_adj_score = group_adj_score
+
+
+
 
 """
 init_population:
@@ -136,7 +149,20 @@ def evaluate_layout(individual):
     individual.departments = departments
     individual.dims_score = dims_score
     individual.all_adjacency_dict = all_adjacency_dict
-    individual.transit_adjacency_list, individual.transit_adjacency_dict = transit_adjacent_list_dict(individual)
+    individual.transit_room_def, individual.transit_adjacency_dict = transit_adjacent_list_dict(individual)
+
+
+def get_group_definition(user_groups):
+    group_dict = defaultdict(list)
+    for group in user_groups:
+        for room in group['rooms']:
+            group_dict[group['name']].append(room['name'])
+
+    #group_adj_list = []
+    #for group_adj in edges_of_user_groups:
+#        group_adj_list.append([group_adj['from'],group_adj['to']])
+
+    return group_dict
 
 
 def transit_adjacent_list_dict(individual):
@@ -151,15 +177,14 @@ def transit_adjacent_list_dict(individual):
             transit_adjacency_dict[room] = adjacent_transits
     return transit_list, transit_adjacency_dict
 
-def defined_adjacency(individual):
+def get_adjacency_definition(individual):
     defined_adjacency={}
     for room in individual.definition['rooms']:
         defined_adjacency[room['name']] = room['adjacency']
     return defined_adjacency
 
 
-def evaluate_pop(generation,user_input_obj, user_input_dict_list):
-    adjacency_definition = defined_adjacency(generation[0]) #Gets a list of adjacency requirements
+def evaluate_pop(generation,adjacency_definition, individual_group_def, edges_of_user_groups):
     for individual in generation:
         if individual.adjacency_score == None: #only call layout if the given object hasn't been evaluated yet
             evaluate_layout(individual)
@@ -168,7 +193,21 @@ def evaluate_pop(generation,user_input_obj, user_input_dict_list):
             individual.evaluate_access_score(adjacency_definition)
             individual.evaluate_transit_connections((individual.transit_adjacency_dict.copy()),[])
             individual.flow_score = individual.access_score + individual.transit_connections_score*2
+    if len(edges_of_user_groups): #If group adjacency has been specified
+        group_transit_dict_list = []  # list of Dicts containing an adjacent group as key and the transit rooms in that group as values (list)
+        for group_adj in edges_of_user_groups:
+            #Rooms that are defined by to & from groups, and are Transit rooms
+            if any(room in individual_group_def[group_adj['from']] for room in generation[0].transit_room_def) and any(room in individual_group_def[group_adj['to']] for room in generation[0].transit_room_def):
+                group_transit_dict = {}
+                group_transit_dict['group1'] =  list(set(individual_group_def[group_adj['from']]).intersection(generation[0].transit_room_def))
+                group_transit_dict['group2'] =  list(set(individual_group_def[group_adj['to']]).intersection(generation[0].transit_room_def))
 
+                #group_transit_dict[group_adj['from']] =  list(set(individual_group_def[group_adj['from']]).intersection(generation[0].transit_room_def))
+                #group_transit_dict[group_adj['to']] =  list(set(individual_group_def[group_adj['to']]).intersection(generation[0].transit_room_def))
+                group_transit_dict_list.append(group_transit_dict)
+        for individual in generation:
+            individual.evaluate_group_adjacency(group_transit_dict_list)
+            individual.flow_score = individual.flow_score+(individual.group_adj_score*3)
 
 
     #     if len(user_input_obj)>0: # if user input exists
@@ -493,7 +532,9 @@ def initial_generate(pop_size,generations):
     db.session.query(Plan).delete()
     db.session.commit()
     Pt, id = init_population(pop_size)
-    evaluate_pop(Pt,[],[]) #correct this...
+    adjacency_def = get_adjacency_definition(Pt[0]) #Gets a list of adjacency requirements
+
+    evaluate_pop(Pt,adjacency_def,[],[])
     save_population_to_database(Pt,0)
     dominance(Pt,[])
     pareto_score(Pt)
@@ -511,7 +552,7 @@ def initial_generate(pop_size,generations):
         #print('Generation: ', n)
         Qt,id = breeding(Pt, id, mutation_ratio)
         mutate(Qt, mutation_ratio)
-        evaluate_pop(Qt,[], [])
+        evaluate_pop(Qt,adjacency_def,[], [])
         Rt = Pt + Qt
         dominance(Rt,[])
         pareto_score(Rt)
@@ -653,7 +694,44 @@ def show_plot_scatter():
 
 
 
-def generate(user_selections_obj,user_selections_rooms,generations):
+# def generate(user_selections_obj,user_selections_rooms,generations):
+#     # query for max generation value in database
+#     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
+#
+#     # load latest generation from database into objects
+#     Pt = get_population_from_database(current_generation)
+#     id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
+#     pop_size=len(Pt)
+#
+#     user_base_aspect_dict = map_user_selection(user_selections_obj,user_selections_rooms)
+#     evaluate_pop(Pt,user_selections_obj, user_base_aspect_dict)
+#     user_base_aspect_dict = map_user_selection(user_selections_obj,user_selections_rooms)
+#     dominance(Pt,user_selections_obj)
+#     pareto_score(Pt)
+#     crowding(Pt)
+#     mutation_ratio = 0.01
+#     plt.figure()
+#     x=[]
+#     y=[]
+#     gen_list=[]
+#
+#     for n in range(generations):
+#         # print('Generation: ', current_generation+n)
+#         Qt, id = breeding(Pt,id, mutation_ratio)
+#         mutate(Qt, mutation_ratio)
+#         evaluate_pop(Qt,user_selections_obj, user_base_aspect_dict)
+#         Rt = Pt + Qt
+#         dominance(Rt,user_selections_obj)
+#         pareto_score(Rt)
+#         crowding(Rt)
+#         Pt = selection(pop_size,Rt)
+#         #x,y,gen_list = prepare_plot(Pt,n,x,y,gen_list)
+#     #show_plot()
+#     save_population_to_database(Pt,generations+current_generation)
+#     # print("Run a total of ", (generations+current_generation), ' generations')
+#     return Pt
+
+def generate(generations, user_groups, edges_of_user_groups):
     # query for max generation value in database
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
 
@@ -661,11 +739,12 @@ def generate(user_selections_obj,user_selections_rooms,generations):
     Pt = get_population_from_database(current_generation)
     id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
     pop_size=len(Pt)
-
-    user_base_aspect_dict = map_user_selection(user_selections_obj,user_selections_rooms)
-    evaluate_pop(Pt,user_selections_obj, user_base_aspect_dict)
-    user_base_aspect_dict = map_user_selection(user_selections_obj,user_selections_rooms)
-    dominance(Pt,user_selections_obj)
+    adjacency_def = get_adjacency_definition(Pt[0]) #Gets a list of adjacency requirements
+    individual_group_def = get_group_definition(user_groups)
+    #user_base_aspect_dict = map_user_selection(user_selections_obj,user_selections_rooms)
+    evaluate_pop(Pt,adjacency_def, individual_group_def, edges_of_user_groups)
+    #user_base_aspect_dict = map_user_selection(user_selections_obj,user_selections_rooms)
+    dominance(Pt,user_groups)
     pareto_score(Pt)
     crowding(Pt)
     mutation_ratio = 0.01
@@ -678,9 +757,9 @@ def generate(user_selections_obj,user_selections_rooms,generations):
         # print('Generation: ', current_generation+n)
         Qt, id = breeding(Pt,id, mutation_ratio)
         mutate(Qt, mutation_ratio)
-        evaluate_pop(Qt,user_selections_obj, user_base_aspect_dict)
+        evaluate_pop(Qt,adjacency_def,individual_group_def, edges_of_user_groups)
         Rt = Pt + Qt
-        dominance(Rt,user_selections_obj)
+        dominance(Rt,user_groups)
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
@@ -784,9 +863,9 @@ def select_objects_for_render(population,selections):
     print('GET LAYOUT')
     #dir_pop = list(selection_list[0].dir_list) # copy the dir list because the passed parameter gets consumed in the get_layout function (pop)
     #get_layout(selection_list[0].definition, selection_list[0].room_def, selection_list[0].split_list, dir_pop, selection_list[0].room_order, selection_list[0].min_opening)
-    adjacency_definition = defined_adjacency(selection_list[0]) #Gets a list of adjacency requirements
+    adjacency_definition = get_adjacency_definition(selection_list[0]) #Gets a list of adjacency requirements
     selection_list[0].evaluate_access_score(adjacency_definition)
-
+    print('Grp Adj Score: ', selection_list[0].group_adj_score)
     for index, obj in enumerate(selection_list):
         # for i,elem in enumerate(obj.aspect_score): #... this works...
         #     obj.aspect_score[i] = round(elem,3)
@@ -794,7 +873,7 @@ def select_objects_for_render(population,selections):
         # for i,elemt in enumerate(obj.base_score): #for some fucked up reason doesn't work
         #     obj.base_score[i] = round(elemt,3)
 
-        print('Lack of access: ', obj.access_score, 'Broken transit groups: ', obj.transit_connections_score)
+        print('Flow', obj.flow_score, 'Access: ', obj.access_score, 'Transit: ', obj.transit_connections_score, 'GroupAdj: ', obj.group_adj_score)
         print('Adj: ', obj.adjacency_score, 'aspect: ', round(obj.aspect_ratio_score,2), ' dims: ', obj.dims_score, 'Crowd: ', round(obj.crowding_score,2), 'CrowdAdj: ', round(obj.crowding_adjacency_score,2), 'CrowdRatio: ', round(obj.crowding_aspect_ratio_score,2))
     return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2]),object_to_visuals(selection_list[3])]
     #selection_list = [object_to_visuals(x) for x in selection_list]

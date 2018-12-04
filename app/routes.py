@@ -52,7 +52,7 @@ def floor_plan():
 @login_required
 def get_floorplans():
     pop_size = 50
-    generations = 1
+    generations = 25
 
     mode = request.form['mode']
     user_groups = json.loads(request.form['user_groups'])
@@ -67,7 +67,7 @@ def get_floorplans():
     # new mode creates a new generation
     elif mode == 'new':
         update_definition(user_groups)
-        Pt = generate(user_selections_obj,user_selections, generations)
+        Pt = generate(generations, user_groups,edges_of_user_groups)
 
     # current mode just returns the latest current generation
     elif mode == 'current':
