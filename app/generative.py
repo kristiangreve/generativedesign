@@ -75,12 +75,24 @@ class individual:
     #     #self.aspect_score = aspect_score
     #     self.base_score = base_score
 
-    def evaluate_access_score(self):
-        tmp_transit_score = 0
-        for adjacency_list in self.all_adjacency_dict.values():
-            if not any(i in adjacency_list for i in self.transit_adjacency_list):
-                tmp_transit_score += 1 #If non of the adjacent rooms are transit rooms
-        self.access_score = tmp_transit_score
+    def evaluate_access_score(self, adjacency_definition):
+        tmp_access_score = 0
+        # /// If we want the option to do groups with NO transit rooms in ///
+        # for this_room, adjacency_list in self.all_adjacency_dict.items():
+        #     if not any(i in adjacency_list for i in self.transit_adjacency_list) and this_room not in self.transit_adjacency_list: #If non of the adjacent rooms are transit rooms
+        #         adjacency_list= [x for x in self.all_adjacency_dict[this_room] if x in adjacency_definition[this_room] and 'outside' not in x]
+        #         if len(adjacency_list)>0:
+        #             print('Adj list: ', adjacency_list, 'transit: ', self.transit_adjacency_list)
+        #             if any(i in adjacency_list for i in self.transit_adjacency_list):
+        #                 print('!SPECIAL!: ', this_room, 'Adj def list: ', adjacency_list)
+        #         else:
+        #             tmp_access_score += 1
+        for this_room, adjacency_list in self.all_adjacency_dict.items():
+            if not any(i in adjacency_list for i in self.transit_adjacency_list) and this_room not in self.transit_adjacency_list: #If non of the adjacent rooms are transit rooms
+                tmp_access_score += 1
+
+
+        self.access_score = tmp_access_score
         #print('Obj: ', self, ' access score: ', self.access_score)
 
     def evaluate_transit_connections(self,transit_dict, temp_list=[], score =0):
@@ -139,13 +151,21 @@ def transit_adjacent_list_dict(individual):
             transit_adjacency_dict[room] = adjacent_transits
     return transit_list, transit_adjacency_dict
 
+def defined_adjacency(individual):
+    defined_adjacency={}
+    for room in individual.definition['rooms']:
+        defined_adjacency[room['name']] = room['adjacency']
+    return defined_adjacency
+
+
 def evaluate_pop(generation,user_input_obj, user_input_dict_list):
+    adjacency_definition = defined_adjacency(generation[0]) #Gets a list of adjacency requirements
     for individual in generation:
         if individual.adjacency_score == None: #only call layout if the given object hasn't been evaluated yet
             evaluate_layout(individual)
             individual.evaluate_aspect_ratio()
         #if individual.access_score == None:
-            individual.evaluate_access_score()
+            individual.evaluate_access_score(adjacency_definition)
             individual.evaluate_transit_connections((individual.transit_adjacency_dict.copy()),[])
             individual.flow_score = individual.access_score + individual.transit_connections_score*2
 
@@ -720,7 +740,7 @@ def select_objects_for_render(population,selections):
         for pareto_front in sorted(pareto_dict.keys()):
             if len(selection_list) == 0:
             #Best adjacency of which is most similar to dir/split/ordder of user selction
-                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.flow_score, x.dims_score, x.adjacency_score,x.aspect_ratio_score, -x.crowding_score), reverse=False)
+                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (-x.flow_score, x.dims_score, x.adjacency_score,x.aspect_ratio_score, -x.crowding_score), reverse=False)
                 selection_list.append(adjacency_sorted[0])
                 print("data on the plan on top: ")
                 print(adjacency_sorted[0].adjacency_score)
@@ -760,6 +780,12 @@ def select_objects_for_render(population,selections):
 
             if len(selection_list)==4:
                 break
+
+    print('GET LAYOUT')
+    #dir_pop = list(selection_list[0].dir_list) # copy the dir list because the passed parameter gets consumed in the get_layout function (pop)
+    #get_layout(selection_list[0].definition, selection_list[0].room_def, selection_list[0].split_list, dir_pop, selection_list[0].room_order, selection_list[0].min_opening)
+    adjacency_definition = defined_adjacency(selection_list[0]) #Gets a list of adjacency requirements
+    selection_list[0].evaluate_access_score(adjacency_definition)
 
     for index, obj in enumerate(selection_list):
         # for i,elem in enumerate(obj.aspect_score): #... this works...
