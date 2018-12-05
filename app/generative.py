@@ -43,7 +43,7 @@ class individual:
         self.adjacency_score = None
 
         self.crowding_adjacency_score = None
-        self.crowding_aspect_ratio_score = None
+        self.crowding_aspect_ratio_score = 0
         self.crowding_score = []
 
         self.edges_out = []
@@ -59,8 +59,8 @@ class individual:
         aspect_ratio_score = 0
         for room in self.aspect_base.keys():
             if self.aspect_base[room][0] < 0.5: #Only penalize rooms w. aspect of more than 2 (ratio format = min size / max size)
-                if room != 'Hall':
-                    aspect_ratio_score += abs(0.5-2*(self.aspect_base[room][0]*self.aspect_base[room][0])) #squared aspect to penal outliers more, score from 0-0.5 pr. room.
+                if not room.startswith('Commonspace'): #Don't penatalize commonspaces, they only need to live up to min dimension criteria
+                    aspect_ratio_score += ((0.5-self.aspect_base[room][0])*(0.5-self.aspect_base[room][0]))*4 #squared aspect to penal outliers more, score from 0-1 pr. room.
         #for room in ideal_aspect.keys():
         #    aspect_score += abs(self.aspect_base[room][0]-ideal_aspect[room])
         self.aspect_ratio_score = aspect_ratio_score
@@ -819,7 +819,7 @@ def select_objects_for_render(population,selections):
         for pareto_front in sorted(pareto_dict.keys()):
             if len(selection_list) == 0:
             #Best adjacency of which is most similar to dir/split/ordder of user selction
-                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (-x.flow_score, x.dims_score, x.adjacency_score,x.aspect_ratio_score, -x.crowding_score), reverse=False)
+                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.dims_score,x.aspect_ratio_score, x.flow_score, x.adjacency_score, -x.crowding_score), reverse=False)
                 selection_list.append(adjacency_sorted[0])
                 print("data on the plan on top: ")
                 print(adjacency_sorted[0].adjacency_score)
@@ -866,6 +866,7 @@ def select_objects_for_render(population,selections):
     adjacency_definition = get_adjacency_definition(selection_list[0]) #Gets a list of adjacency requirements
     selection_list[0].evaluate_access_score(adjacency_definition)
     print('Grp Adj Score: ', selection_list[0].group_adj_score)
+    print('Aspect: ', selection_list[0].evaluate_aspect_ratio())
     for index, obj in enumerate(selection_list):
         # for i,elem in enumerate(obj.aspect_score): #... this works...
         #     obj.aspect_score[i] = round(elem,3)
