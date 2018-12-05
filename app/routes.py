@@ -58,8 +58,8 @@ def get_floorplans():
     user_groups = json.loads(request.form['user_groups'])
     edges_of_user_groups = json.loads(request.form['edges_of_user_groups'])
 
-    print("groups", user_groups)
-    print("edges of groups", edges_of_user_groups)
+    #print("groups", user_groups)
+    #print("edges of groups", edges_of_user_groups)
 
 
     if mode == 'restart':
