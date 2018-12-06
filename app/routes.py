@@ -95,6 +95,7 @@ def change_transit_of_department():
 @login_required
 def departments():
     number_of_employees = current_user.number_of_employees
+
     number_of_bathrooms = 0
 
     # add one bathroom per 10 employees, if 11, 2 is added.
@@ -106,7 +107,8 @@ def departments():
     suggested_departments = [{"name": "Bathroom "+str(i),"size":6} for i in range(number_of_bathrooms)]
 
 
-    departments = current_user.departments
+    departments = Department.query.all()
+
     window_room = 0
     transit_room = 0
 
