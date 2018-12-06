@@ -260,7 +260,7 @@ def evaluate_pop(generation,adjacency_definition, individual_group_def, edges_of
     #         individual.aspect_base_score = sum(individual.base_score) #Ignore aspect score
 
 def weighted_ranking(population):
-    attributes_weight = {'dims_score':10,'adjacency_score':3,'aspect_ratio_score':2,'access_score':3,'transit_connections_score':5, 'group_adj_score':2, 'crowding_score':1}
+    attributes_weight = {'dims_score':10,'adjacency_score':3,'aspect_ratio_score':1,'access_score':5,'transit_connections_score':5, 'group_adj_score':2, 'crowding_score':1}
     for individual in population:
         for attribute, weight in attributes_weight.items(): #normalize all attributes
             if getattr(population[0],(attribute)) != None:
