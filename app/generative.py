@@ -180,12 +180,12 @@ def normalized_sum(population):
 
 
     # /// TO normalize scores ////
-    for individual in population:
-        for attribute, max_value in max_dict.items(): #normalize all attributes
-            if max_value != 0:
-                setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)/max_value))
-            elif max_value == 0:
-                setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)))
+    # for individual in population:
+    #     for attribute, max_value in max_dict.items(): #normalize all attributes
+    #         if max_value != 0:
+    #             setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)/max_value))
+    #         elif max_value == 0:
+    #             setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)))
 
     # /// to get average of normalized scores ///
     # for attribute in attributes_to_score:
@@ -194,9 +194,10 @@ def normalized_sum(population):
     #         if hasattr(population[0], ('norm_'+attribute)):
     #             average_dict[attribute] = mean(tmp_attribute_list)
 
-    print('Max: ', max_dict)
-    print('Min: ', min_dict)
-    print('Average: ', average_dict)
+    #print('Max: ', max_dict)
+    #print('Min: ', min_dict)
+    #print('Average: ', average_dict)
+    return(min_dict)
 
 
 def evaluate_pop(generation,adjacency_definition, individual_group_def, edges_of_user_groups):
@@ -474,8 +475,9 @@ def initial_generate(pop_size,generations):
     #plt.figure()
     #x1,x_b = [],[]
     #y1,y2,y_b1,y_b2,y_b3= [],[],[],[],[]
-
-    gen_list=[]
+    min_dict_list = []
+    min_dict_list.append(normalized_sum(Pt))
+    gen_list=[0]
     start_time = time.time()
     #print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation_ratio)
     for n in range(generations):
@@ -489,16 +491,18 @@ def initial_generate(pop_size,generations):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
+        min_dict_list.append(normalized_sum(Pt))
+        gen_list.append(n)
         #x1,y1,y2 = prepare_plot(Pt,n,x1,y1,y2)
         #x_b,y_b1,y_b2,y_b3 = prepare_plot_best_of(Pt,n,x_b,y_b1,y_b2,y_b3)
     end_time = time.time()
     time_ellapsed = end_time-start_time
     save_population_to_database(Pt,generations)
-    #stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation: '+str(mutation_ratio)
-    #stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
+    stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation: '+str(mutation_ratio)
+    stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
     #show_plot(x1,y1,y2, stringlabel,stringshort)
-    #plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort)
-    #plt.close('all')
+    plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
+    plt.close('all')
 
     return Pt
     #return Pt, [x1,y1,y2], [x_b,y_b1,y_b2,y_b3], time_ellapsed
@@ -509,6 +513,75 @@ def prepare_plot(population, generation,x,y1,y2):
         y1.append(obj.adjacency_score)
         y2.append(obj.aspect_ratio_score)
     return x,y1,y2
+
+def plot_best_of_old(min_dict_list,gen_list,stringlabel,stringshort):
+    plt.figure(figsize=(30,15), dpi=80)
+    attribute = ['dims_score','adjacency_score','aspect_ratio_score','access_score','transit_connections_score','crowding_score']
+    colors = ['red','grey','teal','blue','green','orange']
+    plot_dict = defaultdict(list)
+    for gen,min_dict in enumerate(min_dict_list):
+        for key,value in min_dict.items():
+            plot_dict[key].append(value)
+        plot_dict['gen'].append(gen)
+    print('Plot dict: ', plot_dict)
+    for attribute,value_list in plot_dict.items():
+        if attribute != 'gen':
+            plt.plot(plot_dict['gen'],value_list, label=attribute)
+    plt.legend(fontsize=20)
+    plt.ylim(0, 20)
+    plt.yticks(range(20))
+    plt.xlabel('Generation. ('+stringlabel+')',fontsize=15)
+
+    filename = 'photos/min_'+stringshort
+    i = 0
+    while os.path.exists('{}{:d}.png'.format(filename, i)):
+        i += 1
+    plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
+    plt.close()
+
+def plot_best_of(min_dict_list,gen_list,stringlabel,stringshort):
+    #plt.figure(figsize=(30,15), dpi=80)
+    fig,ax1 = plt.subplots(figsize=(30,15), dpi=80)
+    ax2 = ax1.twinx()
+    #ax1.figure(figsize=(30,15), dpi=80)
+    attribute = ['dims_score','adjacency_score','aspect_ratio_score','access_score','transit_connections_score','crowding_score']
+    colors = ['red','grey','teal','blue','green','orange']
+    plot_dict = defaultdict(list)
+    for gen,min_dict in enumerate(min_dict_list):
+        for key,value in min_dict.items():
+            plot_dict[key].append(value)
+        plot_dict['gen'].append(gen)
+    print('Plot dict: ', plot_dict)
+    for attribute,value_list in plot_dict.items():
+        if attribute != 'gen':
+            if value_list[0]<4:
+                ax1.plot(plot_dict['gen'],value_list, label=attribute)
+            else:
+                ax2.plot(plot_dict['gen'],value_list, label=attribute)
+    plt.legend(fontsize=20)
+    plt.ylim(0, 20)
+    plt.yticks(range(20))
+    plt.xlabel('Generation. ('+stringlabel+')',fontsize=15)
+
+    filename = 'photos/min_'+stringshort
+    i = 0
+    while os.path.exists('{}{:d}.png'.format(filename, i)):
+        i += 1
+    plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
+    plt.close()
+
+def show_2yaxis(x,y1,y2, stringlabel):
+    fig,ax1 = plt.subplots()
+    ax2 = ax1.twinx()
+    ax1.scatter(x,y1, label = 'Adjacency Score', color='red')
+    ax2.scatter(x,y2, label = 'Aspect ratio Score', color='blue')
+    plt.legend()
+    #plt.yticks(range(20))
+    #plt.ylim(0, 20)
+    ax1.set_xlabel('Generation. ('+stringlabel+')')
+    ax1.set_ylabel('Adjacency score')
+    ax2.set_ylabel('Aspect ratio score')
+    plt.show()
 
 def plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort):
     plt.figure(figsize=(30,15), dpi=80)
@@ -529,29 +602,6 @@ def plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort):
         i += 1
     plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
     plt.close()
-
-
-def prepare_plot_best_of(population, n,x_b,y_b1,y_b2,y_b3):
-    try:
-        best_adj = population[0].adjacency_score
-        best_aspect = population[0].aspect_ratio_score
-        best_dims = population[0].dims_score
-        for obj in population:
-            if obj.adjacency_score < best_adj:
-                best_adj = obj.adjacency_score
-            if obj.aspect_ratio_score < best_aspect:
-                best_aspect = obj.aspect_ratio_score
-            if obj.dims_score < best_dims:
-                best_dims = obj.dims_score
-        y_b1.append(best_adj)
-        y_b2.append(best_aspect)
-        y_b3.append(best_dims)
-        x_b.append(n)
-        return x_b,y_b1,y_b2,y_b3
-    except IndexError:
-        print('INDEX ERROR')
-        print('Len of pop: ', len(population))
-        print('Pop: ', population)
 
 
 
@@ -588,19 +638,6 @@ def show_plot(x,y1,y2, stringlabel,stringshort):
     plt.gcf().clear()
     plt.close()
     #plt.show()
-
-def show_2yaxis(x,y1,y2, stringlabel):
-    fig,ax1 = plt.subplots()
-    ax2 = ax1.twinx()
-    ax1.scatter(x,y1, label = 'Adjacency Score', color='red')
-    ax2.scatter(x,y2, label = 'Aspect ratio Score', color='blue')
-    plt.legend()
-    #plt.yticks(range(20))
-    #plt.ylim(0, 20)
-    ax1.set_xlabel('Generation. ('+stringlabel+')')
-    ax1.set_ylabel('Adjacency score')
-    ax2.set_ylabel('Aspect ratio score')
-    plt.show()
 
 
 def prepare_plot_scatter(population, generation,x,y,gen_list):
@@ -709,7 +746,7 @@ def select_objects_for_render(population,selections):
     adj_counter = 0
 
     normalized_sum(population)
-    weighted_ranking(population)
+    #weighted_ranking(population)
     sorted_rank = sorted(population, key=lambda x: (x.weighted_sum_score))
 
 
@@ -769,12 +806,12 @@ def select_objects_for_render(population,selections):
     #adjacency_definition = get_adjacency_definition(selection_list[0]) #Gets a list of adjacency requirements
     #selection_list[0].evaluate_access_score(adjacency_definition)
 
-    for index, obj in enumerate(sorted_rank[0:1]):
+    for index, obj in enumerate(selection_list[0:1]):
         print('Weight Sum', obj.weighted_sum_score, 'Access: ', obj.access_score, 'Transit: ', obj.transit_connections_score, 'GroupAdj: ', obj.group_adj_score)
         print(' Dims: ', obj.dims_score, 'Adj: ', obj.adjacency_score, 'aspect: ', round(obj.aspect_ratio_score,2), 'Crowd: ', round(obj.crowding_score,2), 'CrowdAdj: ', round(obj.crowding_adjacency_score,2), 'CrowdRatio: ', round(obj.crowding_aspect_ratio_score,2))
 
-    return [object_to_visuals(sorted_rank[0])]
-    #return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2]),object_to_visuals(selection_list[3])]
+    #return [object_to_visuals(sorted_rank[0])]
+    return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2]),object_to_visuals(selection_list[3])]
     #selection_list = [object_to_visuals(x) for x in selection_list]
     #return selection_list
 

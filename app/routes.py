@@ -10,7 +10,7 @@ from app.email import send_password_reset_email
 import json
 from operator import itemgetter
 from app.generative import json_departments_from_db, random_design, generate, get_population_from_database, \
-initial_generate, select_objects_for_render, evaluate_layout, id_to_obj, update_definition, evaluate_pop
+initial_generate, select_objects_for_render, evaluate_layout, update_definition, evaluate_pop
 from app.space_planning import get_layout
 import statistics
 import matplotlib.pyplot as plt
