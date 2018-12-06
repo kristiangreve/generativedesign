@@ -821,7 +821,7 @@ def select_objects_for_render(population,selections):
         for pareto_front in sorted(pareto_dict.keys()):
             if len(selection_list) == 0:
             #Best adjacency of which is most similar to dir/split/ordder of user selction
-                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score, x.flow_score, x.dims_score, x.aspect_ratio_score, -x.crowding_score), reverse=False)
+                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.dims_score, x.flow_score, x.adjacency_score, x.aspect_ratio_score, -x.crowding_score), reverse=False)
                 selection_list.append(adjacency_sorted[0])
                 print("data on the plan on top: ")
                 print(adjacency_sorted[0].adjacency_score)
@@ -910,7 +910,7 @@ def update_definition(groups):
 
     definition = json_departments_from_db()
 
-    print("definition from db:",definition)
+    #print("definition from db:",definition)
 
     # replace the adjacencies of each room in the definition with the ones specified by edges
     for i, room in enumerate(definition["rooms"]):
