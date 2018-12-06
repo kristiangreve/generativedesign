@@ -51,7 +51,7 @@ def floor_plan():
 @app.route('/get_floorplans', methods = ['GET','POST'])
 @login_required
 def get_floorplans():
-    pop_size = 100
+    pop_size = 50
     generations = 20
 
     mode = request.form['mode']
@@ -59,6 +59,7 @@ def get_floorplans():
     edges_of_user_groups = json.loads(request.form['edges_of_user_groups'])
 
     if mode == 'restart':
+        update_definition(user_groups)
         Pt = initial_generate(pop_size, generations)
     # new mode creates a new generation
     elif mode == 'new':

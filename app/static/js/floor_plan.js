@@ -61,19 +61,65 @@ function change_transit_of_department(group,department) {
 		}else{
 			var border = 3
 		}
-
 		node_dict = {id: department, label: department, group: group.name, borderWidth: border};
 		group.nodes[index] = node_dict
 		update_network(group);
 	});
 };
 
-$("#add_group_button").click(function(){
+function update_group(group_name,room){
+	var gr_index = groups.findIndex(function(gr) {
+		return (gr.name == group_name)
+	});
 
+	var rm_index = groups[gr_index].rooms.findIndex(function(rm) {
+		return (rm.name == room.name)
+	});
+
+	if(rm_index>-1){
+		groups[gr_index].rooms.splice(rm_index,1);
+	} else {
+		groups[gr_index].rooms.push(room);
+	};
+
+	groups[gr_index].nodes = [];
+	groups[gr_index].rooms.forEach(function(room){
+		// if it is a transit element, add a thick border
+		if (room.transit == 0){
+			var border = 1
+		}else{
+			var border = 3
+		}
+		node_dict = {id: room.name, label: room.name, group: groups[gr_index].name, borderWidth: border};
+		groups[gr_index].nodes.push(node_dict);
+});
+};
+
+$("#select_group_button").click(function(){
+	group_name = document.getElementById("select_group").value;
+	console.log(group_name);
+
+	current_group.forEach(function(room){
+		update_group(group_name,room)
+	});
+
+	update_groups_for_network(groups);
+	update_group_network(groups,edges_of_groups);
+
+	var index =	groups.findIndex(function(group) {
+		return (group.name == group_name)
+	});
+
+	update_network(groups[index]);
+
+	render_floorplans(render_array);
+	current_group = [];
+});
+
+$("#add_group_button").click(function(){
 	// get name from field and delete it
 	group_name = document.getElementById("name_of_group").value;
 	document.getElementById("name_of_group").value = "";
-
 	// add a card for the group
 	add_group_card(group_name);
 	group_dict = {name:group_name, rooms:current_group};
@@ -94,9 +140,22 @@ $("#add_group_button").click(function(){
 
 	// pass that array to the opdate network function
 	update_network(groups[index]);
-	current_group = [];
 	render_floorplans(render_array);
+	update_group_selections();
+	current_group = [];
 });
+
+function update_group_selections() {
+	var select_group = document.getElementById("select_group");
+	while (select_group.firstChild) {
+		select_group.removeChild(select_group.firstChild);
+	}
+	groups.forEach(function(group){
+		var group_option = document.createElement("option");
+		group_option.innerHTML = group.name;
+		select_group.appendChild(group_option);
+	});
+}
 
 function add_group_card(group_name) {
 	// create a new div element
@@ -207,15 +266,28 @@ function compare_and_add(group,element) {
 			var department = new Rectangle(base,dims);
 			var path = new Path.Rectangle(department);
 			var fillColor = 'lightgrey'
-			// find index of room in specified rooms:
-			var index =	specified_rooms.findIndex(function(el) {
-				return (el.name == name);
-			});
 
-			// if it is found in specified rooms:
-			if (index > -1) {
-				var group_name = specified_rooms[index].group;
-				fillColor = options.groups[group_name].color.background;
+			// loop through groups
+			console.log("groups",groups);
+
+			var i;
+			var n;
+
+			groups:
+			for (i = 0; i < groups.length; i++) {
+				group_name = groups[i].name;
+
+				console.log("i:",i);
+				console.log("group",groups[i].rooms);
+				// loop through rooms of group members
+
+				for (n = 0; n < groups[i].rooms.length; n++) {
+					// if the name of the room is the same, break
+					if (groups[i].rooms[n].name == name) {
+						fillColor = options.groups[group_name].color.background;
+						break groups;
+					};
+				};
 			};
 
 			path.fillColor = fillColor;

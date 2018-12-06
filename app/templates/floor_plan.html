@@ -16,7 +16,7 @@
     height: auto;
   }
   .network {
-    height: 300px;
+    height: 200px;
     width: 100%;
   }
   .subnetwork {
@@ -28,19 +28,61 @@
 <p></p>
 <div class="row">
   <div class="col-md-7">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Suggested floor plan</h5>
-        <canvas class="floor_canvas" id="canvas_1" width="300" height="100"></canvas>
-        <button id="generate_button" class="btn btn-primary">Generate new layout</button>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Suggested floor plan</h5>
+            <canvas class="floor_canvas" id="canvas_1" width="300" height="100"></canvas>
+            <button id="generate_button" class="btn btn-primary">Generate new layout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p></p>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">New group</h5>
+            <div class="row">
+              <div class="col-md-4">
+                <input name = "name_of_group" id="name_of_group" type="text" class="form-control">
+              </div>
+              <div class="col-md-4">
+                <button id="add_group_button" class="btn btn-primary">Create</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Add to group</h5>
+            <div class="row">
+              <div class="col-md-4">
+                <select class="form-control" id="select_group">
+                </select>
+              </div>
+              <div class="col-md-4">
+                <button id="select_group_button" class="btn btn-primary">Add to</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
   <div class="col-md-5">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Groups</h5>
-        <div class="network" id="group_network"></div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Groups</h5>
+            <div class="network" id="group_network"></div>
+          </div>
+        </div>
       </div>
     </div>
     <p></p>
@@ -60,29 +102,14 @@
         </div>
       </div>
     </div>
-  </div>
-</div>
-<p></p>
-<div class="row">
-  <div class="col-md-7">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Add group</h5>
-        <div class="row">
-          <div class="col-md-4">
-            <input name = "name_of_group" id="name_of_group" type="text" class="form-control">
-          </div>
-          <div class="col-md-4">
-            <button id="add_group_button" class="btn btn-primary">New group</button>
-          </div>
-        </div>
+    <p></p>
+    <div class="row">
+      <div class="col-md-12" id = 'groups'>
       </div>
     </div>
   </div>
-  <div class="col-md-5" id = 'groups'>
-  </div>
-
 </div>
+
 
 <div class="col-md-7" style="display: none;">
   <div class="card">

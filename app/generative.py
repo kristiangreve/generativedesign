@@ -732,13 +732,17 @@ def show_plot_scatter():
 #     return Pt
 
 def generate(generations, user_groups, edges_of_user_groups):
-    # query for max generation value in database
+    # query for current generation value in database
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
 
     # load latest generation from database into objects
     Pt = get_population_from_database(current_generation)
     id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
     pop_size=len(Pt)
+
+    ## RESTARTING EACH TIME
+    #Pt, id = init_population(pop_size)
+
     adjacency_def = get_adjacency_definition(Pt[0]) #Gets a list of adjacency requirements
     individual_group_def = get_group_definition(user_groups)
     #user_base_aspect_dict = map_user_selection(user_selections_obj,user_selections_rooms)
