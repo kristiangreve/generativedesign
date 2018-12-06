@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 from timeit import default_timer as timer
 from app.space_planning import get_layout
-from app.models import User, Plan
+from app.models import User, Post, Department, Plan
 from app import app, db
 from flask_login import current_user
 from sqlalchemy import func
@@ -772,10 +772,12 @@ def generate(generations, user_groups, edges_of_user_groups):
 # function for creating room definition
 
 def json_departments_from_db():
-    departments = current_user.departments
+    departments = Department.query.all()
     aspect = current_user.length/current_user.width
     department_list = []
+
     for department in departments:
+        print(department.name,department.transit)
         department_dict = {}
         department_dict['window']=department.window
         department_dict['transit']=department.transit
@@ -819,7 +821,11 @@ def select_objects_for_render(population,selections):
         for pareto_front in sorted(pareto_dict.keys()):
             if len(selection_list) == 0:
             #Best adjacency of which is most similar to dir/split/ordder of user selction
+<<<<<<< HEAD
                 adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.dims_score,x.aspect_ratio_score, x.flow_score, x.adjacency_score, -x.crowding_score), reverse=False)
+=======
+                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score, x.flow_score, x.dims_score, x.aspect_ratio_score, -x.crowding_score), reverse=False)
+>>>>>>> v11
                 selection_list.append(adjacency_sorted[0])
                 print("data on the plan on top: ")
                 print(adjacency_sorted[0].adjacency_score)
@@ -905,9 +911,10 @@ def update_definition(groups):
                 rooms.append({"name": edge['to'], "adjacency": [edge['from']]})
 
         # get the most recent definition from the database
-    current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
-    query = db.session.query(Plan).filter_by(generation=current_generation).first()
-    definition = json.loads(query.definition)
+
+    definition = json_departments_from_db()
+
+    print("definition from db:",definition)
 
     # replace the adjacencies of each room in the definition with the ones specified by edges
     for i, room in enumerate(definition["rooms"]):
@@ -917,14 +924,15 @@ def update_definition(groups):
         else:
             definition['rooms'][i]['adjacency'] = []
 
-
-    print("definition from interactive: ", definition)
-
     # change the definition of all plans in the latest generation to have the new adjacency
+
+    current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
     query = db.session.query(Plan).filter_by(generation=current_generation).all()
+
     for plan in query:
         plan.definition = json.dumps(definition)
         plan.room_def = definition["rooms"]
+
     db.session.commit()
 
 def get_population_from_database(generation):
