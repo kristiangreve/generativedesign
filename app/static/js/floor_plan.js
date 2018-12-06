@@ -41,43 +41,32 @@ function get_floorplans(mode, user_groups, edges_of_user_groups){
 	});
 };
 
-
-function add_group_card(group_name) {
-
-  // create a new div element
-	var newRow = document.createElement("div");
-	newRow.setAttribute('class', 'row');
-	newRow.setAttribute('name', group_name);
-	var newCol = document.createElement("div");
-	newCol.setAttribute('class', 'col-md-12');
-  var newCard = document.createElement("div");
-	newCard.setAttribute('class', 'card');
-	var newCardBody = document.createElement("div");
-	newCardBody.setAttribute('class', 'card-body');
-	var newNetwork = document.createElement("div");
-	newNetwork.setAttribute('class', 'subnetwork');
-	newNetwork.setAttribute('id', group_name);
-	var newTitle = document.createElement("h5");
-	newTitle.setAttribute('class', 'card-title');
-	newTitle.innerHTML = group_name;
-
-	newCardBody.appendChild(newTitle);
-	newCardBody.appendChild(newNetwork);
-	newCard.appendChild(newCardBody);
-	newCol.appendChild(newCard);
-	newRow.appendChild(newCol);
-
-  var group_location = document.getElementById('groups');
-	var paragraph = document.createElement("p");
-	group_location.insertBefore(paragraph, group_location.childNodes[0])
-	group_location.insertBefore(newRow, group_location.childNodes[0])
-};
-
 // button onclick handlers
 $("#generate_button").click(function(){
 	var mode = 'new';
-	get_floorplans(mode,groups,edges_of_groups)
+	get_floorplans(mode, groups, edges_of_groups);
+	console.log("groups", groups);
 });
+
+function change_transit_of_department(group,department) {
+	$.post('/change_transit_of_department',{
+		department: department
+	}).done(function(response) {
+		var index =	group.rooms.findIndex(function(room) {
+			return (room.name == department)
+		});
+		group.rooms[index].transit = response;
+		if (response == 0){
+			var border = 1
+		}else{
+			var border = 3
+		}
+
+		node_dict = {id: department, label: department, group: group.name, borderWidth: border};
+		group.nodes[index] = node_dict
+		update_network(group);
+	});
+};
 
 $("#add_group_button").click(function(){
 
@@ -109,12 +98,41 @@ $("#add_group_button").click(function(){
 	render_floorplans(render_array);
 });
 
-function init_group_adjacents(group){
-	group.edges = []
-	group.nodes = []
+function add_group_card(group_name) {
+	// create a new div element
+	var newRow = document.createElement("div");
+	newRow.setAttribute('class', 'row');
+	newRow.setAttribute('name', group_name);
+	var newCol = document.createElement("div");
+	newCol.setAttribute('class', 'col-md-12');
+	var newCard = document.createElement("div");
+	newCard.setAttribute('class', 'card');
+	var newCardBody = document.createElement("div");
+	newCardBody.setAttribute('class', 'card-body');
+	var newNetwork = document.createElement("div");
+	newNetwork.setAttribute('class', 'subnetwork');
+	newNetwork.setAttribute('id', group_name);
+	var newTitle = document.createElement("h5");
+	newTitle.setAttribute('class', 'card-title');
+	newTitle.innerHTML = group_name;
 
+	newCardBody.appendChild(newTitle);
+	newCardBody.appendChild(newNetwork);
+	newCard.appendChild(newCardBody);
+	newCol.appendChild(newCard);
+	newRow.appendChild(newCol);
+
+	var group_location = document.getElementById('groups');
+	var paragraph = document.createElement("p");
+	group_location.insertBefore(paragraph, group_location.childNodes[0])
+	group_location.insertBefore(newRow, group_location.childNodes[0])
+};
+
+
+function init_group_adjacents(group){
+	group.edges = [];
+	group.nodes = [];
 	group.rooms.forEach(function(room){
-		console.log(room.transit)
 		// if it is a transit element, add a thick border
 		if (room.transit == 0){
 			var border = 1
@@ -129,7 +147,6 @@ function init_group_adjacents(group){
 
 function compare_and_add(group,element) {
 	var adajcent_rooms = render_array[element.render_id].all_adjacency_dict[element.name];
-
 	group.rooms.forEach(function(room){
 		adajcent_rooms.forEach(function(adj_room){
 			if (room.name == adj_room){
@@ -143,138 +160,277 @@ function compare_and_add(group,element) {
 						edge_dict.to = room.name;
 						group.edges.push(edge_dict);
 					};
-			};
+				};
+			});
 		});
-	});
-};
-
-
-function render_floorplans(render_array) {
-	canvases = jQuery.makeArray($(".floor_canvas"));
-	for( var i = 0; i< canvases.length; i++){
-		plotPlan(canvases[i],i,render_array[i]);
-		canvases[i].setAttribute('plan_id',render_array[i].id); // ændret
 	};
-};
 
-function parse_dim(float) {
-	return parseFloat(Math.round(float * 100) / 100).toFixed(0);
-};
+	function render_floorplans(render_array) {
+		canvases = jQuery.makeArray($(".floor_canvas"));
+		for( var i = 0; i< canvases.length; i++){
+			plotPlan(canvases[i],i,render_array[i]);
+			canvases[i].setAttribute('plan_id',render_array[i].id); // ændret
+		};
+	};
+
+	function parse_dim(float) {
+		return parseFloat(Math.round(float * 100) / 100).toFixed(0);
+	};
 
 
 
-function plotPlan(plotCanvas,project_id,render_graphics) {
-	mypapers[project_id].activate();
-	mypapers[project_id].view.draw();
-	var layer = new Layer();
-	mypapers[project_id].project.clear()
-	mypapers[project_id].project.addLayer(layer)
-	var render_id = render_graphics.id;
+	function plotPlan(plotCanvas,project_id,render_graphics) {
+		mypapers[project_id].activate();
+		mypapers[project_id].view.draw();
+		var layer = new Layer();
+		mypapers[project_id].project.clear()
+		mypapers[project_id].project.addLayer(layer)
+		var render_id = render_graphics.id;
 
-	max_size = render_graphics.max_sizes;
-	var factor_x = parseInt(plotCanvas.style.width) / max_size[1];
-	var factor_y = parseInt(plotCanvas.style.height) / max_size[0];
-	var scale_factor = Math.min(factor_x,factor_y);
+		max_size = render_graphics.max_sizes;
+		var factor_x = parseInt(plotCanvas.style.width) / max_size[1];
+		var factor_y = parseInt(plotCanvas.style.height) / max_size[0];
+		var scale_factor = Math.min(factor_x,factor_y);
 
-	// outline for the floor plan
+		// outline for the floor plan
 
-	var base = new Point(0,0);
-	var dims = new Size(max_size[1]*scale_factor,max_size[0]*scale_factor)
+		var base = new Point(0,0);
+		var dims = new Size(max_size[1]*scale_factor,max_size[0]*scale_factor)
 
-	var departments = render_graphics.departments;
-	var walls = render_graphics.walls;
+		var departments = render_graphics.departments;
+		var walls = render_graphics.walls;
 
-	departments.forEach(function(element) {
-		var base = new Point(element.base[0]*scale_factor,element.base[1]*scale_factor);
-		var dims = new Size(element.dims[1]*scale_factor,element.dims[0]*scale_factor);
-		var name = element.name;
-		var department = new Rectangle(base,dims);
-		var path = new Path.Rectangle(department);
-		var fillColor = 'lightgrey'
-		// find index of room in specified rooms:
-		var index =	specified_rooms.findIndex(function(el) {
-			return (el.name == name);
-		});
+		departments.forEach(function(element) {
+			var base = new Point(element.base[0]*scale_factor,element.base[1]*scale_factor);
+			var dims = new Size(element.dims[1]*scale_factor,element.dims[0]*scale_factor);
+			var name = element.name;
+			var department = new Rectangle(base,dims);
+			var path = new Path.Rectangle(department);
+			var fillColor = 'lightgrey'
+			// find index of room in specified rooms:
+			var index =	specified_rooms.findIndex(function(el) {
+				return (el.name == name);
+			});
 
-		// if it is found in specified rooms:
-		if (index > -1) {
+			// if it is found in specified rooms:
+			if (index > -1) {
 				var group_name = specified_rooms[index].group;
 				fillColor = options.groups[group_name].color.background;
-		};
-
-		path.fillColor = fillColor;
-		path.name = name;
-		path.selected = false;
-		path.opacity = 0.5;
-
-		var font_size = 12;
-		var center_point = new Point(department.center._x,department.center._y);
-		var text_name = new PointText(center_point);
-		text_name.fillColor = 'black';
-		text_name.fontSize = font_size;
-		text_name.justification = 'center';
-		text_name.content = name;
-
-		var type_point = new Point(department.center._x,department.center._y+font_size);
-		var text_type = new PointText(type_point);
-		text_type.fillColor = 'grey';
-		text_type.fontSize = font_size;
-		text_type.fontWeight = 'italic'
-		text_type.justification = 'center';
-		text_type.content = parse_dim(element.dims[1]*element.dims[0]).concat(" m2");
-
-
-		// mouseevents
-		path.onMouseEnter = function(event) {
-			this.fillColor = 'lightgreen';
-		};
-
-		path.onClick = function(event) {
-			var index =	current_group.findIndex(function(element) {
-				return (element.name == name);
-			});
-			if (index > -1){
-				current_group.splice(index,1);
-				this.fillColor = 'lightgrey';
-			} else {
-				var department_dict = {};
-				department_dict.name = element.name;
-				department_dict.plan_id = render_id;
-				department_dict.render_id = project_id;
-				department_dict.transit = element.transit;
-				current_group.push(department_dict);
-				this.fillColor = 'green';
 			};
-		};
 
-		path.onMouseLeave = function(event) {
-			var index =	current_group.findIndex(function(element) {
-				return (element.name == name);
-			});
-			// if it is in the group
-			if (index > -1){
-				this.fillColor = 'green';
-			} else {
-				this.fillColor = fillColor;
+			path.fillColor = fillColor;
+			path.name = name;
+			path.selected = false;
+			path.opacity = 0.5;
+
+			var font_size = 12;
+			var center_point = new Point(department.center._x,department.center._y);
+			var text_name = new PointText(center_point);
+			text_name.fillColor = 'black';
+			text_name.fontSize = font_size;
+			text_name.justification = 'center';
+			text_name.content = name;
+
+			var type_point = new Point(department.center._x,department.center._y+font_size);
+			var text_type = new PointText(type_point);
+			text_type.fillColor = 'grey';
+			text_type.fontSize = font_size;
+			text_type.fontWeight = 'italic'
+			text_type.justification = 'center';
+			text_type.content = parse_dim(element.dims[1]*element.dims[0]).concat(" m2");
+
+
+			// mouseevents
+			path.onMouseEnter = function(event) {
+				this.fillColor = 'lightgreen';
 			};
-		};
 
-	});
+			path.onClick = function(event) {
+				var index =	current_group.findIndex(function(element) {
+					return (element.name == name);
+				});
+				if (index > -1){
+					current_group.splice(index,1);
+					this.fillColor = 'lightgrey';
+				} else {
+					var department_dict = {};
+					department_dict.name = element.name;
+					department_dict.plan_id = render_id;
+					department_dict.render_id = project_id;
+					department_dict.transit = element.transit;
+					current_group.push(department_dict);
+					this.fillColor = 'green';
+				};
+			};
 
-	walls.forEach(function(element) {
-		var from = new Point(element[0][0]*scale_factor,element[0][1]*scale_factor)
-		var to  = new Point(element[1][0]*scale_factor,element[1][1]*scale_factor)
-		var path = new Path.Line(from, to);
+			path.onMouseLeave = function(event) {
+				var index =	current_group.findIndex(function(element) {
+					return (element.name == name);
+				});
+				// if it is in the group
+				if (index > -1){
+					this.fillColor = 'green';
+				} else {
+					this.fillColor = fillColor;
+				};
+			};
+
+		});
+
+		walls.forEach(function(element) {
+			var from = new Point(element[0][0]*scale_factor,element[0][1]*scale_factor)
+			var to  = new Point(element[1][0]*scale_factor,element[1][1]*scale_factor)
+			var path = new Path.Line(from, to);
+			path.strokeColor = 'black';
+			path.strokeWidth = 1;
+		});
+
+		var outlineWidth = 5;
+		var outline = new Rectangle(base,dims);
+		var path = new Path.Rectangle(outline);
 		path.strokeColor = 'black';
-		path.strokeWidth = 1;
-	});
+		path.strokeWidth = outlineWidth;
+		var onpath = new Path.Rectangle(outline);
+		onpath.strokeColor = 'white';
+		onpath.strokeWidth = outlineWidth-2;
+	};
 
-	var outlineWidth = 5;
-	var outline = new Rectangle(base,dims);
-	var path = new Path.Rectangle(outline);
-	path.strokeColor = 'black';
-	path.strokeWidth = outlineWidth;
-	var onpath = new Path.Rectangle(outline);
-	onpath.strokeColor = 'white';
-	onpath.strokeWidth = outlineWidth-2;
-};
+
+	// network script
+
+	var options = {
+		"nodes": {
+			"shape": "dot"
+		},
+		"edges": {
+			"smooth": {
+				"forceDirection": "none"
+			}
+		},
+		"interaction": {
+			"dragNodes": false,
+			"dragView": false,
+
+			"selectConnectedEdges": false,
+			"hoverConnectedEdges": false,
+			"zoomView": false
+		},
+		"physics": {
+			"forceAtlas2Based": {
+				"gravitationalConstant": -20,
+				"springLength": 10,
+				"springConstant": 0.05,
+				"avoidOverlap": 1
+			},
+			"minVelocity": 0.75,
+			"solver": "forceAtlas2Based",
+			"timestep": 1
+		}
+	}
+
+
+	function update_groups_for_network(groups){
+		options.groups = {};
+		var colors = ['LightSeaGreen','LightBlue','LightSkyBlue','LightSteelBlue','LightCoral','LightCyan']
+		groups.forEach(function(group) {
+			options.groups[group.name] = {
+				color: {background:colors[0],border:"black"}
+			};
+			colors.splice(0,1);
+		});
+	}
+
+	function update_network(group){
+
+		var adding = false;
+		var from_node = 0;
+		var to_node = 0;
+		var data = {
+			nodes: group.nodes,
+			edges: group.edges
+		};
+		var container = document.getElementById(group.name);
+		var network = new vis.Network(container, data, options);
+
+		network.on("selectEdge", function (params) {
+			var index =	group.edges.findIndex(function(edge) {
+				return (edge.id == params.edges[0]);
+			});
+			group.edges.splice(index,1);
+			update_network(group);
+		});
+
+		network.on("doubleClick", function (params) {
+			change_transit_of_department(group,params.nodes[0]);
+		});
+
+		network.on("selectNode", function (params) {
+			if(adding == false){
+				adding = true;
+				from_node = params.nodes[0];
+			} else {
+				adding = false;
+				to_node = params.nodes[0];
+				var index =	group.edges.findIndex(function(el) {
+					return (el.to == from_node && el.from == to_node ||
+						el.to == to_node && el.from == from_node)
+					});
+					if (index == -1){
+						if (from_node != to_node){
+							group.edges.push({from:from_node,to:to_node});
+							update_network(group);
+						};
+					};
+				}
+			});
+
+		};
+
+
+
+		function update_group_network(groups,edges_of_groups){
+			var adding = false;
+			var from_node = 0;
+			var to_node = 0;
+
+			// adding the overall group edges to the edge array
+			group_nodes = [];
+			groups.forEach(function(group) {
+				node_dict = {id: group.name, label: group.name, group: group.name};
+				group_nodes.push(node_dict)
+			});
+
+			var data = {
+				nodes: group_nodes,
+				edges: edges_of_groups
+			};
+
+			var container = document.getElementById('group_network');
+			var network = new vis.Network(container, data, options);
+			network.on("selectEdge", function (params) {
+				var index =	edges_of_groups.findIndex(function(edge) {
+					return (edge.id == params.edges[0]);
+				});
+				edges_of_groups.splice(index,1);
+				update_group_network(groups,edges_of_groups)
+			});
+			network.on("selectNode", function (params) {
+				if(adding == false){
+					adding = true;
+					from_node = params.nodes[0];
+				} else {
+					adding = false;
+					to_node = params.nodes[0];
+					var index =	edges_of_groups.findIndex(function(el) {
+						return (el.to == from_node && el.from == to_node ||
+							el.to == to_node && el.from == from_node)
+						});
+						if(index == -1){
+							if (from_node != to_node){
+								edges_of_groups.push({from:from_node,to:to_node});
+								update_group_network(groups,edges_of_groups);
+							};
+						};
+					};
+				});
+			};
