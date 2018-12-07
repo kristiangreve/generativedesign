@@ -13,6 +13,7 @@ import time
 import numpy as numpy
 from random import gauss
 from operator import attrgetter
+from statistics import mean
 
 class individual:
     def __init__(self, definition, room_def, split_list, dir_list, room_order, min_opening):
@@ -37,6 +38,7 @@ class individual:
         self.transit_connections_score = None
         self.flow_score = None
         self.group_adj_score = None
+        self.weighted_sum_score = 0
 
         self.pareto = None
         self.dominated_count = 0
@@ -122,7 +124,6 @@ class individual:
         for group_adj in group_transit_dict:
             for room_group1 in group_adj['group1']:
                 if not any(room in group_adj['group2'] for room in self.all_adjacency_dict[room_group1]):
-                    print('Broken grp adj!')
                     group_adj_score += 1
         self.group_adj_score = group_adj_score
 
@@ -183,6 +184,31 @@ def get_adjacency_definition(individual):
         defined_adjacency[room['name']] = room['adjacency']
     return defined_adjacency
 
+def normalized_sum(population):
+    attributes_to_score = ['dims_score','adjacency_score','aspect_ratio_score','access_score','transit_connections_score', 'group_adj_score', 'crowding_score']
+    max_dict = {}
+    average_dict = {}
+    for attribute in attributes_to_score:
+        if getattr(population[0],attribute) != None:
+            max_dict[attribute] = max([getattr(x,attribute) for x in population])
+            #tmp_attribute_list = [getattr(x,attribute) for x in population]
+            #max_list.append(max([getattr(x,attribute) for x in population]))
+            #average_list.append(mean(tmp_attribute_list))
+        #sorted([getattr(x,attribute) for x in population], key=lambda x: (getattr(x,attribute)))))
+    for individual in population:
+        for attribute, max_value in max_dict.items(): #normalize all attributes
+            if max_value != 0:
+                setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)/max_value) )
+
+
+    for attribute in attributes_to_score:
+        if getattr(population[0],attribute) != None:
+            tmp_attribute_list = [getattr(x,('norm_'+attribute)) for x in population]
+            average_dict[attribute] = mean(tmp_attribute_list)
+
+    print('Max: ', max_dict)
+    print('Average: ', average_dict)
+
 
 def evaluate_pop(generation,adjacency_definition, individual_group_def, edges_of_user_groups):
     for individual in generation:
@@ -233,6 +259,14 @@ def evaluate_pop(generation,adjacency_definition, individual_group_def, edges_of
     #         #individual.aspect_base_score = sum(individual.base_score) + sum(individual.aspect_score)
     #         individual.aspect_base_score = sum(individual.base_score) #Ignore aspect score
 
+def weighted_ranking(population):
+    attributes_weight = {'dims_score':10,'adjacency_score':3,'aspect_ratio_score':1,'access_score':5,'transit_connections_score':5, 'group_adj_score':2, 'crowding_score':1}
+    for individual in population:
+        for attribute, weight in attributes_weight.items(): #normalize all attributes
+            if getattr(population[0],(attribute)) != None:
+                setattr(individual,'weighted_sum_score',(getattr(individual,('norm_'+attribute))*weight))
+    print('Weight calculated!')
+
 
 def dominance(population,selections):
      for i in range(len(population)):      #Loops through all individuals of population
@@ -241,25 +275,25 @@ def dominance(population,selections):
             if len(selections)>0:
                 #Adjacency score: #of broken adjecencies , the lower the better
                 if (population[i].adjacency_score <= population[j].adjacency_score)\
-                and (population[i].aspect_ratio_score < population[j].aspect_ratio_score)\
+                and (population[i].dims_score < population[j].dims_score)\
                 and (population[i].flow_score < population[j].flow_score):
 
                     population[i].dominates_these.append(population[j])
                     population[j].dominated_count += 1
                 elif (population[i].adjacency_score >= population[j].adjacency_score)\
-                and (population[i].aspect_ratio_score > population[j].aspect_ratio_score)\
+                and (population[i].dims_score > population[j].dims_score)\
                 and (population[i].flow_score > population[j].flow_score):
 
                     population[j].dominates_these.append(population[i])
                     population[i].dominated_count += 1
             else:
                 if (population[i].adjacency_score < population[j].adjacency_score)\
-                and (population[i].aspect_ratio_score < population[j].aspect_ratio_score):
+                and (population[i].dims_score < population[j].dims_score):
                 #and (population[i].dims_score < population[j].dims_score):
                     population[i].dominates_these.append(population[j])
                     population[j].dominated_count += 1
                 elif (population[i].adjacency_score > population[j].adjacency_score)\
-                and (population[i].aspect_ratio_score > population[j].aspect_ratio_score):
+                and (population[i].dims_score > population[j].dims_score):
                 #and (population[i].dims_score > population[j].dims_score):
                     population[j].dominates_these.append(population[i])
                     population[i].dominated_count += 1
@@ -568,6 +602,7 @@ def initial_generate(pop_size,generations):
     #show_plot(x1,y1,y2, stringlabel,stringshort)
     #plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort)
     #plt.close('all')
+
     return Pt
     #return Pt, [x1,y1,y2], [x_b,y_b1,y_b2,y_b3], time_ellapsed
 
@@ -814,6 +849,12 @@ def select_objects_for_render(population,selections):
     pareto_dict = defaultdict(list)
     adj_counter = 0
 
+    normalized_sum(population)
+    weighted_ranking(population)
+    sorted_rank = sorted(population, key=lambda x: (x.weighted_sum_score))
+
+
+
     for individual in population: #Only add objects that are NOT similar to the previously selected
         if individual.plan_id not in [ind.plan_id for sublist in selections for ind in sublist]:
             pareto_dict[individual.pareto].append(individual)
@@ -825,7 +866,7 @@ def select_objects_for_render(population,selections):
         for pareto_front in sorted(pareto_dict.keys()):
             if len(selection_list) == 0:
             #Best adjacency of which is most similar to dir/split/ordder of user selction
-                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score, x.flow_score, x.dims_score, x.aspect_ratio_score, -x.crowding_score), reverse=False)
+                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.dims_score, x.flow_score, x.adjacency_score, x.aspect_ratio_score, -x.crowding_score), reverse=False)
                 selection_list.append(adjacency_sorted[0])
                 print("data on the plan on top: ")
                 print(adjacency_sorted[0].adjacency_score)
@@ -867,22 +908,22 @@ def select_objects_for_render(population,selections):
                 break
 
     print('GET LAYOUT')
-    #dir_pop = list(selection_list[0].dir_list) # copy the dir list because the passed parameter gets consumed in the get_layout function (pop)
-    #get_layout(selection_list[0].definition, selection_list[0].room_def, selection_list[0].split_list, dir_pop, selection_list[0].room_order, selection_list[0].min_opening)
+
     adjacency_definition = get_adjacency_definition(selection_list[0]) #Gets a list of adjacency requirements
     selection_list[0].evaluate_access_score(adjacency_definition)
-    print('Grp Adj Score: ', selection_list[0].group_adj_score)
-    print('Aspect: ', selection_list[0].evaluate_aspect_ratio())
-    for index, obj in enumerate(selection_list):
+
+    for index, obj in enumerate(sorted_rank[0:2]):
         # for i,elem in enumerate(obj.aspect_score): #... this works...
         #     obj.aspect_score[i] = round(elem,3)
         #
         # for i,elemt in enumerate(obj.base_score): #for some fucked up reason doesn't work
         #     obj.base_score[i] = round(elemt,3)
 
-        print('Flow', obj.flow_score, 'Access: ', obj.access_score, 'Transit: ', obj.transit_connections_score, 'GroupAdj: ', obj.group_adj_score)
+        print('Weight Sum', obj.weighted_sum_score, 'Access: ', obj.access_score, 'Transit: ', obj.transit_connections_score, 'GroupAdj: ', obj.group_adj_score)
         print('Adj: ', obj.adjacency_score, 'aspect: ', round(obj.aspect_ratio_score,2), ' dims: ', obj.dims_score, 'Crowd: ', round(obj.crowding_score,2), 'CrowdAdj: ', round(obj.crowding_adjacency_score,2), 'CrowdRatio: ', round(obj.crowding_aspect_ratio_score,2))
-    return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2]),object_to_visuals(selection_list[3])]
+
+    return [object_to_visuals(sorted_rank[0])]
+    #return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2]),object_to_visuals(selection_list[3])]
     #selection_list = [object_to_visuals(x) for x in selection_list]
     #return selection_list
 
@@ -914,7 +955,7 @@ def update_definition(groups):
 
     definition = json_departments_from_db()
 
-    print("definition from db:",definition)
+    #print("definition from db:",definition)
 
     # replace the adjacencies of each room in the definition with the ones specified by edges
     for i, room in enumerate(definition["rooms"]):

@@ -324,7 +324,6 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
     a = math.sqrt(definition["aspect"] * sum(room_areas))
     b = sum(room_areas) / a
     dims = [a,b]
-
     rooms_list = []
 
     for num in room_order:
@@ -428,10 +427,10 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
     adjacency_violations = [0] * (num_zones + 1)
 
     room_transit_dict = {}
+
     for room in room_def: #Used to check if a given adjacency is between 2 transit rooms
         room_transit_dict[room_dict[room['name']]] = room['transit']
     room_transit_dict[0] = 0
-
     added_openings = set() #List to keep track of rooms that have gotten a doorway added
 
     for adjacency in adjacency_list:
@@ -462,6 +461,7 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
                 adjacency_violations[zone_index] += 1
 
     connecting_transit_edges = []
+
     #print('Init Openings set: ', added_openings)
     for neighbor_pair in edges_neighbors:
         #Remove walls between 2 adjacent transit rooms
