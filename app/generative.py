@@ -402,6 +402,8 @@ def selection(pop_size, population):
             for obj in pareto_dict[pareto_counter]:
                 new_gen.append(obj)
         else:
+            if pareto_counter ==1:
+                print('Pareto1>len:', len(pareto_dict[pareto_counter]))
             sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: (x.dims_score, -x.crowding_score), reverse=False)
             for obj in sorted_pareto:
                 if len(new_gen) < pop_size:
@@ -458,7 +460,7 @@ def init_population(size):
     return population, id
 
 
-def initial_generate(pop_size,generations):
+def initial_generate(pop_size,generations,mutation):
     # delete all existing instances from database
     db.session.query(Plan).delete()
     db.session.commit()
@@ -470,8 +472,8 @@ def initial_generate(pop_size,generations):
     dominance(Pt,[])
     pareto_score(Pt)
     crowding(Pt)
-    #mutation_ratio = mutation
-    mutation_ratio = 0.01
+    mutation_ratio = mutation
+    #mutation_ratio = 0.01
     #plt.figure()
     #x1,x_b = [],[]
     #y1,y2,y_b1,y_b2,y_b3= [],[],[],[],[]
@@ -479,10 +481,9 @@ def initial_generate(pop_size,generations):
     min_dict_list.append(normalized_sum(Pt))
     gen_list=[0]
     start_time = time.time()
-    #print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation_ratio)
+    print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation_ratio)
     for n in range(generations):
         print('Generation: ', n )
-        #print('Generation: ', n)
         Qt,id = breeding(Pt, id, mutation_ratio)
         mutate(Qt, mutation_ratio)
         evaluate_pop(Qt,adjacency_def,[], [])
@@ -498,7 +499,7 @@ def initial_generate(pop_size,generations):
     end_time = time.time()
     time_ellapsed = end_time-start_time
     save_population_to_database(Pt,generations)
-    stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation: '+str(mutation_ratio)
+    stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))
     stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
     #show_plot(x1,y1,y2, stringlabel,stringshort)
     plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
@@ -540,28 +541,31 @@ def plot_best_of_old(min_dict_list,gen_list,stringlabel,stringshort):
     plt.close()
 
 def plot_best_of(min_dict_list,gen_list,stringlabel,stringshort):
-    #plt.figure(figsize=(30,15), dpi=80)
     fig,ax1 = plt.subplots(figsize=(30,15), dpi=80)
     ax2 = ax1.twinx()
-    #ax1.figure(figsize=(30,15), dpi=80)
     attribute = ['dims_score','adjacency_score','aspect_ratio_score','access_score','transit_connections_score','crowding_score']
-    colors = ['red','grey','teal','blue','green','orange']
+    colors = ['red',(0.64,0.287,0.64),'orange','blue','green',(0.125,0.698,0.65)]
     plot_dict = defaultdict(list)
+    #(0.392,0.6,0.847)
     for gen,min_dict in enumerate(min_dict_list):
         for key,value in min_dict.items():
             plot_dict[key].append(value)
         plot_dict['gen'].append(gen)
-    print('Plot dict: ', plot_dict)
+    color_counter = 0
     for attribute,value_list in plot_dict.items():
         if attribute != 'gen':
-            if value_list[0]<4:
-                ax1.plot(plot_dict['gen'],value_list, label=attribute)
+            if attribute in ['dims_score','access_score','aspect_ratio_score']:
+                ax1.plot(plot_dict['gen'],value_list, label=attribute,color=colors[color_counter])
             else:
-                ax2.plot(plot_dict['gen'],value_list, label=attribute)
-    plt.legend(fontsize=20)
-    plt.ylim(0, 20)
-    plt.yticks(range(20))
-    plt.xlabel('Generation. ('+stringlabel+')',fontsize=15)
+                ax2.plot(plot_dict['gen'],value_list, label=attribute,color=colors[color_counter])
+            color_counter += 1
+
+    ax1.legend(fontsize=20, loc='upper left')
+    ax2.legend(fontsize=20, loc='upper right')
+    ax1.set_ylim((0,25))
+    ax2.set_ylim((0,4))
+    ax2.set_ylabel('Rest')
+    ax1.set_xlabel('Generation. ('+stringlabel+')',fontsize=15)
 
     filename = 'photos/min_'+stringshort
     i = 0
@@ -601,6 +605,7 @@ def plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort):
     while os.path.exists('{}{:d}.png'.format(filename, i)):
         i += 1
     plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
+    plt.gcf().clear()
     plt.close()
 
 
@@ -806,9 +811,9 @@ def select_objects_for_render(population,selections):
     #adjacency_definition = get_adjacency_definition(selection_list[0]) #Gets a list of adjacency requirements
     #selection_list[0].evaluate_access_score(adjacency_definition)
 
-    for index, obj in enumerate(selection_list[0:1]):
-        print('Weight Sum', obj.weighted_sum_score, 'Access: ', obj.access_score, 'Transit: ', obj.transit_connections_score, 'GroupAdj: ', obj.group_adj_score)
-        print(' Dims: ', obj.dims_score, 'Adj: ', obj.adjacency_score, 'aspect: ', round(obj.aspect_ratio_score,2), 'Crowd: ', round(obj.crowding_score,2), 'CrowdAdj: ', round(obj.crowding_adjacency_score,2), 'CrowdRatio: ', round(obj.crowding_aspect_ratio_score,2))
+    #for index, obj in enumerate(selection_list[0:1]):
+    #    print('Weight Sum', obj.weighted_sum_score, 'Access: ', obj.access_score, 'Transit: ', obj.transit_connections_score, 'GroupAdj: ', obj.group_adj_score)
+    #    print(' Dims: ', obj.dims_score, 'Adj: ', obj.adjacency_score, 'aspect: ', round(obj.aspect_ratio_score,2), 'Crowd: ', round(obj.crowding_score,2), 'CrowdAdj: ', round(obj.crowding_adjacency_score,2), 'CrowdRatio: ', round(obj.crowding_aspect_ratio_score,2))
 
     #return [object_to_visuals(sorted_rank[0])]
     return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2]),object_to_visuals(selection_list[3])]

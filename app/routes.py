@@ -51,16 +51,24 @@ def floor_plan():
 @app.route('/get_floorplans', methods = ['GET','POST'])
 @login_required
 def get_floorplans():
-    pop_size = 50
-    generations = 20
-
+    pop_size = 100
+    generations = 100
+    mutation_rate = 0.01
     mode = request.form['mode']
     user_groups = json.loads(request.form['user_groups'])
     edges_of_user_groups = json.loads(request.form['edges_of_user_groups'])
 
+    pop_sizes = [50,100,200]
+    no_generations = [200,100,50]
+    mutation_rates = [0.005,0.01,0.05,0.1]
+
     if mode == 'restart':
         update_definition(user_groups)
-        Pt = initial_generate(pop_size, generations)
+        Pt = initial_generate(pop_size, generations,mutation_rate)
+        # for i in range(3):
+        #     for index, pop in enumerate(pop_sizes):
+        #         for mutate in mutation_rates:
+        #             Pt = initial_generate(pop, no_generations[index],mutate)
     # new mode creates a new generation
     elif mode == 'new':
         update_definition(user_groups)
