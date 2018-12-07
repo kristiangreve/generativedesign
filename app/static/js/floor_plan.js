@@ -301,7 +301,7 @@ function compare_and_add(group,element) {
 			text_name.fillColor = 'black';
 			text_name.fontSize = font_size;
 			text_name.justification = 'center';
-			text_name.content = name;
+			text_name.content = name.replace(/[0-9]/g, '');
 
 			var type_point = new Point(department.center._x,department.center._y+font_size);
 			var text_type = new PointText(type_point);
