@@ -52,8 +52,8 @@ def floor_plan():
 @login_required
 def get_floorplans():
     pop_size = 100
-    generations = 100
-    mutation_rate = 0.02
+    generations = 200
+    mutation_rate = 0.01
     mode = request.form['mode']
     user_groups = json.loads(request.form['user_groups'])
     edges_of_user_groups = json.loads(request.form['edges_of_user_groups'])
@@ -62,16 +62,17 @@ def get_floorplans():
     # no_generations = [200,100,50]
     # mutation_rates = [0.005,0.01,0.05,0.1]
 
-    weight_list = [[10,5,5,5,3,2,1],[100,20,20,10,5,0,0],[1,0,0,0,0,0,0]]
+    weight_list = [[5,10,3,3,1,10,0]]
     mutation_rates = [0.01, 0.02, 0.05]
     #attributes_weight = {'dims_score':weights[0],'access_score':weights[1],'transit_connections_score':weights[2],'adjacency_score':weights[3],'group_adj_score':weights[4],'aspect_ratio_score':weights[5], 'crowding_score':weights[6]}
 
 
     if mode == 'restart':
         update_definition(user_groups)
+        #for weights in weight_list:
+        #    for mutation in mutation_rates:
         for weights in weight_list:
-            for mutation in mutation_rates:
-                Pt = initial_generate_weighted(pop_size, generations,mutation,weights)
+            Pt = initial_generate_weighted(pop_size, generations,mutation_rate,weights)
         # for i in range(3):
         #     for index, pop in enumerate(pop_sizes):
         #         for mutate in mutation_rates:

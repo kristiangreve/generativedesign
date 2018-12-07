@@ -37,6 +37,15 @@ class individual:
         self.group_adj_score = None
         self.weighted_sum_score = 0
 
+        self.flack_dims_score = 0
+        self.flack_adjacency_score = 0
+        self.flack_aspect_ratio_score = 0
+        self.flack_access_score = 0
+        self.flack_transit_connections_score = 0
+        self.flack_group_adj_score = 0
+        self.flack_crowding_score = 0
+
+
         self.pareto = None
         self.dominated_count = 0
         self.adjacency_score = None
@@ -167,6 +176,43 @@ def get_adjacency_definition(individual):
         defined_adjacency[room['name']] = room['adjacency']
     return defined_adjacency
 
+def flack_ranking(population):
+    attributes_to_score = ['dims_score','adjacency_score','aspect_ratio_score','access_score','transit_connections_score', 'group_adj_score', 'crowding_score']
+    #for attribute in attributes_to_score:
+
+    for i in range(len(population)):      #Loops through all individuals of population
+        for j in range(i+1,len(population)): #Loops through all the remaining indiduals
+            for attribute in attributes_to_score:
+                if getattr(i,attribute) < getattr(j,attribute):
+                    setattr(i, ('flack_'+attribute),(getattr(i,'flack_'+attribute)+1))
+                elif getattr(i,attribute) > getattr(j,attribute):
+                    setattr(j, ('flack_'+attribute),(getattr(j,'flack_'+attribute)+1))
+
+
+    for attribute in attributes_to_score: #Give rank
+        sorted_pop = sorted(population, key=lambda x: (getattr(x,'flack_'+attribute)))
+        rank = 0
+        setattr(sorted_pop[0], ('flack_rank_'+attribute),rank)
+        for index, individual in enumerate(sorted_pop[1:]):
+            if getattr(sorted_pop[index-1],'flack_rank_'+attribute) == rank:
+                setattr(individual, ('flack_rank_'+attribute),rank)
+            else:
+                rank +=1
+                setattr(individual, ('flack_rank_'+attribute),rank)
+            if attribute == 'dims_score':
+                print('Dir rank:', getattr(individual,'flack_rank_'+attribute))
+
+    for attribute in attributes_to_score: #To normalzie rank
+        max_rank = max([getattr(x,'flack_rank_'+attribute) for x in population])
+        for individual in population:
+            setattr(individual, ('flack_rank_norm_'+attribute),(getattr(individual,'flack_rank_'+attribute)/max_rank))
+
+    for individual in population:
+        individual.flack_rank_sum = sum([getattr(individual,'flack_rank_norm'+attribute) for attribute in attributes_to_score if attribute != None])
+
+
+
+
 def normalized_sum(population):
     attributes_to_score = ['dims_score','adjacency_score','aspect_ratio_score','access_score','transit_connections_score', 'group_adj_score', 'crowding_score']
     max_dict = {}
@@ -224,6 +270,7 @@ def evaluate_pop(generation,adjacency_definition, individual_group_def, edges_of
         for individual in generation:
             individual.evaluate_group_adjacency(group_transit_dict_list)
             individual.flow_score = individual.flow_score+(individual.group_adj_score*3)
+
 
 
 def weighted_ranking(population, weights):
@@ -739,9 +786,9 @@ def select_objects_for_render(population,selections):
     #adjacency_definition = get_adjacency_definition(selection_list[0]) #Gets a list of adjacency requirements
     #selection_list[0].evaluate_access_score(adjacency_definition)
 
-    #for index, obj in enumerate(selection_list[0:1]):
-    #    print('Weight Sum', obj.weighted_sum_score, 'Access: ', obj.access_score, 'Transit: ', obj.transit_connections_score, 'GroupAdj: ', obj.group_adj_score)
-    #    print(' Dims: ', obj.dims_score, 'Adj: ', obj.adjacency_score, 'aspect: ', round(obj.aspect_ratio_score,2), 'Crowd: ', round(obj.crowding_score,2), 'CrowdAdj: ', round(obj.crowding_adjacency_score,2), 'CrowdRatio: ', round(obj.crowding_aspect_ratio_score,2))
+    for index, obj in enumerate(sorted_rank[0:1]):
+        print('Weight Sum', obj.weighted_sum_score, 'Access: ', obj.access_score, 'Transit: ', obj.transit_connections_score, 'GroupAdj: ', obj.group_adj_score)
+        print(' Dims: ', obj.dims_score, 'Adj: ', obj.adjacency_score, 'Aspect: ', round(obj.aspect_ratio_score,2))
 
     return [object_to_visuals(sorted_rank[0])]
     #return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2]),object_to_visuals(selection_list[3])]
