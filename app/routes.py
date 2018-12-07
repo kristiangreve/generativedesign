@@ -58,9 +58,11 @@ def get_floorplans():
     user_groups = json.loads(request.form['user_groups'])
     edges_of_user_groups = json.loads(request.form['edges_of_user_groups'])
 
-    pop_sizes = [50,100,200]
-    no_generations = [200,100,50]
-    mutation_rates = [0.005,0.01,0.05,0.1]
+    # pop_sizes = [50,100,200]
+    # no_generations = [200,100,50]
+    # mutation_rates = [0.005,0.01,0.05,0.1]
+
+    
 
     if mode == 'restart':
         update_definition(user_groups)

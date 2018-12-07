@@ -176,16 +176,16 @@ def normalized_sum(population):
             tmp_attribute_list = [getattr(x,attribute) for x in population]
             max_dict[attribute] = max(tmp_attribute_list)
             min_dict[attribute] = min(tmp_attribute_list)
-            average_dict[attribute]= mean(tmp_attribute_list)
+            #average_dict[attribute]= mean(tmp_attribute_list)
 
 
     # /// TO normalize scores ////
-    # for individual in population:
-    #     for attribute, max_value in max_dict.items(): #normalize all attributes
-    #         if max_value != 0:
-    #             setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)/max_value))
-    #         elif max_value == 0:
-    #             setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)))
+    for individual in population:
+        for attribute, max_value in max_dict.items(): #normalize all attributes
+            if max_value != 0:
+                 setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)/max_value))
+            elif max_value == 0:
+                 setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)))
 
     # /// to get average of normalized scores ///
     # for attribute in attributes_to_score:
@@ -226,14 +226,18 @@ def evaluate_pop(generation,adjacency_definition, individual_group_def, edges_of
             individual.flow_score = individual.flow_score+(individual.group_adj_score*3)
 
 
-def weighted_ranking(population):
-    attributes_weight = {'dims_score':10,'adjacency_score':3,'aspect_ratio_score':1,'access_score':5,'transit_connections_score':5, 'group_adj_score':2, 'crowding_score':1}
+def weighted_ranking(population, weights):
+    attributes_weight = {'dims_score':weights[0],'access_score':weights[1],'transit_connections_score':weights[2],'adjacency_score':weights[3],'group_adj_score':weights[4],'aspect_ratio_score':weights[5], 'crowding_score':weights[6]}
     for individual in population:
         for attribute, weight in attributes_weight.items(): #normalize all attributes
             if getattr(population[0],(attribute)) != None:
                 setattr(individual,'weighted_sum_score',(getattr(individual,('norm_'+attribute))*weight))
 
-
+def weighted_selection(population, pop_size):
+        normalized_sum(population)
+        weighted_ranking(population)
+        sorted_pop = sorted(population, key=lambda x: (x.weighted_sum_score))
+        return sorted_pop(:pop_size)
 
 def dominance(population,selections):
      for i in range(len(population)):      #Loops through all individuals of population
@@ -337,10 +341,27 @@ def comparison(obj1,obj2): # Compares 2 individuals on pareto front, followed by
     else:
         return obj2
 
+def comparison_weighted(obj1,obj2): # Compares 2 individuals on pareto front, followed by crowding
+    if obj1.weighted_sum_score == obj2.weighted_sum_score: #if equal rank, look at distance
+        #if obj1.crowding_score>obj2.crowding_score:
+        if obj1.dims_score < obj2.dims_score: #Criteria1: Dims score
+            return obj1
+        else:
+            return obj2
+    elif obj1.weighted_sum_score < obj2.weighted_sum_score:
+        return obj1
+    else:
+        return obj2
+
 def binary_tournament(population):
     Obj1 = random.choice(population)
     Obj2 = random.choice(population)
     return comparison(Obj1,Obj2)
+
+def weighted_binary_tournament(population):
+    Obj1 = random.choice(population)
+    Obj2 = random.choice(population)
+    return comparison_weighted(Obj1,Obj2)
 
 def crossover(obj1,obj2):
     # get the current plan_id
@@ -371,6 +392,24 @@ def crossover(obj1,obj2):
 
     return child1,child2
 
+def weighted_breeding(population, id, mutation_rate):
+    # get highest id from database
+    id = id
+    children = []
+    similar_counter = 0
+    while len(children) < len(population):
+        parent1 = binary_tournament(population)
+        parent2 = binary_tournament(population)
+        if parent1 != parent2: #to avoid breeding the same parent
+            child1,child2 = crossover(parent1,parent2) #
+            id+=1
+            child1.plan_id = id
+            id+=1
+            child2.plan_id = id
+            children.append(child1)
+            children.append(child2)
+    return children, id
+
 def breeding(population, id, mutation_rate):
     # get highest id from database
     id = id
@@ -381,8 +420,6 @@ def breeding(population, id, mutation_rate):
         parent2 = binary_tournament(population)
         if parent1 != parent2: #to avoid breeding the same parent
             child1,child2 = crossover(parent1,parent2) #
-            children_test = [child1,child2]
-            parent_test = [parent1,parent2]
             id+=1
             child1.plan_id = id
             id+=1
@@ -459,6 +496,41 @@ def init_population(size):
         population.append(element)
     return population, id
 
+def initial_generate_weighted(pop_size,generations,mutation,weights):
+    # delete all existing instances from database
+    db.session.query(Plan).delete()
+    db.session.commit()
+    Pt, id = init_population(pop_size)
+    adjacency_def = get_adjacency_definition(Pt[0]) #Gets a list of adjacency requirements
+
+    evaluate_pop(Pt,adjacency_def,[],[])
+    save_population_to_database(Pt,0)
+
+    min_dict_list = []
+    min_dict_list.append(normalized_sum(Pt))
+    weighted_ranking(Pt,weights)
+
+    mutation_ratio = mutation
+    gen_list=[0]
+    start_time = time.time()
+    print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation_ratio)
+    for n in range(generations):
+        print('Generation: ', n )
+        Qt,id = weighted_breeding(Pt, id, mutation_ratio)
+        mutate(Qt, mutation_ratio)
+        Rt = Pt + Qt
+        min_dict_list.append(normalized_sum(Rt))
+        weighted_ranking(Rt,weights)
+        Pt = weighted_selection(pop_size,Rt)
+        gen_list.append(n)
+    end_time = time.time()
+    time_ellapsed = end_time-start_time
+    save_population_to_database(Pt,generations)
+    stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))
+    stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
+    plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
+    plt.close('all')
+    return Pt
 
 def initial_generate(pop_size,generations,mutation):
     # delete all existing instances from database
@@ -508,37 +580,6 @@ def initial_generate(pop_size,generations,mutation):
     return Pt
     #return Pt, [x1,y1,y2], [x_b,y_b1,y_b2,y_b3], time_ellapsed
 
-def prepare_plot(population, generation,x,y1,y2):
-    for obj in population:
-        x.append(generation)
-        y1.append(obj.adjacency_score)
-        y2.append(obj.aspect_ratio_score)
-    return x,y1,y2
-
-def plot_best_of_old(min_dict_list,gen_list,stringlabel,stringshort):
-    plt.figure(figsize=(30,15), dpi=80)
-    attribute = ['dims_score','adjacency_score','aspect_ratio_score','access_score','transit_connections_score','crowding_score']
-    colors = ['red','grey','teal','blue','green','orange']
-    plot_dict = defaultdict(list)
-    for gen,min_dict in enumerate(min_dict_list):
-        for key,value in min_dict.items():
-            plot_dict[key].append(value)
-        plot_dict['gen'].append(gen)
-    print('Plot dict: ', plot_dict)
-    for attribute,value_list in plot_dict.items():
-        if attribute != 'gen':
-            plt.plot(plot_dict['gen'],value_list, label=attribute)
-    plt.legend(fontsize=20)
-    plt.ylim(0, 20)
-    plt.yticks(range(20))
-    plt.xlabel('Generation. ('+stringlabel+')',fontsize=15)
-
-    filename = 'photos/min_'+stringshort
-    i = 0
-    while os.path.exists('{}{:d}.png'.format(filename, i)):
-        i += 1
-    plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
-    plt.close()
 
 def plot_best_of(min_dict_list,gen_list,stringlabel,stringshort):
     fig,ax1 = plt.subplots(figsize=(30,15), dpi=80)
@@ -574,97 +615,7 @@ def plot_best_of(min_dict_list,gen_list,stringlabel,stringshort):
     plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
     plt.close()
 
-def show_2yaxis(x,y1,y2, stringlabel):
-    fig,ax1 = plt.subplots()
-    ax2 = ax1.twinx()
-    ax1.scatter(x,y1, label = 'Adjacency Score', color='red')
-    ax2.scatter(x,y2, label = 'Aspect ratio Score', color='blue')
-    plt.legend()
-    #plt.yticks(range(20))
-    #plt.ylim(0, 20)
-    ax1.set_xlabel('Generation. ('+stringlabel+')')
-    ax1.set_ylabel('Adjacency score')
-    ax2.set_ylabel('Aspect ratio score')
-    plt.show()
 
-def plot_multiple(x_b,y_b1,y_b2,y_b3,stringlabel,stringshort):
-    plt.figure(figsize=(30,15), dpi=80)
-    y_plots = [y_b1,y_b2,y_b3]
-    labels = ['#Broken adjacencies','Aspect ratio deviation','#Broken min. dimensions']
-    colors = ['red','blue','green']
-    #plt.plot(x_b, y_b1,'b', x_b, y_b2,'g',  x_b, y_b3, 'r')
-    for y_val, label,color in zip(y_plots, labels,colors):
-         plt.plot(x_b, y_val, label=label, color=color)
-    plt.legend(fontsize=20)
-    plt.ylim(0, 10)
-    plt.yticks(range(10))
-    plt.xlabel('Generation. ('+stringlabel+')',fontsize=15)
-
-    filename = 'photos/BestOf_'+stringshort
-    i = 0
-    while os.path.exists('{}{:d}.png'.format(filename, i)):
-        i += 1
-    plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
-    plt.gcf().clear()
-    plt.close()
-
-
-
-def show_plot(x,y1,y2, stringlabel,stringshort):
-    plt.figure(figsize=(30,15), dpi=80)
-    plt.scatter(x,y1, label = 'Adjacency Score', color='red')
-    plt.legend(fontsize=20)
-    plt.yticks(range(20))
-    plt.ylim(0, 20)
-    plt.xlabel('Generation. ('+stringlabel+')',fontsize=15)
-    plt.ylabel('Adjacency score',fontsize=15)
-
-    filename = 'photos/Adjacency_'+stringshort
-    # print(filename)
-    i = 0
-    while os.path.exists('{}{:d}.png'.format(filename, i)):
-        i += 1
-    plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
-    #plt.savefig('adjacency.png', bbox_inches='tight')
-    plt.gcf().clear()
-
-    #plt.show()
-    plt.figure(figsize=(30,15),dpi=80)
-    plt.scatter(x,y2, label = 'Aspect ratio Score', color='blue')
-    plt.legend(fontsize=20)
-    plt.ylim(0, 10)
-    plt.ylabel('Aspect ratio score', fontsize=15)
-    plt.xlabel('Generation. ('+stringlabel+')',fontsize=15)
-    #plt.savefig('aspect.png', bbox_inches='tight')
-
-    filename = 'photos/Aspect_'+stringshort
-    plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
-
-    plt.gcf().clear()
-    plt.close()
-    #plt.show()
-
-
-def prepare_plot_scatter(population, generation,x,y,gen_list):
-    for obj in population:
-        x.append(obj.adjacency_score)
-        y.append(obj.aspect_ratio_score)
-        gen_list.append(int(generation/10))
-    if(generation % 10 == 0): #Group plot colours together pr. 10th generation
-        plt.scatter(x, y, alpha=0.3, s=100, label = int(generation/10))
-        x=[]
-        y=[]
-        gen_list=[]
-    return x,y,gen_list
-
-def show_plot_scatter():
-    plt.legend()
-    plt.xticks(range(10))
-    plt.xlim(0, 10)
-    plt.ylim(0, 6)
-    plt.xlabel('Adjacency score')
-    plt.ylabel('Aspect ratio score')
-    plt.show()
 
 
 def generate(generations, user_groups, edges_of_user_groups):
@@ -753,7 +704,6 @@ def select_objects_for_render(population,selections):
     normalized_sum(population)
     #weighted_ranking(population)
     sorted_rank = sorted(population, key=lambda x: (x.weighted_sum_score))
-
 
 
     for individual in population: #Only add objects that are NOT similar to the previously selected
