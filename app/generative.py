@@ -43,7 +43,8 @@ class individual:
 
         self.crowding_adjacency_score = None
         self.crowding_aspect_ratio_score = 0
-        self.crowding_score = []
+        #self.crowding_score = []
+        self.crowding_score = None
 
         self.edges_out = []
         self.dominates_these = []
@@ -178,14 +179,13 @@ def normalized_sum(population):
             min_dict[attribute] = min(tmp_attribute_list)
             #average_dict[attribute]= mean(tmp_attribute_list)
 
-
     # /// TO normalize scores ////
     for individual in population:
         for attribute, max_value in max_dict.items(): #normalize all attributes
             if max_value != 0:
-                 setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)/max_value))
+                setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)/max_value))
             elif max_value == 0:
-                 setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)))
+                setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)))
 
     # /// to get average of normalized scores ///
     # for attribute in attributes_to_score:
@@ -233,11 +233,9 @@ def weighted_ranking(population, weights):
             if getattr(population[0],(attribute)) != None:
                 setattr(individual,'weighted_sum_score',(getattr(individual,('norm_'+attribute))*weight))
 
-def weighted_selection(population, pop_size):
-        normalized_sum(population)
-        weighted_ranking(population)
+def weighted_selection(pop_size,population):
         sorted_pop = sorted(population, key=lambda x: (x.weighted_sum_score))
-        return sorted_pop(:pop_size)
+        return sorted_pop[:pop_size]
 
 def dominance(population,selections):
      for i in range(len(population)):      #Loops through all individuals of population
@@ -398,8 +396,8 @@ def weighted_breeding(population, id, mutation_rate):
     children = []
     similar_counter = 0
     while len(children) < len(population):
-        parent1 = binary_tournament(population)
-        parent2 = binary_tournament(population)
+        parent1 = weighted_binary_tournament(population)
+        parent2 = weighted_binary_tournament(population)
         if parent1 != parent2: #to avoid breeding the same parent
             child1,child2 = crossover(parent1,parent2) #
             id+=1
@@ -518,6 +516,7 @@ def initial_generate_weighted(pop_size,generations,mutation,weights):
         print('Generation: ', n )
         Qt,id = weighted_breeding(Pt, id, mutation_ratio)
         mutate(Qt, mutation_ratio)
+        evaluate_pop(Qt,adjacency_def,[], [])
         Rt = Pt + Qt
         min_dict_list.append(normalized_sum(Rt))
         weighted_ranking(Rt,weights)
@@ -526,7 +525,7 @@ def initial_generate_weighted(pop_size,generations,mutation,weights):
     end_time = time.time()
     time_ellapsed = end_time-start_time
     save_population_to_database(Pt,generations)
-    stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))
+    stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))+' weights:'+str(weights)
     stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
     plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
     plt.close('all')
@@ -701,11 +700,6 @@ def select_objects_for_render(population,selections):
     pareto_dict = defaultdict(list)
     adj_counter = 0
 
-    normalized_sum(population)
-    #weighted_ranking(population)
-    sorted_rank = sorted(population, key=lambda x: (x.weighted_sum_score))
-
-
     for individual in population: #Only add objects that are NOT similar to the previously selected
         if individual.plan_id not in [ind.plan_id for sublist in selections for ind in sublist]:
             pareto_dict[individual.pareto].append(individual)
@@ -713,39 +707,21 @@ def select_objects_for_render(population,selections):
                 adj_counter += 1
 
     selection_list = []
-    while len(selection_list)<3:
+    while len(selection_list)<1:
         for pareto_front in sorted(pareto_dict.keys()):
             if len(selection_list) == 0:
             #Best adjacency of which is most similar to dir/split/ordder of user selction
-                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.dims_score, x.flow_score, x.adjacency_score, x.aspect_ratio_score, -x.crowding_score), reverse=False)
+                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.dims_score, x.flow_score, x.adjacency_score, x.aspect_ratio_score), reverse=False)
                 selection_list.append(adjacency_sorted[0])
 
 
             if len(selection_list)==1:
                 #Most similar dir/split/room_order
-                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.dims_score, x.flow_score, x.adjacency_score, x.aspect_ratio_score, -x.crowding_score), reverse=False)
+                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.dims_score, x.flow_score, x.adjacency_score, x.aspect_ratio_score), reverse=False)
                 for obj in interactive_sorted:
                     if len(selection_list)==1:
                         if obj not in selection_list:
                             selection_list.append(obj)
-
-            if len(selection_list)==2:
-                #most similar aspect score
-                aspect_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.aspect_ratio_score, -x.crowding_score,x.dims_score), reverse=False)
-                for obj in aspect_sorted:
-                    if len(selection_list) == 2:
-                        if obj not in selection_list:
-                            selection_list.append(obj)
-
-            if len(selection_list)==3:
-                #Most different (crowding) to neighbors
-                crowding_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (-x.crowding_score, x.dims_score, x.aspect_ratio_score), reverse=False)
-                for obj in crowding_sorted:
-                    if len(selection_list) == 3:
-                        if obj not in selection_list:
-                #        if obj != selection_list[2]:
-                            selection_list.append(obj)
-
 
                 ############## show last selected
                 #if len(selections)>0:
@@ -753,10 +729,12 @@ def select_objects_for_render(population,selections):
                 #else:
                 #    selection_list.append(selection_list[2])
 
-            if len(selection_list)==4:
+            if len(selection_list)==2:
                 break
 
     print('/////////')
+    sorted_rank = sorted(population, key=lambda x: (x.weighted_sum_score))
+
 
     #adjacency_definition = get_adjacency_definition(selection_list[0]) #Gets a list of adjacency requirements
     #selection_list[0].evaluate_access_score(adjacency_definition)
@@ -765,8 +743,8 @@ def select_objects_for_render(population,selections):
     #    print('Weight Sum', obj.weighted_sum_score, 'Access: ', obj.access_score, 'Transit: ', obj.transit_connections_score, 'GroupAdj: ', obj.group_adj_score)
     #    print(' Dims: ', obj.dims_score, 'Adj: ', obj.adjacency_score, 'aspect: ', round(obj.aspect_ratio_score,2), 'Crowd: ', round(obj.crowding_score,2), 'CrowdAdj: ', round(obj.crowding_adjacency_score,2), 'CrowdRatio: ', round(obj.crowding_aspect_ratio_score,2))
 
-    #return [object_to_visuals(sorted_rank[0])]
-    return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2]),object_to_visuals(selection_list[3])]
+    return [object_to_visuals(sorted_rank[0])]
+    #return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2]),object_to_visuals(selection_list[3])]
     #selection_list = [object_to_visuals(x) for x in selection_list]
     #return selection_list
 
