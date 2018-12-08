@@ -10,7 +10,8 @@ from app.email import send_password_reset_email
 import json
 from operator import itemgetter
 from app.generative import json_departments_from_db, random_design, generate, get_population_from_database, \
-initial_generate, select_objects_for_render, evaluate_layout, update_definition, evaluate_pop, initial_generate_weighted, initial_generate_flack
+initial_generate, select_objects_for_render, evaluate_layout, update_definition, evaluate_pop, initial_generate_weighted,\
+initial_generate_flack, generate_flack
 from app.space_planning import get_layout
 import statistics
 import matplotlib.pyplot as plt
@@ -52,7 +53,7 @@ def floor_plan():
 @login_required
 def get_floorplans():
     pop_size = 100
-    generations = 200
+    generations = 50
     mutation_rate = 0.01
     mode = request.form['mode']
     user_groups = json.loads(request.form['user_groups'])
@@ -79,7 +80,8 @@ def get_floorplans():
     # new mode creates a new generation
     elif mode == 'new':
         update_definition(user_groups)
-        Pt = generate(generations, user_groups, edges_of_user_groups)
+        Pt = generate_flack(pop_size, generations, mutation_rate, user_groups, edges_of_user_groups)
+        #Pt = generate(generations, user_groups, edges_of_user_groups)
     # current mode just returns the latest current generation
     elif mode == 'current':
         Pt = generate([],[], 0)

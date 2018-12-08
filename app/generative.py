@@ -206,7 +206,7 @@ def flack_ranking(population):
         max_rank = max([getattr(x,'flack_rank_'+attribute) for x in population])
         for individual in population:
             if max_rank != 0:
-                if attribute == 'asspect_ratio_score' or attribute == 'dims_score': #Weighted dims & aspect!
+                if attribute == 'dims_score': #Weighted dims & aspect!
                     setattr(individual, ('flack_rank_norm_'+attribute),(getattr(individual,'flack_rank_'+attribute)*3/max_rank))
                 else:
                     setattr(individual, ('flack_rank_norm_'+attribute),(getattr(individual,'flack_rank_'+attribute)/max_rank))
@@ -215,8 +215,6 @@ def flack_ranking(population):
 
     for individual in population:
         individual.flack_rank_sum = sum([getattr(individual,'flack_rank_norm_'+attribute) for attribute in attributes_to_score if attribute != None])
-
-
 
 
 def normalized_sum(population):
@@ -679,10 +677,7 @@ def initial_generate(pop_size,generations,mutation):
     pareto_score(Pt)
     crowding(Pt)
     mutation_ratio = mutation
-    #mutation_ratio = 0.01
-    #plt.figure()
-    #x1,x_b = [],[]
-    #y1,y2,y_b1,y_b2,y_b3= [],[],[],[],[]
+
     min_dict_list = []
     min_dict_list.append(normalized_sum(Pt))
     gen_list=[0]
@@ -700,14 +695,13 @@ def initial_generate(pop_size,generations,mutation):
         Pt = selection(pop_size,Rt)
         min_dict_list.append(normalized_sum(Pt))
         gen_list.append(n)
-        #x1,y1,y2 = prepare_plot(Pt,n,x1,y1,y2)
-        #x_b,y_b1,y_b2,y_b3 = prepare_plot_best_of(Pt,n,x_b,y_b1,y_b2,y_b3)
+
     end_time = time.time()
     time_ellapsed = end_time-start_time
     save_population_to_database(Pt,generations)
     stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))
-    stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
-    #show_plot(x1,y1,y2, stringlabel,stringshort)
+    stringshort = 'Flack_P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
+
     plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
     plt.close('all')
 
@@ -742,7 +736,7 @@ def plot_best_of(min_dict_list,gen_list,stringlabel,stringshort):
     ax2.set_ylabel('Rest')
     ax1.set_xlabel('Generation. ('+stringlabel+')',fontsize=15)
 
-    filename = 'photos/min_'+stringshort
+    filename = 'photos/'+stringshort
     i = 0
     while os.path.exists('{}{:d}.png'.format(filename, i)):
         i += 1
@@ -750,7 +744,41 @@ def plot_best_of(min_dict_list,gen_list,stringlabel,stringshort):
     plt.close()
 
 
+def generate_flack(pop_size, generations,mutation, user_groups, edges_of_user_groups):
+    # query for current generation value in database
+    #current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
 
+    # load latest generation from database into objects
+    #Pt = get_population_from_database(current_generation)
+    #id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
+
+    db.session.query(Plan).delete()
+    db.session.commit()
+
+    mutation_ratio = mutation
+    Pt, id = init_population(pop_size)
+    adjacency_def = get_adjacency_definition(Pt[0]) #Gets a list of adjacency requirements
+    individual_group_def = get_group_definition(user_groups)
+    evaluate_pop(Pt,adjacency_def, individual_group_def, edges_of_user_groups)
+    save_population_to_database(Pt,0)
+    pop_size=len(Pt)
+
+    ## RESTARTING EACH TIME
+    #Pt, id = init_population(pop_size)
+
+
+    flack_ranking(Pt)
+
+    for n in range(generations):
+        print('Generation: ', n )
+        Qt,id = flack_breeding(Pt, id, mutation_ratio)
+        mutate(Qt, mutation_ratio)
+        evaluate_pop(Qt,adjacency_def,individual_group_def, edges_of_user_groups)
+        Rt = Pt + Qt
+        flack_ranking(Rt)
+        Pt = flack_selection(pop_size,Rt)
+    save_population_to_database(Pt,generations)
+    return Pt
 
 def generate(generations, user_groups, edges_of_user_groups):
     # query for current generation value in database
@@ -923,13 +951,16 @@ def update_definition(groups):
             definition['rooms'][i]['adjacency'] = []
 
     # change the definition of all plans in the latest generation to have the new adjacency
+    if db.session.query(Plan).order_by(Plan.generation.desc()).first() == None:
+        print('DB None')
+    else:
+        
+        current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
+        query = db.session.query(Plan).filter_by(generation=current_generation).all()
 
-    current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
-    query = db.session.query(Plan).filter_by(generation=current_generation).all()
-
-    for plan in query:
-        plan.definition = json.dumps(definition)
-        plan.room_def = definition["rooms"]
+        for plan in query:
+            plan.definition = json.dumps(definition)
+            plan.room_def = definition["rooms"]
 
     db.session.commit()
 
