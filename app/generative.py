@@ -177,38 +177,44 @@ def get_adjacency_definition(individual):
     return defined_adjacency
 
 def flack_ranking(population):
-    attributes_to_score = ['dims_score','adjacency_score','aspect_ratio_score','access_score','transit_connections_score', 'group_adj_score', 'crowding_score']
+    attributes_to_score = ['dims_score','adjacency_score','aspect_ratio_score','access_score','transit_connections_score', 'group_adj_score']
     #for attribute in attributes_to_score:
 
     for i in range(len(population)):      #Loops through all individuals of population
         for j in range(i+1,len(population)): #Loops through all the remaining indiduals
             for attribute in attributes_to_score:
-                if getattr(i,attribute) < getattr(j,attribute):
-                    setattr(i, ('flack_'+attribute),(getattr(i,'flack_'+attribute)+1))
-                elif getattr(i,attribute) > getattr(j,attribute):
-                    setattr(j, ('flack_'+attribute),(getattr(j,'flack_'+attribute)+1))
+                if getattr(population[i],attribute) != None:
+                    if getattr(population[i],attribute) < getattr(population[j],attribute):
+                        setattr(population[j], ('flack_'+attribute),(getattr(population[j],'flack_'+attribute)+1))
+                    elif getattr(population[i],attribute) > getattr(population[j],attribute):
+                        setattr(population[i], ('flack_'+attribute),(getattr(population[i],'flack_'+attribute)+1))
 
 
     for attribute in attributes_to_score: #Give rank
         sorted_pop = sorted(population, key=lambda x: (getattr(x,'flack_'+attribute)))
         rank = 0
         setattr(sorted_pop[0], ('flack_rank_'+attribute),rank)
+
         for index, individual in enumerate(sorted_pop[1:]):
-            if getattr(sorted_pop[index-1],'flack_rank_'+attribute) == rank:
+            if getattr(sorted_pop[index],'flack_'+attribute) == getattr(individual,'flack_'+attribute):
                 setattr(individual, ('flack_rank_'+attribute),rank)
             else:
                 rank +=1
                 setattr(individual, ('flack_rank_'+attribute),rank)
-            if attribute == 'dims_score':
-                print('Dir rank:', getattr(individual,'flack_rank_'+attribute))
 
     for attribute in attributes_to_score: #To normalzie rank
         max_rank = max([getattr(x,'flack_rank_'+attribute) for x in population])
         for individual in population:
-            setattr(individual, ('flack_rank_norm_'+attribute),(getattr(individual,'flack_rank_'+attribute)/max_rank))
+            if max_rank != 0:
+                if attribute == 'asspect_ratio_score' or attribute == 'dims_score': #Weighted dims & aspect!
+                    setattr(individual, ('flack_rank_norm_'+attribute),(getattr(individual,'flack_rank_'+attribute)*3/max_rank))
+                else:
+                    setattr(individual, ('flack_rank_norm_'+attribute),(getattr(individual,'flack_rank_'+attribute)/max_rank))
+            else:
+                setattr(individual, ('flack_rank_norm_'+attribute),(getattr(individual,'flack_rank_'+attribute)))
 
     for individual in population:
-        individual.flack_rank_sum = sum([getattr(individual,'flack_rank_norm'+attribute) for attribute in attributes_to_score if attribute != None])
+        individual.flack_rank_sum = sum([getattr(individual,'flack_rank_norm_'+attribute) for attribute in attributes_to_score if attribute != None])
 
 
 
@@ -218,20 +224,25 @@ def normalized_sum(population):
     max_dict = {}
     min_dict = {}
     average_dict = {}
-    for attribute in attributes_to_score:
-        if getattr(population[0],attribute) != None:
-            tmp_attribute_list = [getattr(x,attribute) for x in population]
-            max_dict[attribute] = max(tmp_attribute_list)
-            min_dict[attribute] = min(tmp_attribute_list)
+    # for attribute in attributes_to_score:
+    #     if getattr(population[0],attribute) != None:
+    #         tmp_attribute_list = [getattr(x,attribute) for x in population]
+    #         max_dict[attribute] = max(tmp_attribute_list)
+    #         min_dict[attribute] = min(tmp_attribute_list)
             #average_dict[attribute]= mean(tmp_attribute_list)
 
+    sorted_pop = sorted(population, key=lambda x: (x.flack_rank_sum))
+    for attribute in attributes_to_score:
+        if getattr(sorted_pop[0],attribute) != None:
+            min_dict[attribute] = getattr(sorted_pop[0], attribute)
+
     # /// TO normalize scores ////
-    for individual in population:
-        for attribute, max_value in max_dict.items(): #normalize all attributes
-            if max_value != 0:
-                setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)/max_value))
-            elif max_value == 0:
-                setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)))
+    # for individual in population:
+    #     for attribute, max_value in max_dict.items(): #normalize all attributes
+    #         if max_value != 0:
+    #             setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)/max_value))
+    #         elif max_value == 0:
+    #             setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)))
 
     # /// to get average of normalized scores ///
     # for attribute in attributes_to_score:
@@ -282,6 +293,10 @@ def weighted_ranking(population, weights):
 
 def weighted_selection(pop_size,population):
         sorted_pop = sorted(population, key=lambda x: (x.weighted_sum_score))
+        return sorted_pop[:pop_size]
+
+def flack_selection(pop_size,population):
+        sorted_pop = sorted(population, key=lambda x: (x.flack_rank_sum, x.dims_score))
         return sorted_pop[:pop_size]
 
 def dominance(population,selections):
@@ -398,6 +413,18 @@ def comparison_weighted(obj1,obj2): # Compares 2 individuals on pareto front, fo
     else:
         return obj2
 
+def comparison_flack(obj1,obj2): # Compares 2 individuals on pareto front, followed by crowding
+    if obj1.dims_score == obj2.dims_score: #if equal rank, look at distance
+        #if obj1.crowding_score>obj2.crowding_score:
+        if obj1.flack_rank_sum < obj2.flack_rank_sum: #Criteria1: Dims score
+            return obj1
+        else:
+            return obj2
+    elif obj1.dims_score < obj2.dims_score:
+        return obj1
+    else:
+        return obj2
+
 def binary_tournament(population):
     Obj1 = random.choice(population)
     Obj2 = random.choice(population)
@@ -407,6 +434,11 @@ def weighted_binary_tournament(population):
     Obj1 = random.choice(population)
     Obj2 = random.choice(population)
     return comparison_weighted(Obj1,Obj2)
+
+def flack_binary_tournament(population):
+    Obj1 = random.choice(population)
+    Obj2 = random.choice(population)
+    return comparison_flack(Obj1,Obj2)
 
 def crossover(obj1,obj2):
     # get the current plan_id
@@ -436,6 +468,24 @@ def crossover(obj1,obj2):
     (child2_p1+child2_p2),obj1.min_opening)
 
     return child1,child2
+
+def flack_breeding(population, id, mutation_rate):
+    # get highest id from database
+    id = id
+    children = []
+    similar_counter = 0
+    while len(children) < len(population):
+        parent1 = flack_binary_tournament(population)
+        parent2 = flack_binary_tournament(population)
+        if parent1 != parent2: #to avoid breeding the same parent
+            child1,child2 = crossover(parent1,parent2) #
+            id+=1
+            child1.plan_id = id
+            id+=1
+            child2.plan_id = id
+            children.append(child1)
+            children.append(child2)
+    return children, id
 
 def weighted_breeding(population, id, mutation_rate):
     # get highest id from database
@@ -541,6 +591,44 @@ def init_population(size):
         population.append(element)
     return population, id
 
+def initial_generate_flack(pop_size,generations,mutation):
+    # delete all existing instances from database
+    db.session.query(Plan).delete()
+    db.session.commit()
+    Pt, id = init_population(pop_size)
+    adjacency_def = get_adjacency_definition(Pt[0]) #Gets a list of adjacency requirements
+
+    evaluate_pop(Pt,adjacency_def,[],[])
+    save_population_to_database(Pt,0)
+
+    min_dict_list = []
+
+    flack_ranking(Pt)
+    min_dict_list.append(normalized_sum(Pt))
+
+    mutation_ratio = mutation
+    gen_list=[0]
+    start_time = time.time()
+    print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation_ratio)
+    for n in range(generations):
+        print('Generation: ', n )
+        Qt,id = flack_breeding(Pt, id, mutation_ratio)
+        mutate(Qt, mutation_ratio)
+        evaluate_pop(Qt,adjacency_def,[], [])
+        Rt = Pt + Qt
+        flack_ranking(Rt)
+        Pt = flack_selection(pop_size,Rt)
+        min_dict_list.append(normalized_sum(Rt))
+        gen_list.append(n)
+    end_time = time.time()
+    time_ellapsed = end_time-start_time
+    save_population_to_database(Pt,generations)
+    stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2)) #+' weights:'+str(weights)
+    stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
+    plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
+    plt.close('all')
+    return Pt
+
 def initial_generate_weighted(pop_size,generations,mutation,weights):
     # delete all existing instances from database
     db.session.query(Plan).delete()
@@ -572,7 +660,7 @@ def initial_generate_weighted(pop_size,generations,mutation,weights):
     end_time = time.time()
     time_ellapsed = end_time-start_time
     save_population_to_database(Pt,generations)
-    stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))+' weights:'+str(weights)
+    stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))
     stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
     plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
     plt.close('all')
@@ -780,14 +868,15 @@ def select_objects_for_render(population,selections):
                 break
 
     print('/////////')
-    sorted_rank = sorted(population, key=lambda x: (x.weighted_sum_score))
+    #sorted_rank = sorted(population, key=lambda x: (x.weighted_sum_score))
+    sorted_rank = sorted(population, key=lambda x: (x.flack_rank_sum))
 
 
     #adjacency_definition = get_adjacency_definition(selection_list[0]) #Gets a list of adjacency requirements
     #selection_list[0].evaluate_access_score(adjacency_definition)
-
+#'Weight Sum', obj.weighted_sum_score,
     for index, obj in enumerate(sorted_rank[0:1]):
-        print('Weight Sum', obj.weighted_sum_score, 'Access: ', obj.access_score, 'Transit: ', obj.transit_connections_score, 'GroupAdj: ', obj.group_adj_score)
+        print('Access: ', obj.access_score, 'Transit: ', obj.transit_connections_score, 'GroupAdj: ', obj.group_adj_score)
         print(' Dims: ', obj.dims_score, 'Adj: ', obj.adjacency_score, 'Aspect: ', round(obj.aspect_ratio_score,2))
 
     return [object_to_visuals(sorted_rank[0])]

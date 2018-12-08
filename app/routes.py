@@ -10,7 +10,7 @@ from app.email import send_password_reset_email
 import json
 from operator import itemgetter
 from app.generative import json_departments_from_db, random_design, generate, get_population_from_database, \
-initial_generate, select_objects_for_render, evaluate_layout, update_definition, evaluate_pop, initial_generate_weighted
+initial_generate, select_objects_for_render, evaluate_layout, update_definition, evaluate_pop, initial_generate_weighted, initial_generate_flack
 from app.space_planning import get_layout
 import statistics
 import matplotlib.pyplot as plt
@@ -71,8 +71,7 @@ def get_floorplans():
         update_definition(user_groups)
         #for weights in weight_list:
         #    for mutation in mutation_rates:
-        for weights in weight_list:
-            Pt = initial_generate_weighted(pop_size, generations,mutation_rate,weights)
+        Pt = initial_generate_flack(pop_size, generations,mutation_rate)
         # for i in range(3):
         #     for index, pop in enumerate(pop_sizes):
         #         for mutate in mutation_rates:
