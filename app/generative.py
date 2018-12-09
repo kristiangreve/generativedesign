@@ -776,7 +776,7 @@ def generate(generations, user_groups, edges_of_user_groups):
     pop_size=len(Pt)
 
     ## RESTARTING EACH TIME
-    #Pt, id = init_population(pop_size)
+    Pt, id = init_population(pop_size)
 
     adjacency_def = get_adjacency_definition(Pt[0]) #Gets a list of adjacency requirements
     individual_group_def = get_group_definition(user_groups)
@@ -822,8 +822,8 @@ def json_departments_from_db():
         department_dict['transit']=department.transit
         department_dict['name']=department.name
         department_dict['area']=department.size
-
         adjacency = json.loads(department.adjacency)
+
 
         if department.window == 1:
             adjacency.append("outside")
@@ -966,14 +966,13 @@ def update_definition(groups):
             definition['rooms'][i]['adjacency'] = []
 
     # change the definition of all plans in the latest generation to have the new adjacency
-
+    
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
     query = db.session.query(Plan).filter_by(generation=current_generation).all()
 
     for plan in query:
         plan.definition = json.dumps(definition)
         plan.room_def = definition["rooms"]
-
     db.session.commit()
 
 def get_population_from_database(generation):
