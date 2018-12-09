@@ -21,6 +21,7 @@ user_selections = []
 user_selections_obj = []
 user_input_obj = []
 user_input_dict_list = []
+latest_definition = ''
 
 @app.before_request
 def before_request():
@@ -52,9 +53,11 @@ def floor_plan():
 @app.route('/get_floorplans', methods = ['GET','POST'])
 @login_required
 def get_floorplans():
-    pop_size = 100
-    generations = 50
-    mutation_rate = 0.01
+    global latest_definition
+    pop_size = 20
+    generations = 20
+    mutation_rate = 0.1
+    
     mode = request.form['mode']
     user_groups = json.loads(request.form['user_groups'])
     edges_of_user_groups = json.loads(request.form['edges_of_user_groups'])
@@ -67,24 +70,25 @@ def get_floorplans():
     mutation_rates = [0.01, 0.02, 0.05]
     #attributes_weight = {'dims_score':weights[0],'access_score':weights[1],'transit_connections_score':weights[2],'adjacency_score':weights[3],'group_adj_score':weights[4],'aspect_ratio_score':weights[5], 'crowding_score':weights[6]}
 
+    definition = update_definition(user_groups)
+    print("definition: ", definition)
 
     if mode == 'restart':
-        update_definition(user_groups)
-        #for weights in weight_list:
-        #    for mutation in mutation_rates:
-        Pt = initial_generate_flack(pop_size, generations,mutation_rate)
-        # for i in range(3):
-        #     for index, pop in enumerate(pop_sizes):
-        #         for mutate in mutation_rates:
-        #             Pt = initial_generate(pop, no_generations[index],mutate)
-    # new mode creates a new generation
-    elif mode == 'new':
-        update_definition(user_groups)
-        Pt = generate_flack(pop_size, generations, mutation_rate, user_groups, edges_of_user_groups)
-        #Pt = generate(generations, user_groups, edges_of_user_groups)
-    # current mode just returns the latest current generation
-    elif mode == 'current':
-        Pt = generate([],[], 0)
+        print("restarting")
+        Pt = initial_generate_flack(pop_size, generations, mutation_rate, definition)
+
+    else:
+        if latest_definition == definition:
+            print("defintion did not change")
+            Pt = generate_flack(pop_size, generations, mutation_rate, definition, user_groups, edges_of_user_groups)
+        else:
+            print("defintion changed")
+            Pt = initial_generate_flack(pop_size, generations, mutation_rate, definition)
+
+    # updating the most recent definition
+
+    latest_definition = definition
+
     return jsonify(select_objects_for_render(Pt, []))
 
 @app.route('/change_transit_of_department', methods = ['GET','POST'])
@@ -98,12 +102,9 @@ def change_transit_of_department():
         transit = 0
     else:
         transit = 1
-
     dep.transit = transit
-
     print(dep.name,dep.transit)
     db.session.commit()
-
     return jsonify(transit)
 
 
