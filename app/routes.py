@@ -55,8 +55,8 @@ def floor_plan():
 def get_floorplans():
     global latest_definition
     pop_size = 100
-    generations = 50
-    mutation_rate = 0.1
+    generations = 100
+    mutation_rate = 0.02
 
     mode = request.form['mode']
     user_groups = json.loads(request.form['user_groups'])
@@ -64,18 +64,18 @@ def get_floorplans():
 
 
 
-    #weights = [5,3,3,3,1,10,0]
-    weights = [3,3,3,20,1,3,0]
+    weights = [5,5,3,5,3,10,0]
 
     #attributes_weight = {'dims_score':weights[0],'access_score':weights[1],'transit_connections_score':weights[2],'adjacency_score':weights[3],'group_adj_score':weights[4],'aspect_ratio_score':weights[5], 'crowding_score':weights[6]}
 
     definition = update_definition(user_groups)
-    print("definition: ", definition)
+    #print("definition: ", definition)
+    #print('Edge user:', edges_of_user_groups)
 
     if mode == 'restart':
         print("restarting")
         #Pt = initial_generate_flack(pop_size, generations, mutation_rate, definition)
-        Pt = initial_generate_weighted(pop_size, generations, mutation_rate, definition,weights)
+        Pt = initial_generate_weighted(pop_size, 50, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
 
     else:
         if latest_definition == definition:
@@ -85,7 +85,7 @@ def get_floorplans():
         else:
             print("defintion changed")
             #Pt = initial_generate_flack(pop_size, generations, mutation_rate, definition)
-            Pt = initial_generate_weighted(pop_size, generations, mutation_rate, definition,weights)
+            Pt = initial_generate_weighted(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
 
     # updating the most recent definition
 
