@@ -54,19 +54,17 @@ def floor_plan():
 @login_required
 def get_floorplans():
     global latest_definition
-    pop_size = 10
-    generations = 10
-    mutation_rate = 0.1
+    pop_size = 50
+    generations = 50
+    mutation_rate = 0.02
 
     mode = request.form['mode']
     user_groups = json.loads(request.form['user_groups'])
     edges_of_user_groups = json.loads(request.form['edges_of_user_groups'])
 
 
-
+    #[Dims,Access,Transit,Adjacency,Group Adj, Aspect ratio, Crowding]
     weights = [5,5,3,5,3,10,0]
-
-    #attributes_weight = {'dims_score':weights[0],'access_score':weights[1],'transit_connections_score':weights[2],'adjacency_score':weights[3],'group_adj_score':weights[4],'aspect_ratio_score':weights[5], 'crowding_score':weights[6]}
 
     definition = update_definition(user_groups)
     #print("definition: ", definition)
