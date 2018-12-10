@@ -52,6 +52,7 @@ function get_floorplans(mode, user_groups, edges_of_user_groups){
 		edges_of_user_groups: JSON.stringify(edges_of_user_groups)
 	}).done(function(response) {
 		render_array = response;
+		$('.loader').hide();
 		render_floorplans(render_array);
 	});
 };
@@ -59,6 +60,7 @@ function get_floorplans(mode, user_groups, edges_of_user_groups){
 // button onclick handlers
 $("#generate_button").click(function(){
 	var mode = 'new';
+	$('.loader').show();
 	get_floorplans(mode, groups, edges_of_groups);
 	console.log("groups", groups);
 });

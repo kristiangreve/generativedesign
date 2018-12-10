@@ -10,7 +10,8 @@ from app.email import send_password_reset_email
 import json
 from operator import itemgetter
 from app.generative import json_departments_from_db, random_design, generate, get_population_from_database, \
-initial_generate, select_objects_for_render, evaluate_layout, id_to_obj, update_definition, evaluate_pop
+initial_generate, select_objects_for_render, evaluate_layout, update_definition, evaluate_pop, initial_generate_weighted,\
+initial_generate_flack, generate_flack, generate_weighted
 from app.space_planning import get_layout
 import statistics
 import matplotlib.pyplot as plt
@@ -20,6 +21,7 @@ user_selections = []
 user_selections_obj = []
 user_input_obj = []
 user_input_dict_list = []
+latest_definition = ''
 
 @app.before_request
 def before_request():
@@ -51,23 +53,44 @@ def floor_plan():
 @app.route('/get_floorplans', methods = ['GET','POST'])
 @login_required
 def get_floorplans():
-    pop_size = 50
-    generations = 20
+    global latest_definition
+    pop_size = 100
+    generations = 100
+    mutation_rate = 0.02
 
     mode = request.form['mode']
     user_groups = json.loads(request.form['user_groups'])
     edges_of_user_groups = json.loads(request.form['edges_of_user_groups'])
 
+
+
+    weights = [5,5,3,5,3,10,0]
+
+    #attributes_weight = {'dims_score':weights[0],'access_score':weights[1],'transit_connections_score':weights[2],'adjacency_score':weights[3],'group_adj_score':weights[4],'aspect_ratio_score':weights[5], 'crowding_score':weights[6]}
+
+    definition = update_definition(user_groups)
+    #print("definition: ", definition)
+    #print('Edge user:', edges_of_user_groups)
+
     if mode == 'restart':
-        update_definition(user_groups)
-        Pt = initial_generate(pop_size, generations)
-    # new mode creates a new generation
-    elif mode == 'new':
-        update_definition(user_groups)
-        Pt = generate(generations, user_groups, edges_of_user_groups)
-    # current mode just returns the latest current generation
-    elif mode == 'current':
-        Pt = generate([],[], 0)
+        print("restarting")
+        #Pt = initial_generate_flack(pop_size, generations, mutation_rate, definition)
+        Pt = initial_generate_weighted(pop_size, 50, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
+
+    else:
+        if latest_definition == definition:
+            print("defintion did not change")
+            #Pt = generate_flack(pop_size, generations, mutation_rate, definition, user_groups, edges_of_user_groups)
+            Pt = generate_weighted(pop_size, generations, mutation_rate, definition, user_groups, edges_of_user_groups,weights)
+        else:
+            print("defintion changed")
+            #Pt = initial_generate_flack(pop_size, generations, mutation_rate, definition)
+            Pt = initial_generate_weighted(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
+
+    # updating the most recent definition
+
+    latest_definition = definition
+
     return jsonify(select_objects_for_render(Pt, []))
 
 @app.route('/change_transit_of_department', methods = ['GET','POST'])
@@ -81,12 +104,9 @@ def change_transit_of_department():
         transit = 0
     else:
         transit = 1
-
     dep.transit = transit
-
     print(dep.name,dep.transit)
     db.session.commit()
-
     return jsonify(transit)
 
 
