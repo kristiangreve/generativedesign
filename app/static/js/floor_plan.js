@@ -294,10 +294,7 @@ function compare_and_add(group,element) {
 		var factor_y = parseInt(plotCanvas.style.height) / max_size[0];
 		var scale_factor = Math.min(factor_x,factor_y);
 
-		// outline for the floor plan
 
-		var base = new Point(0,0);
-		var dims = new Size(max_size[1]*scale_factor,max_size[0]*scale_factor)
 
 		var departments = render_graphics.departments;
 		var walls = render_graphics.walls;
@@ -389,14 +386,19 @@ function compare_and_add(group,element) {
 			path.strokeWidth = 1;
 		});
 
-		var outlineWidth = 8;
+		// outline for the floor plan
+
+		var base = new Point(3,3);
+		var dims = new Size(max_size[1]*scale_factor-6,max_size[0]*scale_factor-6)
+
+		var outlineWidth = 6;
 		var outline = new Rectangle(base,dims);
 		var path = new Path.Rectangle(outline);
 		path.strokeColor = 'black';
 		path.strokeWidth = outlineWidth;
 		var onpath = new Path.Rectangle(outline);
 		onpath.strokeColor = 'white';
-		onpath.strokeWidth = outlineWidth-4;
+		onpath.strokeWidth = outlineWidth-3;
 	};
 
 	function plotFavorite(plotCanvas,project_id,render_graphics) {
@@ -410,11 +412,6 @@ function compare_and_add(group,element) {
 		var factor_x = parseInt(plotCanvas.style.width) / max_size[1];
 		var factor_y = parseInt(plotCanvas.style.height) / max_size[0];
 		var scale_factor = Math.min(factor_x,factor_y);
-
-		// outline for the floor plan
-
-		var base = new Point(0,0);
-		var dims = new Size(max_size[1]*scale_factor,max_size[0]*scale_factor)
 
 		var departments = render_graphics.departments;
 		var walls = render_graphics.walls;
@@ -447,41 +444,7 @@ function compare_and_add(group,element) {
 			text_type.fontWeight = 'italic'
 			text_type.justification = 'center';
 			text_type.content = parse_dim(element.dims[1]*element.dims[0]).concat(" m2");
-			//
-			// // mouseevents
-			// path.onMouseEnter = function(event) {
-			// 	this.fillColor = 'lightgreen';
-			// };
-			//
-			// path.onClick = function(event) {
-			// 	var index =	current_group.findIndex(function(element) {
-			// 		return (element.name == name);
-			// 	});
-			// 	if (index > -1){
-			// 		current_group.splice(index,1);
-			// 		this.fillColor = 'lightgrey';
-			// 	} else {
-			// 		var department_dict = {};
-			// 		department_dict.name = element.name;
-			// 		department_dict.plan_id = render_id;
-			// 		department_dict.render_id = project_id;
-			// 		department_dict.transit = element.transit;
-			// 		current_group.push(department_dict);
-			// 		this.fillColor = 'green';
-			// 	};
-			// };
-			//
-			// path.onMouseLeave = function(event) {
-			// 	var index =	current_group.findIndex(function(element) {
-			// 		return (element.name == name);
-			// 	});
-			// 	// if it is in the group
-			// 	if (index > -1){
-			// 		this.fillColor = 'green';
-			// 	} else {
-			// 		this.fillColor = fillColor;
-			// 	};
-			// };
+
 		});
 
 		walls.forEach(function(element) {
@@ -492,14 +455,17 @@ function compare_and_add(group,element) {
 			path.strokeWidth = 1;
 		});
 
-		var outlineWidth = 5;
+		var base = new Point(3,3);
+		var dims = new Size(max_size[1]*scale_factor-6,max_size[0]*scale_factor-6)
+
+		var outlineWidth = 6;
 		var outline = new Rectangle(base,dims);
 		var path = new Path.Rectangle(outline);
 		path.strokeColor = 'black';
 		path.strokeWidth = outlineWidth;
 		var onpath = new Path.Rectangle(outline);
 		onpath.strokeColor = 'white';
-		onpath.strokeWidth = outlineWidth-2;
+		onpath.strokeWidth = outlineWidth-3;
 	};
 
 
