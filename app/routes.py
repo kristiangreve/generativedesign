@@ -11,7 +11,7 @@ import json
 from operator import itemgetter
 from app.generative import json_departments_from_db, random_design, generate, get_population_from_database, \
 initial_generate, select_objects_for_render, evaluate_layout, update_definition, evaluate_pop, initial_generate_weighted,\
-initial_generate_flack, generate_flack
+initial_generate_flack, generate_flack, generate_weighted
 from app.space_planning import get_layout
 import statistics
 import matplotlib.pyplot as plt
@@ -54,20 +54,19 @@ def floor_plan():
 @login_required
 def get_floorplans():
     global latest_definition
-    pop_size = 20
-    generations = 20
+    pop_size = 100
+    generations = 50
     mutation_rate = 0.1
-    
+
     mode = request.form['mode']
     user_groups = json.loads(request.form['user_groups'])
     edges_of_user_groups = json.loads(request.form['edges_of_user_groups'])
 
-    # pop_sizes = [50,100,200]
-    # no_generations = [200,100,50]
-    # mutation_rates = [0.005,0.01,0.05,0.1]
 
-    weight_list = [[5,10,3,3,1,10,0]]
-    mutation_rates = [0.01, 0.02, 0.05]
+
+    #weights = [5,3,3,3,1,10,0]
+    weights = [3,3,3,20,1,3,0]
+
     #attributes_weight = {'dims_score':weights[0],'access_score':weights[1],'transit_connections_score':weights[2],'adjacency_score':weights[3],'group_adj_score':weights[4],'aspect_ratio_score':weights[5], 'crowding_score':weights[6]}
 
     definition = update_definition(user_groups)
@@ -75,15 +74,18 @@ def get_floorplans():
 
     if mode == 'restart':
         print("restarting")
-        Pt = initial_generate_flack(pop_size, generations, mutation_rate, definition)
+        #Pt = initial_generate_flack(pop_size, generations, mutation_rate, definition)
+        Pt = initial_generate_weighted(pop_size, generations, mutation_rate, definition,weights)
 
     else:
         if latest_definition == definition:
             print("defintion did not change")
-            Pt = generate_flack(pop_size, generations, mutation_rate, definition, user_groups, edges_of_user_groups)
+            #Pt = generate_flack(pop_size, generations, mutation_rate, definition, user_groups, edges_of_user_groups)
+            Pt = generate_weighted(pop_size, generations, mutation_rate, definition, user_groups, edges_of_user_groups,weights)
         else:
             print("defintion changed")
-            Pt = initial_generate_flack(pop_size, generations, mutation_rate, definition)
+            #Pt = initial_generate_flack(pop_size, generations, mutation_rate, definition)
+            Pt = initial_generate_weighted(pop_size, generations, mutation_rate, definition,weights)
 
     # updating the most recent definition
 

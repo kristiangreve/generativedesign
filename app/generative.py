@@ -220,25 +220,26 @@ def normalized_sum(population):
     max_dict = {}
     min_dict = {}
     average_dict = {}
-    # for attribute in attributes_to_score:
-    #     if getattr(population[0],attribute) != None:
-    #         tmp_attribute_list = [getattr(x,attribute) for x in population]
-    #         max_dict[attribute] = max(tmp_attribute_list)
-    #         min_dict[attribute] = min(tmp_attribute_list)
+    for attribute in attributes_to_score:
+        if getattr(population[0],attribute) != None:
+            tmp_attribute_list = [getattr(x,attribute) for x in population]
+            max_dict[attribute] = max(tmp_attribute_list)
+            min_dict[attribute] = min(tmp_attribute_list)
             #average_dict[attribute]= mean(tmp_attribute_list)
 
-    sorted_pop = sorted(population, key=lambda x: (x.flack_rank_sum))
-    for attribute in attributes_to_score:
-        if getattr(sorted_pop[0],attribute) != None:
-            min_dict[attribute] = getattr(sorted_pop[0], attribute)
+    #Makes dict of stats from best performing individual
+    # sorted_pop = sorted(population, key=lambda x: (x.flack_rank_sum))
+    # for attribute in attributes_to_score:
+    #     if getattr(sorted_pop[0],attribute) != None:
+    #         min_dict[attribute] = getattr(sorted_pop[0], attribute)
 
-    # /// TO normalize scores ////
-    # for individual in population:
-    #     for attribute, max_value in max_dict.items(): #normalize all attributes
-    #         if max_value != 0:
-    #             setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)/max_value))
-    #         elif max_value == 0:
-    #             setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)))
+    #/// TO normalize scores ////
+    for individual in population:
+        for attribute, max_value in max_dict.items(): #normalize all attributes
+            if max_value != 0:
+                setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)/max_value))
+            elif max_value == 0:
+                setattr(individual, ('norm_'+attribute),(getattr(individual,attribute)))
 
     # /// to get average of normalized scores ///
     # for attribute in attributes_to_score:
@@ -261,7 +262,7 @@ def evaluate_pop(generation,adjacency_definition, individual_group_def, edges_of
         #if individual.access_score == None:
             individual.evaluate_access_score(adjacency_definition)
             individual.evaluate_transit_connections((individual.transit_adjacency_dict.copy()),[])
-            individual.flow_score = individual.access_score + individual.transit_connections_score*2
+            individual.flow_score = individual.access_score + individual.transit_connections_score
     if len(edges_of_user_groups): #If group adjacency has been specified
         group_transit_dict_list = []  # list of Dicts containing an adjacent group as key and the transit rooms in that group as values (list)
         for group_adj in edges_of_user_groups:
@@ -277,16 +278,18 @@ def evaluate_pop(generation,adjacency_definition, individual_group_def, edges_of
                 group_transit_dict_list.append(group_transit_dict)
         for individual in generation:
             individual.evaluate_group_adjacency(group_transit_dict_list)
-            individual.flow_score = individual.flow_score+(individual.group_adj_score*3)
+            individual.flow_score = individual.flow_score+(individual.group_adj_score)
 
 
 
 def weighted_ranking(population, weights):
     attributes_weight = {'dims_score':weights[0],'access_score':weights[1],'transit_connections_score':weights[2],'adjacency_score':weights[3],'group_adj_score':weights[4],'aspect_ratio_score':weights[5], 'crowding_score':weights[6]}
     for individual in population:
-        for attribute, weight in attributes_weight.items(): #normalize all attributes
-            if getattr(population[0],(attribute)) != None:
-                setattr(individual,'weighted_sum_score',(getattr(individual,('norm_'+attribute))*weight))
+        # for attribute, weight in attributes_weight.items():
+        #     if getattr(population[0],(attribute)) != None:
+        #         #setattr(individual,'weighted_sum_score',(getattr(individual,('norm_'+attribute))*weight))
+        #         setattr(individual,'weighted_sum_score',(getattr(individual,attribute)*weight))
+        individual.weighted_sum_score = sum([getattr(individual,'norm_'+attribute) for attribute in attributes_weight.keys() if getattr(individual,attribute) != None])
 
 def weighted_selection(pop_size,population):
         sorted_pop = sorted(population, key=lambda x: (x.weighted_sum_score))
@@ -626,11 +629,11 @@ def initial_generate_flack(pop_size,generations,mutation,definition):
     # plt.close('all')
     return Pt
 
-def initial_generate_weighted(pop_size,generations,mutation,weights):
+def initial_generate_weighted(pop_size,generations,mutation,definition,weights):
     # delete all existing instances from database
     db.session.query(Plan).delete()
     db.session.commit()
-    Pt, id = init_population(pop_size)
+    Pt, id = init_population(pop_size,definition)
     adjacency_def = get_adjacency_definition(Pt[0]) #Gets a list of adjacency requirements
 
     evaluate_pop(Pt,adjacency_def,[],[])
@@ -741,6 +744,46 @@ def initial_generate(pop_size,generations,mutation):
 #     plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
 #     plt.close()
 
+
+def generate_weighted(pop_size, generations, mutation, definition, user_groups, edges_of_user_groups, weights):
+    # query for current generation value in database
+    current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
+
+    print("current generation", current_generation)
+    # update definition of the latest generation in the databasefco
+    update_db_definition(definition)
+
+    # load latest generation from database into objects
+    Pt = get_population_from_database(current_generation)
+    id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
+
+    # db.session.query(Plan).delete()
+    # db.session.commit()
+
+    mutation_ratio = mutation
+
+    # Pt, id = init_population(pop_size,definition)
+    adjacency_def = get_adjacency_definition(Pt[0]) #Gets a list of adjacency requirements
+    individual_group_def = get_group_definition(user_groups)
+    evaluate_pop(Pt,adjacency_def, individual_group_def, edges_of_user_groups)
+    save_population_to_database(Pt,0)
+    min_dict_list = []
+    min_dict_list.append(normalized_sum(Pt))
+    weighted_ranking(Pt,weights)
+
+    for n in range(generations):
+        print('Generation: ', n )
+        Qt,id = weighted_breeding(Pt, id, mutation_ratio)
+        mutate(Qt, mutation_ratio)
+        evaluate_pop(Qt,adjacency_def,individual_group_def, edges_of_user_groups)
+        Rt = Pt + Qt
+        min_dict_list.append(normalized_sum(Rt))
+        weighted_ranking(Rt,weights)
+        Pt = weighted_selection(pop_size,Rt)
+
+    save_population_to_database(Pt,current_generation+generations)
+
+    return Pt
 
 def generate_flack(pop_size, generations, mutation, definition, user_groups, edges_of_user_groups):
     # query for current generation value in database
@@ -896,15 +939,16 @@ def select_objects_for_render(population,selections):
                 break
 
     print('/////////')
-    #sorted_rank = sorted(population, key=lambda x: (x.weighted_sum_score))
-    sorted_rank = sorted(population, key=lambda x: (x.flack_rank_sum))
-
+    sorted_rank = sorted(population, key=lambda x: (x.weighted_sum_score))
+    #sorted_rank = sorted(population, key=lambda x: (x.flack_rank_sum))
+    dir_pop = list(sorted_rank[0].dir_list)
+    get_layout(sorted_rank[0].definition, sorted_rank[0].room_def, sorted_rank[0].split_list, dir_pop, sorted_rank[0].room_order, sorted_rank[0].min_opening)
 
     #adjacency_definition = get_adjacency_definition(selection_list[0]) #Gets a list of adjacency requirements
     #selection_list[0].evaluate_access_score(adjacency_definition)
 #'Weight Sum', obj.weighted_sum_score,
     for index, obj in enumerate(sorted_rank[0:1]):
-        print('Access: ', obj.access_score, 'Transit: ', obj.transit_connections_score, 'GroupAdj: ', obj.group_adj_score)
+        print('Weighted sum:', obj.weighted_sum_score, 'Access: ', obj.access_score, 'Transit: ', obj.transit_connections_score, 'GroupAdj: ', obj.group_adj_score)
         print(' Dims: ', obj.dims_score, 'Adj: ', obj.adjacency_score, 'Aspect: ', round(obj.aspect_ratio_score,2))
 
     return [object_to_visuals(sorted_rank[0])]
@@ -940,17 +984,20 @@ def update_definition(groups):
 
         # get the most recent definition from the database
 
-
-
     #print("definition from db:",definition)
 
     # replace the adjacencies of each room in the definition with the ones specified by edges
+    #BUGG this snippet overwrites outside as it only includes rooms that are on the "group" input
     for i, room in enumerate(definition["rooms"]):
         adjacency = next( (rm['adjacency'] for rm in rooms if rm['name'] == room['name']), None)
         if adjacency:
             definition['rooms'][i]['adjacency'] = adjacency
         else:
             definition['rooms'][i]['adjacency'] = []
+
+    for i, room in enumerate(definition["rooms"]): #Adds outside to adj again
+        if room['window']==1:
+            room['adjacency'].append('outside')
 
     return definition
 
