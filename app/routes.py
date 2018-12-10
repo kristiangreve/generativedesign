@@ -54,9 +54,9 @@ def floor_plan():
 @login_required
 def get_floorplans():
     global latest_definition
-    pop_size = 100
-    generations = 100
-    mutation_rate = 0.02
+    pop_size = 10
+    generations = 10
+    mutation_rate = 0.1
 
     mode = request.form['mode']
     user_groups = json.loads(request.form['user_groups'])

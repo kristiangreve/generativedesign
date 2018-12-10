@@ -1,7 +1,7 @@
 import random, math, json
 import os
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from collections import defaultdict
 from timeit import default_timer as timer
 from app.space_planning import get_layout
@@ -660,10 +660,10 @@ def initial_generate_weighted(pop_size,generations,mutation,definition,user_grou
     end_time = time.time()
     time_ellapsed = end_time-start_time
     save_population_to_database(Pt,generations)
-    stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))
-    stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
-    plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
-    plt.close('all')
+    # stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))
+    # stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
+    # plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
+    # plt.close('all')
     return Pt
 
 def initial_generate(pop_size,generations,mutation):
@@ -710,39 +710,39 @@ def initial_generate(pop_size,generations,mutation):
 
 
 
-def plot_best_of(min_dict_list,gen_list,stringlabel,stringshort):
-    fig,ax1 = plt.subplots(figsize=(30,15), dpi=80)
-    ax2 = ax1.twinx()
-    attribute = ['dims_score','adjacency_score','aspect_ratio_score','access_score','transit_connections_score','crowding_score']
-    colors = ['red',(0.64,0.287,0.64),'orange','blue','green',(0.125,0.698,0.65)]
-    plot_dict = defaultdict(list)
-    #(0.392,0.6,0.847)
-    for gen,min_dict in enumerate(min_dict_list):
-        for key,value in min_dict.items():
-            plot_dict[key].append(value)
-        plot_dict['gen'].append(gen)
-    color_counter = 0
-    for attribute,value_list in plot_dict.items():
-        if attribute != 'gen':
-            if attribute in ['dims_score','access_score','aspect_ratio_score']:
-                ax1.plot(plot_dict['gen'],value_list, label=attribute,color=colors[color_counter])
-            else:
-                ax2.plot(plot_dict['gen'],value_list, label=attribute,color=colors[color_counter])
-            color_counter += 1
-
-    ax1.legend(fontsize=20, loc='upper left')
-    ax2.legend(fontsize=20, loc='upper right')
-    ax1.set_ylim((0,25))
-    ax2.set_ylim((0,4))
-    ax2.set_ylabel('Rest')
-    ax1.set_xlabel('Generation. ('+stringlabel+')',fontsize=15)
-
-    filename = 'photos/'+stringshort
-    i = 0
-    while os.path.exists('{}{:d}.png'.format(filename, i)):
-        i += 1
-    plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
-    plt.close()
+# def plot_best_of(min_dict_list,gen_list,stringlabel,stringshort):
+#     fig,ax1 = plt.subplots(figsize=(30,15), dpi=80)
+#     ax2 = ax1.twinx()
+#     attribute = ['dims_score','adjacency_score','aspect_ratio_score','access_score','transit_connections_score','crowding_score']
+#     colors = ['red',(0.64,0.287,0.64),'orange','blue','green',(0.125,0.698,0.65)]
+#     plot_dict = defaultdict(list)
+#     #(0.392,0.6,0.847)
+#     for gen,min_dict in enumerate(min_dict_list):
+#         for key,value in min_dict.items():
+#             plot_dict[key].append(value)
+#         plot_dict['gen'].append(gen)
+#     color_counter = 0
+#     for attribute,value_list in plot_dict.items():
+#         if attribute != 'gen':
+#             if attribute in ['dims_score','access_score','aspect_ratio_score']:
+#                 ax1.plot(plot_dict['gen'],value_list, label=attribute,color=colors[color_counter])
+#             else:
+#                 ax2.plot(plot_dict['gen'],value_list, label=attribute,color=colors[color_counter])
+#             color_counter += 1
+#
+#     ax1.legend(fontsize=20, loc='upper left')
+#     ax2.legend(fontsize=20, loc='upper right')
+#     ax1.set_ylim((0,25))
+#     ax2.set_ylim((0,4))
+#     ax2.set_ylabel('Rest')
+#     ax1.set_xlabel('Generation. ('+stringlabel+')',fontsize=15)
+#
+#     filename = 'photos/'+stringshort
+#     i = 0
+#     while os.path.exists('{}{:d}.png'.format(filename, i)):
+#         i += 1
+#     plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
+#     plt.close()
 
 
 def generate_weighted(pop_size, generations, mutation, definition, user_groups, edges_of_user_groups, weights):
@@ -786,10 +786,10 @@ def generate_weighted(pop_size, generations, mutation, definition, user_groups, 
     save_population_to_database(Pt,current_generation+generations)
     end_time = time.time()
     time_ellapsed = end_time-start_time
-    stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))
-    stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
-    plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
-    plt.close('all')
+    # stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))
+    # stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
+    # plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
+    # plt.close('all')
     return Pt
 
 def generate_flack(pop_size, generations, mutation, definition, user_groups, edges_of_user_groups):
@@ -989,22 +989,29 @@ def update_definition(groups):
             if to_id == None:
                 rooms.append({"name": edge['to'], "adjacency": [edge['from']]})
 
+
+
         # get the most recent definition from the database
 
     #print("definition from db:",definition)
 
     # replace the adjacencies of each room in the definition with the ones specified by edges
-    #BUGG this snippet overwrites outside as it only includes rooms that are on the "group" input
-    for i, room in enumerate(definition["rooms"]):
-        adjacency = next( (rm['adjacency'] for rm in rooms if rm['name'] == room['name']), None)
-        if adjacency:
-            definition['rooms'][i]['adjacency'] = adjacency
-        else:
-            definition['rooms'][i]['adjacency'] = []
 
-    for i, room in enumerate(definition["rooms"]): #Adds outside to adj again
-        if room['window']==1:
-            room['adjacency'].append('outside')
+    for i, room in enumerate(definition["rooms"]):
+
+        # get the adjecency specified by groups for that specific room.
+        adjacency = next((rm['adjacency'] for rm in rooms if rm['name'] == room['name']), None)
+
+        # if adjacencies are specified, add those to the adjacencies of the room
+
+        if adjacency:
+            if 'outside' in definition['rooms'][i]['adjacency']:
+                adjacency.append('outside')
+                definition['rooms'][i]['adjacency'] = adjacency
+            else:
+                definition['rooms'][i]['adjacency'] = adjacency
+
+    print("definition after edit",definition)
 
     return definition
 
