@@ -30,7 +30,6 @@ class individual:
         self.aspect_base = {}
         self.all_adjacency_dict = None
         self.transit_room_def = None
-
         self.access_score = None
         self.transit_connections_score = None
         self.flow_score = None
@@ -175,6 +174,65 @@ def get_adjacency_definition(individual):
     return defined_adjacency
 
 def flack_ranking(population):
+    # reset rank of population individuals
+    # sort in ascending order on functional score
+    rank = 0
+    for n, individual in enumerate(sorted(population, key=lambda x: x.dims_score, reverse=False)):
+        if n == 0:
+            individual.flack_dims_score = rank
+            previous_individual = individual
+            continue
+        # if it has a functional score worse than the previous one, update the rank and assign it.
+        if individual.dims_score > previous_individual.dims_score:
+            rank = n+1
+            individual.flack_dims_score = rank
+        else:
+            individual.flack_dims_score = rank
+        previous_individual = individual
+
+
+    # sort in ascending order on geometric score
+    rank = 0
+    for n, individual in enumerate(sorted(population, key=lambda x: x.adjacency_score, reverse=False)):
+        if n == 0:
+            individual.flack_adjacency_score = rank
+            previous_individual = individual
+            continue
+
+        # if it has a functional score worse than the previous one, update the rank and assign it.
+        if individual.adjacency_score > previous_individual.adjacency_score:
+            rank = n+1
+            individual.flack_adjacency_score = rank
+        else:
+            individual.flack_adjacency_score = rank
+
+        previous_individual = individual
+
+
+    rank = 0
+    for n, individual in enumerate(sorted(population, key=lambda x: x.access_score, reverse=False)):
+        if n == 0:
+            individual.flack_access_score = rank
+            previous_individual = individual
+            continue
+
+        # if it has a functional score worse than the previous one, update the rank and assign it.
+        if individual.access_score > previous_individual.access_score:
+            rank = n+1
+            individual.flack_access_score = rank
+        else:
+            individual.flack_access_score = rank
+
+        previous_individual = individual
+
+
+
+    for individual in population:
+        individual.rank = individual.flack_dims_score + individual.flack_adjacency_score + individual.flack_access_score
+
+    return sorted(population, key=lambda x: x.rank, reverse=False)
+
+def flack_ranking_old(population):
     attributes_to_score = ['dims_score','adjacency_score','aspect_ratio_score','access_score','transit_connections_score', 'group_adj_score']
     #for attribute in attributes_to_score:
 
@@ -186,7 +244,6 @@ def flack_ranking(population):
                         setattr(population[j], ('flack_'+attribute),(getattr(population[j],'flack_'+attribute)+1))
                     elif getattr(population[i],attribute) > getattr(population[j],attribute):
                         setattr(population[i], ('flack_'+attribute),(getattr(population[i],'flack_'+attribute)+1))
-
 
     for attribute in attributes_to_score: #Give rank
         sorted_pop = sorted(population, key=lambda x: (getattr(x,'flack_'+attribute)))
@@ -296,7 +353,7 @@ def weighted_selection(pop_size,population):
         return sorted_pop[:pop_size]
 
 def flack_selection(pop_size,population):
-        sorted_pop = sorted(population, key=lambda x: (x.flack_rank_sum, x.dims_score))
+        sorted_pop = sorted(population, key=lambda x: (x.rank, x.dims_score))
         return sorted_pop[:pop_size]
 
 def dominance(population,selections):
@@ -416,11 +473,11 @@ def comparison_weighted(obj1,obj2): # Compares 2 individuals on pareto front, fo
 def comparison_flack(obj1,obj2): # Compares 2 individuals on pareto front, followed by crowding
     if obj1.dims_score == obj2.dims_score: #if equal rank, look at distance
         #if obj1.crowding_score>obj2.crowding_score:
-        if obj1.flack_rank_sum < obj2.flack_rank_sum: #Criteria1: Dims score
+        if obj1.rank < obj2.rank: #Criteria1: Dims score
             return obj1
         else:
             return obj2
-    elif obj1.dims_score < obj2.dims_score:
+    elif obj1.adjacency_score < obj2.adjacency_score:
         return obj1
     else:
         return obj2
@@ -629,7 +686,7 @@ def initial_generate_flack(pop_size,generations,mutation,definition):
     # plt.close('all')
     return Pt
 
-def initial_generate_weighted(pop_size,generations,mutation,definition,user_groups, edges_of_user_groups,weights):
+def initial_generate_weighted(pop_size,generations,mutation,definition,user_groups, edges_of_user_groups, weights):
     # delete all existing instances from database
     db.session.query(Plan).delete()
     db.session.commit()
@@ -924,7 +981,7 @@ def select_objects_for_render(population,selections):
         for pareto_front in sorted(pareto_dict.keys()):
             if len(selection_list) == 0:
             #Best adjacency of which is most similar to dir/split/ordder of user selction
-                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.dims_score, x.flow_score, x.adjacency_score, x.aspect_ratio_score), reverse=False)
+                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.adjacency_score, x.dims_score, x.flow_score, x.aspect_ratio_score), reverse=False)
                 selection_list.append(adjacency_sorted[0])
 
 

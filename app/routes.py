@@ -56,15 +56,18 @@ def get_floorplans():
     global latest_definition
     pop_size = 50
     generations = 50
-    mutation_rate = 0.02
+    mutation_rate = 0.1
 
     mode = request.form['mode']
     user_groups = json.loads(request.form['user_groups'])
     edges_of_user_groups = json.loads(request.form['edges_of_user_groups'])
 
 
-    #[Dims,Access,Transit,Adjacency,Group Adj, Aspect ratio, Crowding]
-    weights = [5,5,3,5,3,10,0]
+    #[Dims, Access, Transit, Adjacency, Group Adj, Aspect ratio, Crowding]
+    # weights = [5,5,3,5,3,10,0]
+
+    #           [Dims,  Access, Transit,    Adjacency,  Group Adj,  Aspect ratio,   Crowding]
+    weights =   [5,     5,      5,          10,          5,          5,             0]
 
     definition = update_definition(user_groups)
     #print("definition: ", definition)
@@ -73,17 +76,17 @@ def get_floorplans():
     if mode == 'restart':
         print("restarting")
         #Pt = initial_generate_flack(pop_size, generations, mutation_rate, definition)
-        Pt = initial_generate_weighted(pop_size, 50, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
+        Pt = initial_generate_flack(pop_size, 50, mutation_rate, definition)
 
     else:
         if latest_definition == definition:
             print("defintion did not change")
             #Pt = generate_flack(pop_size, generations, mutation_rate, definition, user_groups, edges_of_user_groups)
-            Pt = generate_weighted(pop_size, generations, mutation_rate, definition, user_groups, edges_of_user_groups,weights)
+            Pt = generate_flack(pop_size, generations, mutation_rate, definition, user_groups, edges_of_user_groups)
         else:
             print("defintion changed")
             #Pt = initial_generate_flack(pop_size, generations, mutation_rate, definition)
-            Pt = initial_generate_weighted(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
+            Pt = initial_generate_flack(pop_size, 50, mutation_rate, definition)
 
     # updating the most recent definition
 
