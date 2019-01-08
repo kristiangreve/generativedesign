@@ -433,7 +433,6 @@ def get_layout(definition, room_def, split_list, dir_list, room_order, min_openi
     room_transit_dict[0] = 0
     added_openings = set() #List to keep track of rooms that have gotten a doorway added
 
-
     for adjacency in adjacency_list:
         # #For debugging:
         # if adjacency in edges_neighbors and edge_lengths[edges_neighbors.index(adjacency)] >= min_opening or (list(reversed(adjacency)) in edges_neighbors and edge_lengths[edges_neighbors.index(list(reversed(adjacency)))] >= min_opening):
