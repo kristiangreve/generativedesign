@@ -1,7 +1,7 @@
 import random, math, json
 import os
 import numpy as np
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from collections import defaultdict
 from timeit import default_timer as timer
 from app.space_planning import get_layout
@@ -536,7 +536,8 @@ def selection(pop_size, population):
         else:
             if pareto_counter ==1:
                 print('Pareto1>len:', len(pareto_dict[pareto_counter]))
-            sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: (x.dims_score, -x.crowding_score), reverse=False)
+            #sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: (x.dims_score, -x.crowding_score), reverse=False)
+            sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: (-x.crowding_score), reverse=False)
             for obj in sorted_pareto:
                 if len(new_gen) < pop_size:
                     new_gen.append(obj)
@@ -660,22 +661,24 @@ def initial_generate_weighted(pop_size,generations,mutation,definition,user_grou
     end_time = time.time()
     time_ellapsed = end_time-start_time
     save_population_to_database(Pt,generations)
-    # stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))
-    # stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
-    # plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
-    # plt.close('all')
+    stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))+' weights:'+str(weights)
+    stringshort = 'P_weight'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
+    plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
+    plt.close('all')
     return Pt
 
-def initial_generate(pop_size,generations,mutation):
+def initial_generate(pop_size,generations,mutation,definition,user_groups, edges_of_user_groups):
     # delete all existing instances from database
     db.session.query(Plan).delete()
     db.session.commit()
-    Pt, id = init_population(pop_size)
+    Pt, id = init_population(pop_size,definition)
     adjacency_def = get_adjacency_definition(Pt[0]) #Gets a list of adjacency requirements
+    individual_group_def = get_group_definition(user_groups)
 
-    evaluate_pop(Pt,adjacency_def,[],[])
+    evaluate_pop(Pt,adjacency_def, individual_group_def, edges_of_user_groups)
     save_population_to_database(Pt,0)
-    dominance(Pt,[])
+
+    dominance(Pt,user_groups)
     pareto_score(Pt)
     crowding(Pt)
     mutation_ratio = mutation
@@ -689,9 +692,9 @@ def initial_generate(pop_size,generations,mutation):
         print('Generation: ', n )
         Qt,id = breeding(Pt, id, mutation_ratio)
         mutate(Qt, mutation_ratio)
-        evaluate_pop(Qt,adjacency_def,[], [])
+        evaluate_pop(Qt,adjacency_def, individual_group_def, edges_of_user_groups)
         Rt = Pt + Qt
-        dominance(Rt,[])
+        dominance(Pt,user_groups)
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
@@ -701,48 +704,48 @@ def initial_generate(pop_size,generations,mutation):
     end_time = time.time()
     time_ellapsed = end_time-start_time
     save_population_to_database(Pt,generations)
-    # stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))
-    # stringshort = 'Flack_P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
-    # plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
-    # plt.close('all')
+    stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))
+    stringshort = 'pareto_P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
+    plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
+    plt.close('all')
 
     return Pt
 
 
 
-# def plot_best_of(min_dict_list,gen_list,stringlabel,stringshort):
-#     fig,ax1 = plt.subplots(figsize=(30,15), dpi=80)
-#     ax2 = ax1.twinx()
-#     attribute = ['dims_score','adjacency_score','aspect_ratio_score','access_score','transit_connections_score','crowding_score']
-#     colors = ['red',(0.64,0.287,0.64),'orange','blue','green',(0.125,0.698,0.65)]
-#     plot_dict = defaultdict(list)
-#     #(0.392,0.6,0.847)
-#     for gen,min_dict in enumerate(min_dict_list):
-#         for key,value in min_dict.items():
-#             plot_dict[key].append(value)
-#         plot_dict['gen'].append(gen)
-#     color_counter = 0
-#     for attribute,value_list in plot_dict.items():
-#         if attribute != 'gen':
-#             if attribute in ['dims_score','access_score','aspect_ratio_score']:
-#                 ax1.plot(plot_dict['gen'],value_list, label=attribute,color=colors[color_counter])
-#             else:
-#                 ax2.plot(plot_dict['gen'],value_list, label=attribute,color=colors[color_counter])
-#             color_counter += 1
-#
-#     ax1.legend(fontsize=20, loc='upper left')
-#     ax2.legend(fontsize=20, loc='upper right')
-#     ax1.set_ylim((0,25))
-#     ax2.set_ylim((0,4))
-#     ax2.set_ylabel('Rest')
-#     ax1.set_xlabel('Generation. ('+stringlabel+')',fontsize=15)
-#
-#     filename = 'photos/'+stringshort
-#     i = 0
-#     while os.path.exists('{}{:d}.png'.format(filename, i)):
-#         i += 1
-#     plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
-#     plt.close()
+def plot_best_of(min_dict_list,gen_list,stringlabel,stringshort):
+    fig,ax1 = plt.subplots(figsize=(30,15), dpi=80)
+    ax2 = ax1.twinx()
+    attribute = ['dims_score','adjacency_score','aspect_ratio_score','access_score','transit_connections_score','crowding_score']
+    colors = ['red',(0.64,0.287,0.64),'orange','blue','green',(0.125,0.698,0.65)]
+    plot_dict = defaultdict(list)
+    #(0.392,0.6,0.847)
+    for gen,min_dict in enumerate(min_dict_list):
+        for key,value in min_dict.items():
+            plot_dict[key].append(value)
+        plot_dict['gen'].append(gen)
+    color_counter = 0
+    for attribute,value_list in plot_dict.items():
+        if attribute != 'gen':
+            if attribute in ['dims_score','access_score','aspect_ratio_score']:
+                ax1.plot(plot_dict['gen'],value_list, label=attribute,color=colors[color_counter])
+            else:
+                ax2.plot(plot_dict['gen'],value_list, label=attribute,color=colors[color_counter])
+            color_counter += 1
+
+    ax1.legend(fontsize=20, loc='upper left')
+    ax2.legend(fontsize=20, loc='upper right')
+    ax1.set_ylim((0,10))
+    ax2.set_ylim((0,4))
+    ax2.set_ylabel('Rest')
+    ax1.set_xlabel('Generation. ('+stringlabel+')',fontsize=15)
+
+    filename = 'photos/'+stringshort
+    i = 0
+    while os.path.exists('{}{:d}.png'.format(filename, i)):
+        i += 1
+    plt.savefig('{}{:d}.png'.format(filename, i), box_inches='tight')
+    plt.close()
 
 
 def generate_weighted(pop_size, generations, mutation, definition, user_groups, edges_of_user_groups, weights):
@@ -830,31 +833,28 @@ def generate_flack(pop_size, generations, mutation, definition, user_groups, edg
 
     return Pt
 
-def generate(generations, user_groups, edges_of_user_groups):
+def generate(pop_size, generations, mutation_rate, definition, user_groups, edges_of_user_groups):
     # query for current generation value in database
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
+
+    print("current generation", current_generation)
+    # update definition of the latest generation in the databasefco
+    update_db_definition(definition)
 
     # load latest generation from database into objects
     Pt = get_population_from_database(current_generation)
     id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
-    pop_size=len(Pt)
 
-    ## RESTARTING EACH TIME
-    #Pt, id = init_population(pop_size)
+    mutation_ratio = mutation_rate
 
     adjacency_def = get_adjacency_definition(Pt[0]) #Gets a list of adjacency requirements
     individual_group_def = get_group_definition(user_groups)
-    #user_base_aspect_dict = map_user_selection(user_selections_obj,user_selections_rooms)
     evaluate_pop(Pt,adjacency_def, individual_group_def, edges_of_user_groups)
     #user_base_aspect_dict = map_user_selection(user_selections_obj,user_selections_rooms)
     dominance(Pt,user_groups)
     pareto_score(Pt)
     crowding(Pt)
-    mutation_ratio = 0.01
-    # plt.figure()
-    # x=[]
-    # y=[]
-    # gen_list=[]
+
 
     for n in range(generations):
         print('Generation: ', current_generation+n)
@@ -866,7 +866,7 @@ def generate(generations, user_groups, edges_of_user_groups):
         pareto_score(Rt)
         crowding(Rt)
         Pt = selection(pop_size,Rt)
-        #x,y,gen_list = prepare_plot(Pt,n,x,y,gen_list)
+
     #show_plot()
     save_population_to_database(Pt,generations+current_generation)
     # print("Run a total of ", (generations+current_generation), ' generations')
@@ -946,6 +946,7 @@ def select_objects_for_render(population,selections):
                 break
 
     print('/////////')
+    weighted_ranking(population,[10,5,3,5,3,5,0])
     sorted_rank = sorted(population, key=lambda x: (x.weighted_sum_score))
     #sorted_rank = sorted(population, key=lambda x: (x.flack_rank_sum))
     dir_pop = list(sorted_rank[0].dir_list)
