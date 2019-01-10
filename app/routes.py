@@ -55,8 +55,8 @@ def floor_plan():
 def get_floorplans():
     global latest_definition
     pop_size = 50
-    generations = 50
-    mutation_rate = 0.02
+    generations = 100
+    mutation_rate = 0.05
 
     mode = request.form['mode']
     user_groups = json.loads(request.form['user_groups'])
