@@ -73,8 +73,8 @@ def get_floorplans():
     if mode == 'restart':
         print("restarting")
         #Pt = initial_generate_flack(pop_size, generations, mutation_rate, definition)
-        Pt = initial_generate_weighted(pop_size, 50, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
-        #Pt = initial_generate(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups)
+        #Pt = initial_generate_weighted(pop_size, 50, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
+        Pt = initial_generate(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups)
 
 
     else:

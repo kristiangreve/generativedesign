@@ -305,13 +305,21 @@ def dominance(population,selections):
             #What if adjacency and interactive score are similar? Then i gets favored while in fact solutions are equally good.
                 #Adjacency score: #of broken adjecencies , the lower the better
             if (population[i].adjacency_score <= population[j].adjacency_score)\
-            and (population[i].dims_score < population[j].dims_score)\
-            and (population[i].flow_score < population[j].flow_score):
+            and (population[i].aspect_ratio_score <= population[j].aspect_ratio_score)\
+            and (population[i].access_score <= population[j].access_score)\
+            and (population[i].dims_score <= population[j].dims_score)\
+            and (population[i].transit_connections_score <= population[j].transit_connections_score):
+            #and (population[i].dims_score < population[j].dims_score)\
+            #and (population[i].flow_score < population[j].flow_score):
                 population[i].dominates_these.append(population[j])
                 population[j].dominated_count += 1
             elif (population[i].adjacency_score >= population[j].adjacency_score)\
-            and (population[i].dims_score > population[j].dims_score)\
-            and (population[i].flow_score > population[j].flow_score):
+            and (population[i].aspect_ratio_score >= population[j].aspect_ratio_score)\
+            and (population[i].dims_score >= population[j].dims_score)\
+            and (population[i].access_score >= population[j].access_score)\
+            and (population[i].transit_connections_score >= population[j].transit_connections_score):
+            #and (population[i].dims_score > population[j].dims_score)\
+            #and (population[i].flow_score > population[j].flow_score):
                 population[j].dominates_these.append(population[i])
                 population[i].dominated_count += 1
 
@@ -386,17 +394,17 @@ def crowding(population):
 
 
 def comparison(obj1,obj2): # Compares 2 individuals on pareto front, followed by crowding
-    if obj1.pareto == obj2.pareto: #if equal rank, look at distance
+    if obj1.dims_score == obj2.dims_score: #if equal rank, look at distance
         #if obj1.crowding_score>obj2.crowding_score:
-        if obj1.dims_score < obj2.dims_score: #Criteria1: Dims score
+        if obj1.pareto < obj2.pareto: #Criteria1: Dims score
             return obj1
-        elif obj2.dims_score > obj2.dims_score:
+        elif obj2.pareto > obj2.pareto:
             return obj2
         elif obj1.crowding_score>obj2.crowding_score: #if aspect base score is not calculatet - requires user input
             return obj1
         else:
             return obj2
-    elif obj1.pareto < obj2.pareto:
+    elif obj1.dims_score < obj2.dims_score:
         return obj1
     else:
         return obj2
@@ -536,6 +544,7 @@ def selection(pop_size, population):
         else:
             if pareto_counter ==1:
                 print('Pareto1>len:', len(pareto_dict[pareto_counter]))
+
             #sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: (x.dims_score, -x.crowding_score), reverse=False)
             sorted_pareto = sorted(pareto_dict[pareto_counter], key=lambda x: (-x.crowding_score), reverse=False)
             for obj in sorted_pareto:
