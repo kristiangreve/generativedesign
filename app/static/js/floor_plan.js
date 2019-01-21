@@ -66,7 +66,7 @@ function change_transit_of_department(group,department) {
 		if (response == 0){
 			var border = 1
 		}else{
-			var border = 3
+			var border = 0
 		}
 		node_dict = {id: department, label: department, group: group.name, borderWidth: border};
 		group.nodes[index] = node_dict
@@ -88,11 +88,11 @@ function update_group(group_name,room){
 	};
 	groups[gr_index].nodes = [];
 	groups[gr_index].rooms.forEach(function(room){
-		// if it is a transit element, add a thick border
+		// if it is a transit element, remove border
 		if (room.transit == 0){
 			var border = 1
 		}else{
-			var border = 3
+			var border = 0
 		}
 		node_dict = {id: room.name, label: room.name, group: groups[gr_index].name, borderWidth: border};
 		groups[gr_index].nodes.push(node_dict);
@@ -206,7 +206,7 @@ function add_group_card(group_name) {
 	newRow.setAttribute('class', 'row');
 	newRow.setAttribute('name', group_name);
 	var newCol = document.createElement("div");
-	newCol.setAttribute('class', 'col-md-12');
+	newCol.setAttribute('class', 'col-md-6');
 	var newCard = document.createElement("div");
 	newCard.setAttribute('class', 'card');
 	var newCardBody = document.createElement("div");
@@ -239,7 +239,7 @@ function init_group_adjacents(group){
 		if (room.transit == 0){
 			var border = 1
 		}else{
-			var border = 3
+			var border = 0
 		}
 		node_dict = {id: room.name, label: room.name, group: group.name, borderWidth: border};
 		group.nodes.push(node_dict);
