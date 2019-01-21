@@ -969,7 +969,7 @@ def select_objects_for_render(population,selections):
         print(' Dims: ', obj.dims_score, 'Adj: ', obj.adjacency_score, 'Aspect: ', round(obj.aspect_ratio_score,2))
 
     return [object_to_visuals(sorted_rank[0])]
-    #return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1]),object_to_visuals(selection_list[2]),object_to_visuals(selection_list[3])]
+    #return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1])]
     #selection_list = [object_to_visuals(x) for x in selection_list]
     #return selection_list
 
