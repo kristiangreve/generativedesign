@@ -56,7 +56,7 @@ def get_floorplans():
     global latest_definition
     pop_size = 50
     generations = 200
-    mutation_rate = 0.03
+    mutation_rate = 0.05
 
     mode = request.form['mode']
     user_groups = json.loads(request.form['user_groups'])
@@ -64,7 +64,8 @@ def get_floorplans():
 
 
     #[Dims,Access,Transit,Adjacency,Group Adj, Aspect ratio, Crowding]
-    weights = [5,5,3,5,3,10,0]
+    #weights = [10,5,3,5,2,5,0]
+    weights = [1,1,1,1,1,1,0]
 
     definition = update_definition(user_groups)
     #print("definition: ", definition)
@@ -73,21 +74,21 @@ def get_floorplans():
     if mode == 'restart':
         print("restarting")
         #Pt = initial_generate_flack(pop_size, generations, mutation_rate, definition)
-        Pt = initial_generate_weighted(pop_size, 50, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
-        #Pt = initial_generate(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups)
+        #Pt = initial_generate_weighted(pop_size, 50, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
+        Pt = initial_generate(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
 
 
     else:
         if latest_definition == definition:
             print("defintion did not change")
             #Pt = generate_flack(pop_size, generations, mutation_rate, definition, user_groups, edges_of_user_groups)
-            Pt = generate_weighted(pop_size, generations, mutation_rate, definition, user_groups, edges_of_user_groups,weights)
-            #Pt = generate(pop_size, generations, mutation_rate, definition, user_groups, edges_of_user_groups)
+            #Pt = generate_weighted(pop_size, generations, mutation_rate, definition, user_groups, edges_of_user_groups,weights)
+            Pt = generate(pop_size, generations, mutation_rate, definition, user_groups, edges_of_user_groups,weights)
         else:
             print("defintion changed")
             #Pt = initial_generate_flack(pop_size, generations, mutation_rate, definition)
-            Pt = initial_generate_weighted(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
-            #Pt = initial_generate(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups)
+            #Pt = initial_generate_weighted(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
+            Pt = initial_generate(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
 
     # updating the most recent definition
 
