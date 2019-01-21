@@ -55,7 +55,7 @@ def floor_plan():
 def get_floorplans():
     global latest_definition
     pop_size = 50
-    generations = 50
+    generations = 200
     mutation_rate = 0.03
 
     mode = request.form['mode']

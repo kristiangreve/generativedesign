@@ -68,7 +68,13 @@ class individual:
         for room in self.aspect_base.keys():
             if self.aspect_base[room][0] < 0.5: #Only penalize rooms w. aspect of more than 2 (ratio format = min size / max size)
                 if not room.startswith('Commonspace'): #Don't penatalize commonspaces, they only need to live up to min dimension criteria
-                    aspect_ratio_score += ((0.5-self.aspect_base[room][0])*(0.5-self.aspect_base[room][0]))*4 #squared aspect to penal outliers more, score from 0-1 pr. room.
+                    aspect_ratio_score += ((0.5-self.aspect_base[room][0])*(0.5-self.aspect_base[room][0]))*4 #squared aspect to penal outliers more, score from 0-1 pr. room
+                else: #If common space
+                    for dims in self.aspect_base[room][2]:
+                        if dims < 2: #Only penitalize if dim less than min req.
+                            aspect_ratio_score += ((0.5-self.aspect_base[room][0])*(0.5-self.aspect_base[room][0]))*4 #squared aspect to penal outliers more, score from 0-1 pr. room
+
+                    #aspect_ratio_score += ((0.5-self.aspect_base[room][0])*(0.5-self.aspect_base[room][0]))*4 #squared aspect to penal outliers more, score from 0-1 pr. room
         #for room in ideal_aspect.keys():
         #    aspect_score += abs(self.aspect_base[room][0]-ideal_aspect[room])
         self.aspect_ratio_score = aspect_ratio_score
@@ -647,26 +653,38 @@ def initial_generate_weighted(pop_size,generations,mutation,definition,user_grou
     adjacency_def = get_adjacency_definition(Pt[0]) #Gets a list of adjacency requirements
     individual_group_def = get_group_definition(user_groups)
     evaluate_pop(Pt,adjacency_def, individual_group_def, edges_of_user_groups)
+    normalized_sum(Pt)
+    weighted_ranking(Pt,weights)
+
     save_population_to_database(Pt,0)
 
+    best_individual = sorted(Pt, key=lambda x: x.weighted_sum_score)[0]
     min_dict_list = []
-    min_dict_list.append(normalized_sum(Pt))
-    weighted_ranking(Pt,weights)
+    min_dict_list.append(get_stats(best_individual))
+
 
     mutation_ratio = mutation
     gen_list=[0]
     start_time = time.time()
     print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation_ratio)
-    for n in range(generations):
+
+    n = 1
+
+    #Only display solution if best solution have alla dj requirement, doesnt break any dims and have access to all rooms, or the max # of generations have reached
+    while (best_individual.adjacency_score != 0 or best_individual.dims_score != 0 or best_individual.access_score != 0 or best_individual.transit_connections_score != 0) and n < generations:
         print('Generation: ', n )
         Qt,id = weighted_breeding(Pt, id, mutation_ratio)
         mutate(Qt, mutation_ratio)
         evaluate_pop(Qt,adjacency_def, individual_group_def, edges_of_user_groups)
         Rt = Pt + Qt
-        min_dict_list.append(normalized_sum(Rt))
+        normalized_sum(Rt)
         weighted_ranking(Rt,weights)
         Pt = weighted_selection(pop_size,Rt)
+
+        best_individual = sorted(Pt, key=lambda x: x.weighted_sum_score)[0]
+        min_dict_list.append(get_stats(best_individual))
         gen_list.append(n)
+        n += 1
     end_time = time.time()
     time_ellapsed = end_time-start_time
     save_population_to_database(Pt,generations)
@@ -720,6 +738,13 @@ def initial_generate(pop_size,generations,mutation,definition,user_groups, edges
 
     return Pt
 
+def get_stats(individual):
+    min_dict = {}
+    attributes_to_score = ['dims_score','adjacency_score','aspect_ratio_score','access_score','transit_connections_score', 'group_adj_score', 'crowding_score']
+    for attribute in attributes_to_score:
+        if getattr(individual,attribute) != None:
+            min_dict[attribute] = getattr(individual,attribute)
+    return min_dict
 
 
 def plot_best_of(min_dict_list,gen_list,stringlabel,stringshort):
@@ -785,7 +810,11 @@ def generate_weighted(pop_size, generations, mutation, definition, user_groups, 
     gen_list = [0]
     start_time = time.time()
     print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation_ratio)
-    for n in range(generations):
+
+    n = 1
+    best_individual = sorted(Pt, key=lambda x: x.weighted_sum_score)[0]
+    #Only display solution if best solution have alla dj requirement, doesnt break any dims and have access to all rooms, or the max # of generations have reached
+    while (best_individual.adjacency_score != 0 or best_individual.dims_score != 0 or best_individual.access_score != 0 or best_individual.transit_connections_score != 0) and n < generations:
         print('Generation: ', n )
         Qt,id = weighted_breeding(Pt, id, mutation_ratio)
         mutate(Qt, mutation_ratio)
@@ -794,7 +823,9 @@ def generate_weighted(pop_size, generations, mutation, definition, user_groups, 
         min_dict_list.append(normalized_sum(Rt))
         weighted_ranking(Rt,weights)
         Pt = weighted_selection(pop_size,Rt)
+        best_individual = sorted(Pt, key=lambda x: x.weighted_sum_score)[0]
         gen_list.append(n)
+        n += 1
     save_population_to_database(Pt,current_generation+generations)
     end_time = time.time()
     time_ellapsed = end_time-start_time
@@ -955,7 +986,7 @@ def select_objects_for_render(population,selections):
                 break
 
     print('/////////')
-    weighted_ranking(population,[10,5,3,5,3,5,0])
+    weighted_ranking(population, [5,5,3,5,3,10,0])
     sorted_rank = sorted(population, key=lambda x: (x.weighted_sum_score))
     #sorted_rank = sorted(population, key=lambda x: (x.flack_rank_sum))
     dir_pop = list(sorted_rank[0].dir_list)
