@@ -74,7 +74,9 @@ def get_floorplans():
     if mode == 'restart':
         print("restarting")
         #Pt = initial_generate_flack(pop_size, generations, mutation_rate, definition)
-        Pt = initial_generate_weighted(pop_size, 50, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
+        Pt = initial_generate_weighted(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
+        #if temp_Pt != None:
+        #    Pt = temp_Pt
         #Pt = initial_generate(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
 
 
@@ -88,13 +90,14 @@ def get_floorplans():
             print("defintion changed")
             #Pt = initial_generate_flack(pop_size, generations, mutation_rate, definition)
             Pt = initial_generate_weighted(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
+            #if temp_Pt != None:
+            #    Pt = temp_Pt
             #Pt = initial_generate(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
 
     # updating the most recent definition
-
     latest_definition = definition
 
-    return jsonify(select_objects_for_render(Pt, []))
+    return jsonify(select_objects_for_render(Pt))
 
 @app.route('/change_transit_of_department', methods = ['GET','POST'])
 @login_required

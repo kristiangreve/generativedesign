@@ -14,6 +14,7 @@ import numpy as numpy
 from random import gauss
 from operator import attrgetter
 from statistics import mean
+import copy
 
 class individual:
     def __init__(self, definition, room_def, split_list, dir_list, room_order, min_opening):
@@ -503,7 +504,7 @@ def flack_breeding(population, id, mutation_rate):
             children.append(child2)
     return children, id
 
-def weighted_breeding(population, id, mutation_rate):
+def weighted_breeding(population, id):
     # get highest id from database
     id = id
     children = []
@@ -624,14 +625,14 @@ def initial_generate_flack(pop_size,generations,mutation,definition):
     flack_ranking(Pt)
     min_dict_list.append(normalized_sum(Pt))
 
-    mutation_ratio = mutation
+    mutation = mutation
     gen_list=[0]
     start_time = time.time()
-    print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation_ratio)
+    print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation)
     for n in range(generations):
         print('Generation: ', n )
-        Qt,id = flack_breeding(Pt, id, mutation_ratio)
-        mutate(Qt, mutation_ratio)
+        Qt,id = flack_breeding(Pt, id, mutation)
+        mutate(Qt, mutation)
         evaluate_pop(Qt,adjacency_def,[], [])
         Rt = Pt + Qt
         flack_ranking(Rt)
@@ -641,14 +642,18 @@ def initial_generate_flack(pop_size,generations,mutation,definition):
     end_time = time.time()
     time_ellapsed = end_time-start_time
     save_population_to_database(Pt,generations)
-    # stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2)) #+' weights:'+str(weights)
-    # stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
+    # stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation*100)+' runtime:'+str(round(time_ellapsed,2)) #+' weights:'+str(weights)
+    # stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation)+'_'
     # plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
     # plt.close('all')
     return Pt
 
+backup_Pt = []
+
+
 def initial_generate_weighted(pop_size,generations,mutation,definition,user_groups, edges_of_user_groups,weights):
     # delete all existing instances from database
+
     db.session.query(Plan).delete()
     db.session.commit()
     Pt, id = init_population(pop_size,definition)
@@ -658,25 +663,30 @@ def initial_generate_weighted(pop_size,generations,mutation,definition,user_grou
     normalized_sum(Pt)
     weighted_ranking(Pt,weights)
 
-    save_population_to_database(Pt,0)
+    save_population_to_database(Pt,0) #hvorfor gemmer vi dem her?
 
-    best_individual = sorted(Pt, key=lambda x: x.weighted_sum_score)[0]
     min_dict_list = []
+    best_individual = sorted(Pt, key=lambda x: x.weighted_sum_score)[0]
     min_dict_list.append(get_stats(best_individual))
 
 
-    mutation_ratio = mutation
     gen_list=[0]
+
     start_time = time.time()
-    print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation_ratio)
+    print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation)
+
+    global backup_Pt
 
     n = 1
-
+    n_last_reset = 0
     #Only display solution if best solution have alla dj requirement, doesnt break any dims and have access to all rooms, or the max # of generations have reached
-    while (best_individual.adjacency_score != 0 or best_individual.dims_score != 0 or best_individual.access_score != 0 or best_individual.transit_connections_score != 0 or best_individual.group_adj_score != 0) and n < generations:
-        print('Generation: ', n )
-        Qt,id = weighted_breeding(Pt, id, mutation_ratio)
-        mutate(Qt, mutation_ratio)
+    while (best_individual.adjacency_score != 0 or best_individual.dims_score != 0 \
+    or best_individual.access_score != 0 or best_individual.transit_connections_score != 0 \
+    or best_individual.group_adj_score != 0) and n < generations:
+        print('Generation: ', n)
+
+        Qt,id = weighted_breeding(Pt, id)
+        mutate(Qt, mutation)
         evaluate_pop(Qt,adjacency_def, individual_group_def, edges_of_user_groups)
         Rt = Pt + Qt
         normalized_sum(Rt)
@@ -685,24 +695,59 @@ def initial_generate_weighted(pop_size,generations,mutation,definition,user_grou
 
         best_individual = sorted(Pt, key=lambda x: x.weighted_sum_score)[0]
         min_dict_list.append(get_stats(best_individual))
-        #if n>30:
-        #    last_25 = min_dict_list[-25:]
-        #    print('min dict: ', min_dict_list)
-        #    print('last 25: ', last_25)
-#
-#            if sum(last_25['weighted_sum_score'])/25.0 < 0.1:
-#                print('Restart at n: ', n)
-#                initial_generate_weighted(pop_size,(generations-n),mutation,definition,user_groups, edges_of_user_groups,weights)
         gen_list.append(n)
+
         n += 1
+        n_last_reset += 1
+
+        #////// Reset population
+        # if n_last_reset>40 and n<(generations-50):
+        #     if is_algo_stuck(min_dict_list,40,1) == True:
+        #
+        #         if len(backup_Pt)>0: #If a Pt is allready saved, Only overwrite if recent Pt is better performing than saved Pt
+        #             if sorted(Pt, key=lambda x: x.weighted_sum_score)[0].weighted_sum_score < sorted(backup_Pt, key=lambda x: x.weighted_sum_score)[0].weighted_sum_score:
+        #                 backup_Pt = copy.deepcopy(Pt)
+        #         else: #If no Pt is saved, save current
+        #             backup_Pt = copy.deepcopy(Pt)
+        #
+        #         n_last_reset = 0
+        #         Pt, id = init_population(pop_size,definition)
+        #         evaluate_pop(Pt,adjacency_def, individual_group_def, edges_of_user_groups)
+        #         normalized_sum(Pt)
+        #         weighted_ranking(Pt,weights)
+
+        #////// Increase mutation
+        # if n>40:
+        #     if is_algo_stuck(min_dict_list,40,1) == True:
+        #         if mutation != 0.4:
+        #             mutation = 0.4
+        #             print('Mutation changed to 40%')
+        #     else:
+        #         if mutation != 0.05:
+        #             mutation = 0.05
+        #             print('Mutation changed to 5%')
+
     end_time = time.time()
     time_ellapsed = end_time-start_time
-    save_population_to_database(Pt,generations)
-    stringlabel = 'Pop size:'+str(pop_size)+' max gen: '+str(generations)+ ' #gen: '+str(n)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))+' weights:'+str(weights)
-    stringshort = 'P_weight'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
+
+    #/// Needed if RESET population implemented
+    # if len(backup_Pt)>0: #If a Pt is saved, check which is best performing
+    #     if sorted(Pt, key=lambda x: x.weighted_sum_score)[0].weighted_sum_score > sorted(backup_Pt, key=lambda x: x.weighted_sum_score)[0].weighted_sum_score:
+    #         print('Pt reverted')
+    #         Pt = backup_Pt
+
+    save_population_to_database(Pt,gen_list[-1])
+    stringlabel = 'Pop size:'+str(pop_size)+' max gen: '+str(generations)+ ' #gen: '+str(n)+' mutation (%): '+str(mutation*100)+' runtime:'+str(round(time_ellapsed,2))+' weights:'+str(weights)
+    stringshort = 'P_weight'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation)+'_'
     plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
     plt.close('all')
+
+    min_dict_list = [] #reset min_dict
+    backup_Pt = [] #reset Pt
+    gen_list=[0]
     return Pt
+
+
 
 def initial_generate(pop_size,generations,mutation,definition,user_groups, edges_of_user_groups,weights):
     # delete all existing instances from database
@@ -721,7 +766,6 @@ def initial_generate(pop_size,generations,mutation,definition,user_groups, edges
     dominance(Pt,user_groups)
     pareto_score(Pt)
     crowding(Pt)
-    mutation_ratio = mutation
 
     best_individual = sorted(Pt, key=lambda x: x.weighted_sum_score)[0]
     min_dict_list = []
@@ -729,14 +773,14 @@ def initial_generate(pop_size,generations,mutation,definition,user_groups, edges
 
     gen_list=[0]
     start_time = time.time()
-    print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation_ratio)
+    print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation)
     n = 1
 
     #Only display solution if best solution have alla dj requirement, doesnt break any dims and have access to all rooms, or the max # of generations have reached
     while (best_individual.adjacency_score != 0 or best_individual.dims_score != 0 or best_individual.access_score != 0 or best_individual.transit_connections_score != 0 or best_individual.group_adj_score != 0) and n < generations:
         print('Generation: ', n )
-        Qt,id = breeding(Pt, id, mutation_ratio)
-        mutate(Qt, mutation_ratio)
+        Qt,id = breeding(Pt, id, mutation)
+        mutate(Qt, mutation)
         evaluate_pop(Qt,adjacency_def, individual_group_def, edges_of_user_groups)
         Rt = Pt + Qt
 
@@ -755,8 +799,8 @@ def initial_generate(pop_size,generations,mutation,definition,user_groups, edges
     end_time = time.time()
     time_ellapsed = end_time-start_time
     save_population_to_database(Pt,generations)
-    stringlabel = 'Pop size:'+str(pop_size)+' max gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))+ '#gen: '+str(n)
-    stringshort = 'pareto_P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
+    stringlabel = 'Pop size:'+str(pop_size)+' max gen: '+str(generations)+' mutation (%): '+str(mutation*100)+' runtime:'+str(round(time_ellapsed,2))+ '#gen: '+str(n)
+    stringshort = 'pareto_P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation)+'_'
     plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
     plt.close('all')
 
@@ -769,6 +813,17 @@ def get_stats(individual):
         if getattr(individual,attribute) != None:
             min_dict[attribute] = getattr(individual,attribute)
     return min_dict
+
+def is_algo_stuck(min_dict,window, threshold):
+    gradient = min_dict[-window]['weighted_sum_score'] - min_dict[-1]['weighted_sum_score']
+    #average = np.mean(individual.weighted_sum_score for individual in filter)
+    print('gradient: ', gradient)
+    if gradient < threshold:
+        print('THRESHOLD:', gradient)
+        return True
+    else:
+        return False
+
 
 
 def plot_best_of(min_dict_list,gen_list,stringlabel,stringshort):
@@ -821,7 +876,7 @@ def generate_weighted(pop_size, generations, mutation, definition, user_groups, 
     # db.session.query(Plan).delete()
     # db.session.commit()
 
-    mutation_ratio = mutation
+    mutation = mutation
 
     # Pt, id = init_population(pop_size,definition)
     adjacency_def = get_adjacency_definition(Pt[0]) #Gets a list of adjacency requirements
@@ -833,15 +888,15 @@ def generate_weighted(pop_size, generations, mutation, definition, user_groups, 
     weighted_ranking(Pt,weights)
     gen_list = [0]
     start_time = time.time()
-    print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation_ratio)
+    print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation)
 
     n = 1
     best_individual = sorted(Pt, key=lambda x: x.weighted_sum_score)[0]
     #Only display solution if best solution have alla dj requirement, doesnt break any dims and have access to all rooms, or the max # of generations have reached
     while (best_individual.adjacency_score != 0 or best_individual.dims_score != 0 or best_individual.access_score != 0 or best_individual.transit_connections_score != 0 or best_individual.group_adj_score != 0) and n < generations:
         print('Generation: ', n )
-        Qt,id = weighted_breeding(Pt, id, mutation_ratio)
-        mutate(Qt, mutation_ratio)
+        Qt,id = weighted_breeding(Pt, id)
+        mutate(Qt, mutation)
         evaluate_pop(Qt,adjacency_def,individual_group_def, edges_of_user_groups)
         Rt = Pt + Qt
         min_dict_list.append(normalized_sum(Rt))
@@ -853,8 +908,8 @@ def generate_weighted(pop_size, generations, mutation, definition, user_groups, 
     save_population_to_database(Pt,current_generation+generations)
     end_time = time.time()
     time_ellapsed = end_time-start_time
-    # stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))
-    # stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
+    # stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation*100)+' runtime:'+str(round(time_ellapsed,2))
+    # stringshort = 'P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation)+'_'
     # plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
     # plt.close('all')
     return Pt
@@ -874,7 +929,7 @@ def generate_flack(pop_size, generations, mutation, definition, user_groups, edg
     # db.session.query(Plan).delete()
     # db.session.commit()
 
-    mutation_ratio = mutation
+    mutation = mutation
 
     # Pt, id = init_population(pop_size,definition)
     adjacency_def = get_adjacency_definition(Pt[0]) #Gets a list of adjacency requirements
@@ -886,8 +941,8 @@ def generate_flack(pop_size, generations, mutation, definition, user_groups, edg
 
     for n in range(generations):
         print('Generation: ', n )
-        Qt,id = flack_breeding(Pt, id, mutation_ratio)
-        mutate(Qt, mutation_ratio)
+        Qt,id = flack_breeding(Pt, id, mutation)
+        mutate(Qt, mutation)
         evaluate_pop(Qt,adjacency_def,individual_group_def, edges_of_user_groups)
         Rt = Pt + Qt
         flack_ranking(Rt)
@@ -909,7 +964,7 @@ def generate(pop_size, generations, mutation_rate, definition, user_groups, edge
     Pt = get_population_from_database(current_generation)
     id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
 
-    mutation_ratio = mutation_rate
+    mutation = mutation_rate
 
     adjacency_def = get_adjacency_definition(Pt[0]) #Gets a list of adjacency requirements
     individual_group_def = get_group_definition(user_groups)
@@ -922,8 +977,8 @@ def generate(pop_size, generations, mutation_rate, definition, user_groups, edge
 
     for n in range(generations):
         print('Generation: ', current_generation+n)
-        Qt, id = breeding(Pt,id, mutation_ratio)
-        mutate(Qt, mutation_ratio)
+        Qt, id = breeding(Pt,id, mutation)
+        mutate(Qt, mutation)
         evaluate_pop(Qt,adjacency_def,individual_group_def, edges_of_user_groups)
         Rt = Pt + Qt
         dominance(Rt,user_groups)
@@ -973,49 +1028,14 @@ def random_design(definition):
     min_opening = 1
     return room_def, split_list, dir_list, room_order, min_opening
 
-def select_objects_for_render(population,selections):
-    pareto_dict = defaultdict(list)
-    adj_counter = 0
-
-    for individual in population: #Only add objects that are NOT similar to the previously selected
-        if individual.plan_id not in [ind.plan_id for sublist in selections for ind in sublist]:
-            pareto_dict[individual.pareto].append(individual)
-            if individual.adjacency_score == 0:
-                adj_counter += 1
-
-    selection_list = []
-    while len(selection_list)<1:
-        for pareto_front in sorted(pareto_dict.keys()):
-            if len(selection_list) == 0:
-            #Best adjacency of which is most similar to dir/split/ordder of user selction
-                adjacency_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.dims_score, x.flow_score, x.adjacency_score, x.aspect_ratio_score), reverse=False)
-                selection_list.append(adjacency_sorted[0])
-
-
-            if len(selection_list)==1:
-                #Most similar dir/split/room_order
-                interactive_sorted = sorted(pareto_dict[pareto_front], key=lambda x: (x.dims_score, x.flow_score, x.adjacency_score, x.aspect_ratio_score), reverse=False)
-                for obj in interactive_sorted:
-                    if len(selection_list)==1:
-                        if obj not in selection_list:
-                            selection_list.append(obj)
-
-                ############## show last selected
-                #if len(selections)>0:
-                #    selection_list.append(selections[-1])
-                #else:
-                #    selection_list.append(selection_list[2])
-
-            if len(selection_list)==2:
-                break
-
+def select_objects_for_render(population):
     print('/////////')
-    weighted_ranking(population, [10,5,3,5,2,5,0])
+    #weighted_ranking(population, [10,5,3,5,2,5,0])
     #weighted_ranking(population, [1,1,1,1,1,1,0])
     sorted_rank = sorted(population, key=lambda x: (x.weighted_sum_score))
     #sorted_rank = sorted(population, key=lambda x: (x.flack_rank_sum))
-    dir_pop = list(sorted_rank[0].dir_list)
-    get_layout(sorted_rank[0].definition, sorted_rank[0].room_def, sorted_rank[0].split_list, dir_pop, sorted_rank[0].room_order, sorted_rank[0].min_opening)
+    #dir_pop = list(sorted_rank[0].dir_list)
+    #get_layout(sorted_rank[0].definition, sorted_rank[0].room_def, sorted_rank[0].split_list, dir_pop, sorted_rank[0].room_order, sorted_rank[0].min_opening)
 
     #adjacency_definition = get_adjacency_definition(selection_list[0]) #Gets a list of adjacency requirements
     #selection_list[0].evaluate_access_score(adjacency_definition)
