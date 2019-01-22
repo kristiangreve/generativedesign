@@ -698,7 +698,7 @@ def initial_generate_weighted(pop_size,generations,mutation,definition,user_grou
     end_time = time.time()
     time_ellapsed = end_time-start_time
     save_population_to_database(Pt,generations)
-    stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))+' weights:'+str(weights)
+    stringlabel = 'Pop size:'+str(pop_size)+' max gen: '+str(generations)+ ' #gen: '+str(n)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))+' weights:'+str(weights)
     stringshort = 'P_weight'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
     plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
     plt.close('all')
@@ -755,7 +755,7 @@ def initial_generate(pop_size,generations,mutation,definition,user_groups, edges
     end_time = time.time()
     time_ellapsed = end_time-start_time
     save_population_to_database(Pt,generations)
-    stringlabel = 'Pop size:'+str(pop_size)+' #of gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))
+    stringlabel = 'Pop size:'+str(pop_size)+' max gen: '+str(generations)+' mutation (%): '+str(mutation_ratio*100)+' runtime:'+str(round(time_ellapsed,2))+ '#gen: '+str(n)
     stringshort = 'pareto_P'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation_ratio)+'_'
     plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
     plt.close('all')
@@ -1010,8 +1010,8 @@ def select_objects_for_render(population,selections):
                 break
 
     print('/////////')
-    #weighted_ranking(population, [10,5,3,5,2,5,0])
-    weighted_ranking(population, [1,1,1,1,1,1,0])
+    weighted_ranking(population, [10,5,3,5,2,5,0])
+    #weighted_ranking(population, [1,1,1,1,1,1,0])
     sorted_rank = sorted(population, key=lambda x: (x.weighted_sum_score))
     #sorted_rank = sorted(population, key=lambda x: (x.flack_rank_sum))
     dir_pop = list(sorted_rank[0].dir_list)
