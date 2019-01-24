@@ -45,7 +45,7 @@ def index():
     return render_template('index.html', title='Company information', form=form)
 
 
-@app.route('/floor_plan', methods=['GET', 'POST'])
+@app.route('/floor_plan', methods=['GET','POST'])
 @login_required
 def floor_plan():
     return render_template('floor_plan.html')
@@ -100,6 +100,8 @@ def get_floorplans():
 
     return jsonify(select_objects_for_render(Pt))
 
+
+
 @app.route('/change_transit_of_department', methods = ['GET','POST'])
 @login_required
 def change_transit_of_department():
@@ -116,14 +118,11 @@ def change_transit_of_department():
     db.session.commit()
     return jsonify(transit)
 
-
-
-
 @app.route('/departments', methods=['GET', 'POST'])
 @login_required
 def departments():
-    number_of_employees = current_user.number_of_employees
 
+    number_of_employees = current_user.number_of_employees
     number_of_bathrooms = 0
 
     # add one bathroom per 10 employees, if 11, 2 is added.
@@ -331,11 +330,11 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
+        user = User(username=form.username.data)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Congratulations, you are now a registered user!')
+        flash('Congratulations, your company is now registred')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 

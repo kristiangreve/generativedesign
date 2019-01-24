@@ -51,15 +51,17 @@
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">Suggested floor plan</h5>
-            <canvas class="floor_canvas" id="canvas_1" width="300" height="200"></canvas>
-            <div class="loader"></div>
-	    <button id="generate_button" class="btn btn-primary">Generate new
-layout</button>
-            <button id="add_favourite_button" class="btn btn-primary">Add to favourites</button>
+            <canvas class="floor_canvas" id="canvas_1" width="300" height="150"></canvas>
+              <div class="loader"></div>
+              <button id="generate_button" class="btn btn-primary">Generate floor plan</button>
+              <button id="add_favourite_button" class="btn btn-primary">Add to favourites</button>
           </div>
         </div>
       </div>
     </div>
+    <p></p>
+    <div id = "primary_alert" class="alert alert-primary" role="alert"></div>
+    <div id = "alert_danger" class="alert alert-danger" role="alert"></div>
     <p></p>
     <div class="row">
       <div class="col-md-6">
@@ -120,9 +122,9 @@ layout</button>
         <div class="card">
           <div class="card-body">
             <div class="row">
-              <div class="col-md-1"><svg width="40" height="40"><circle cx="20" cy="20" r="16" stroke="black" stroke-width="3" fill="lightgrey" /></svg></div>
+              <div class="col-md-1"><svg width="40" height="40"><circle cx="20" cy="20" r="16" stroke="black" stroke-width="0" fill="lightgrey" /></svg></div>
               <div class="col-md-3">Open room (double click to make closed)</div>
-              <div class="col-md-1"><svg width="40" height="40"><circle cx="20" cy="20" r="16" stroke="black" stroke-width="1" fill="lightgrey" /></svg></div>
+              <div class="col-md-1"><svg width="40" height="40"><circle cx="20" cy="20" r="16" stroke="black" stroke-width="2" fill="lightgrey" /></svg></div>
               <div class="col-md-3">Closed room (double click to make open)</div>
               <div class="col-md-1"><svg width="40" height="40"><line x1="0" y1="20" x2="40" y2="20" style="stroke:rgb(0,0,0);stroke-width:1" /></svg></div>
               <div class="col-md-3">Link (click on link to remove, click on two rooms to add link)</div>

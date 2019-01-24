@@ -36,12 +36,14 @@ function setup_canvases(){
 };
 
 function get_floorplans(mode, user_groups, edges_of_user_groups){
+	$('.alert').hide();
 	$.post('/get_floorplans',{
 		mode: mode,
 		user_groups: JSON.stringify(user_groups),
 		edges_of_user_groups: JSON.stringify(edges_of_user_groups)
 	}).done(function(response) {
 		render_array = response;
+		console.log(render_array);
 		$('.loader').hide();
 		render_floorplans(render_array);
 	});
@@ -50,6 +52,7 @@ function get_floorplans(mode, user_groups, edges_of_user_groups){
 // button onclick handlers
 $("#generate_button").click(function(){
 	var mode = 'new';
+	$('.alert-primary').hide();
 	$('.loader').show();
 	get_floorplans(mode, groups, edges_of_groups);
 	console.log("groups", groups);
@@ -66,7 +69,7 @@ function change_transit_of_department(group,department) {
 		if (response == 0){
 			var border = 1
 		}else{
-			var border = 3
+			var border = 0
 		}
 		node_dict = {id: department, label: department, group: group.name, borderWidth: border};
 		group.nodes[index] = node_dict
@@ -88,11 +91,11 @@ function update_group(group_name,room){
 	};
 	groups[gr_index].nodes = [];
 	groups[gr_index].rooms.forEach(function(room){
-		// if it is a transit element, add a thick border
+		// if it is a transit element, remove border
 		if (room.transit == 0){
 			var border = 1
 		}else{
-			var border = 3
+			var border = 0
 		}
 		node_dict = {id: room.name, label: room.name, group: groups[gr_index].name, borderWidth: border};
 		groups[gr_index].nodes.push(node_dict);
@@ -165,6 +168,32 @@ function add_favourite_card(favourite_id) {
 $("#add_group_button").click(function(){
 	// get name from field and delete it
 	group_name = document.getElementById("name_of_group").value;
+	var index =	groups.findIndex(function(group) {
+		return (group.name == group_name)
+	});
+
+	// check for group errors
+	if (group_name.length == 0) {
+		$('.alert-danger').hide();
+		$('.alert-danger').html("Please provide a name for the group");
+		$('.alert-danger').fadeIn();
+		return;
+
+	} else if (current_group.length == 0) {
+		$('.alert-danger').hide();
+		$('.alert-danger').html("Please add at least one room to the group");
+		$('.alert-danger').fadeIn();
+		return;
+
+	} else if (index != -1){
+		$('.alert-danger').hide();
+		$('.alert-danger').html("Group name already in use");
+		$('.alert-danger').fadeIn();
+		return;
+	}
+
+	$('.alert-danger').hide();
+
 	document.getElementById("name_of_group").value = "";
 	// add a card for the group
 	add_group_card(group_name);
@@ -177,11 +206,12 @@ $("#add_group_button").click(function(){
 	});
 	update_groups_for_network(groups);
 	update_group_network(groups,edges_of_groups);
+
 	// find index of element in groups array
 	var index =	groups.findIndex(function(group) {
 		return (group.name == group_name)
 	});
-	// pass that array to the opdate network function
+	// pass that array to the update network function
 	update_network(groups[index]);
 	render_floorplans(render_array);
 	update_group_selections();
@@ -206,7 +236,7 @@ function add_group_card(group_name) {
 	newRow.setAttribute('class', 'row');
 	newRow.setAttribute('name', group_name);
 	var newCol = document.createElement("div");
-	newCol.setAttribute('class', 'col-md-12');
+	newCol.setAttribute('class', 'col-md-6');
 	var newCard = document.createElement("div");
 	newCard.setAttribute('class', 'card');
 	var newCardBody = document.createElement("div");
@@ -239,7 +269,7 @@ function init_group_adjacents(group){
 		if (room.transit == 0){
 			var border = 1
 		}else{
-			var border = 3
+			var border = 0
 		}
 		node_dict = {id: room.name, label: room.name, group: group.name, borderWidth: border};
 		group.nodes.push(node_dict);
@@ -514,6 +544,9 @@ function compare_and_add(group,element) {
 	}
 
 	function update_network(group){
+		$('.alert-primary').html("Preferences have been changed. Please update floor plan");
+		$('.alert-primary').fadeIn();
+
 		var adding = false;
 		var from_node = 0;
 		var to_node = 0;
@@ -559,6 +592,9 @@ function compare_and_add(group,element) {
 		};
 
 		function update_group_network(groups,edges_of_groups){
+			$('.alert-primary').html("Preferences have been changed. Please update floor plan");
+			$('.alert-primary').fadeIn();
+
 			var adding = false;
 			var from_node = 0;
 			var to_node = 0;
