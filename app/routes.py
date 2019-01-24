@@ -55,7 +55,8 @@ def floor_plan():
 def get_floorplans():
     global latest_definition
     pop_size = 50
-    generations = 200
+    #generations = 200
+    max_time = 30
     mutation_rate = 0.05
 
     mode = request.form['mode']
@@ -74,7 +75,7 @@ def get_floorplans():
     if mode == 'restart':
         print("restarting")
         #Pt = initial_generate_flack(pop_size, generations, mutation_rate, definition)
-        Pt = initial_generate_weighted(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
+        Pt = initial_generate_weighted(pop_size, max_time, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
         #if temp_Pt != None:
         #    Pt = temp_Pt
         #Pt = initial_generate(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
@@ -84,12 +85,12 @@ def get_floorplans():
         if latest_definition == definition:
             print("defintion did not change")
             #Pt = generate_flack(pop_size, generations, mutation_rate, definition, user_groups, edges_of_user_groups)
-            Pt = generate_weighted(pop_size, generations, mutation_rate, definition, user_groups, edges_of_user_groups,weights)
+            Pt = generate_weighted(pop_size, max_time, mutation_rate, definition, user_groups, edges_of_user_groups,weights)
             #Pt = generate(pop_size, generations, mutation_rate, definition, user_groups, edges_of_user_groups,weights)
         else:
             print("defintion changed")
             #Pt = initial_generate_flack(pop_size, generations, mutation_rate, definition)
-            Pt = initial_generate_weighted(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
+            Pt = initial_generate_weighted(pop_size, max_time, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
             #if temp_Pt != None:
             #    Pt = temp_Pt
             #Pt = initial_generate(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
