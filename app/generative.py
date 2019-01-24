@@ -865,7 +865,7 @@ def plot_best_of(min_dict_list,gen_list,stringlabel,stringshort):
     plt.close()
 
 
-def generate_weighted(pop_size, generations, mutation, definition, user_groups, edges_of_user_groups, weights):
+def generate_weighted(pop_size, max_time, mutation, definition, user_groups, edges_of_user_groups, weights):
     # query for current generation value in database
     current_generation = db.session.query(Plan).order_by(Plan.generation.desc()).first().generation
 
@@ -877,10 +877,6 @@ def generate_weighted(pop_size, generations, mutation, definition, user_groups, 
     Pt = get_population_from_database(current_generation)
     id = int(db.session.query(Plan).order_by(Plan.plan_id.desc()).first().plan_id)
 
-    # db.session.query(Plan).delete()
-    # db.session.commit()
-
-    # Pt, id = init_population(pop_size,definition)
     adjacency_def = get_adjacency_definition(Pt[0]) #Gets a list of adjacency requirements
     individual_group_def = get_group_definition(user_groups)
     evaluate_pop(Pt,adjacency_def, individual_group_def, edges_of_user_groups)
@@ -896,15 +892,19 @@ def generate_weighted(pop_size, generations, mutation, definition, user_groups, 
 
     gen_list = [0]
     start_time = time.time()
-    print('New run. Pop: ', pop_size, ' generations: ', generations, 'mutation: ', mutation)
+    time_now = time.time()
+    time_ellapsed = time_now-start_time
+    print('New run. Pop: ', pop_size, ' max_time: ', max_time, 'mutation: ', mutation)
 
+    global backup_Pt
     n = 1
+    n_last_reset = 0
 
     #Only display solution if best solution have alla dj requirement, doesnt break any dims and have access to all rooms, or the max # of generations have reached
 
     while (best_individual.adjacency_score != 0 or best_individual.dims_score != 0 \
     or best_individual.access_score != 0 or best_individual.transit_connections_score != 0 \
-    or best_individual.group_adj_score != 0) and n < generations:
+    or best_individual.group_adj_score != 0) and time_ellapsed < max_time:
         print('Generation: ', n )
         Qt,id = weighted_breeding(Pt, id)
         mutate(Qt, mutation)
@@ -919,13 +919,39 @@ def generate_weighted(pop_size, generations, mutation, definition, user_groups, 
         gen_list.append(n)
 
         n += 1
-    save_population_to_database(Pt,current_generation+generations)
-    end_time = time.time()
-    time_ellapsed = end_time-start_time
-    #stringlabel = 'Pop size:'+str(pop_size)+' max gen: '+str(generations)+ ' #gen: '+str(n)+' mutation (%): '+str(mutation*100)+' runtime:'+str(round(time_ellapsed,2))+' weights:'+str(weights)
-    #stringshort = 'P_weight'+str(pop_size)+'-G'+str(generations)+'-M'+str(mutation)+'_'
-    #plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
-    #plt.close('all')
+        n_last_reset += 1
+
+        time_now = time.time()
+        time_ellapsed = time_now-start_time
+
+        #////// Reset population
+        if n_last_reset>40 and time_ellapsed<(max_time-5):
+            if is_algo_stuck(min_dict_list,40,1) == True:
+
+                if len(backup_Pt)>0: #If a Pt is allready saved, Only overwrite if recent Pt is better performing than saved Pt
+                    if sorted(Pt, key=lambda x: x.weighted_sum_score)[0].weighted_sum_score < sorted(backup_Pt, key=lambda x: x.weighted_sum_score)[0].weighted_sum_score:
+                        backup_Pt = copy.deepcopy(Pt)
+                else: #If no Pt is saved, save current
+                    backup_Pt = copy.deepcopy(Pt)
+
+                n_last_reset = 0
+                Pt, id = init_population(pop_size,definition)
+                evaluate_pop(Pt,adjacency_def, individual_group_def, edges_of_user_groups)
+                normalized_sum(Pt)
+                weighted_ranking(Pt,weights)
+
+    #/// Needed if RESET population implemented
+    if len(backup_Pt)>0: #If a Pt is saved, check which is best performing
+        if sorted(Pt, key=lambda x: x.weighted_sum_score)[0].weighted_sum_score > sorted(backup_Pt, key=lambda x: x.weighted_sum_score)[0].weighted_sum_score:
+            print('Pt reverted')
+            Pt = backup_Pt
+
+    print('time ellapsed:', time_ellapsed)
+    save_population_to_database(Pt,current_generation+n)
+    stringlabel = 'Pop size:'+str(pop_size)+' max time: '+str(max_time)+ ' #gen: '+str(n)+' mutation (%): '+str(mutation*100)+' runtime:'+str(round(time_ellapsed,2))+' weights:'+str(weights)
+    stringshort = 'P_weight'+str(pop_size)+'-T'+str(max_time)+'-M'+str(mutation)+'_'
+    plot_best_of(min_dict_list, gen_list,stringlabel,stringshort)
+    plt.close('all')
 
     min_dict_list = [] #reset min_dict
     backup_Pt = [] #reset Pt
@@ -1054,6 +1080,12 @@ def select_objects_for_render(population):
     #weighted_ranking(population, [10,5,3,5,2,5,0])
     #weighted_ranking(population, [1,1,1,1,1,1,0])
     sorted_rank = sorted(population, key=lambda x: (x.weighted_sum_score))
+    best_individual = sorted_rank[0]
+
+    perfect_test = False
+    if  (best_individual.adjacency_score != 0 or best_individual.dims_score != 0 or best_individual.access_score != 0 or best_individual.transit_connections_score != 0 or best_individual.group_adj_score != 0):
+        perfect_test = True
+
     #sorted_rank = sorted(population, key=lambda x: (x.flack_rank_sum))
     #dir_pop = list(sorted_rank[0].dir_list)
     #get_layout(sorted_rank[0].definition, sorted_rank[0].room_def, sorted_rank[0].split_list, dir_pop, sorted_rank[0].room_order, sorted_rank[0].min_opening)
@@ -1064,13 +1096,13 @@ def select_objects_for_render(population):
     print('Weighted sum:', sorted_rank[0].weighted_sum_score, 'Access: ', sorted_rank[0].access_score, 'Transit: ', sorted_rank[0].transit_connections_score, 'GroupAdj: ', sorted_rank[0].group_adj_score)
     print(' Dims: ', sorted_rank[0].dims_score, 'Adj: ', sorted_rank[0].adjacency_score, 'Aspect: ', round(sorted_rank[0].aspect_ratio_score,2))
 
-    return [object_to_visuals(sorted_rank[0])]
+    return [object_to_visuals(sorted_rank[0],perfect_test)]
     #return [object_to_visuals(selection_list[0]),object_to_visuals(selection_list[1])]
     #selection_list = [object_to_visuals(x) for x in selection_list]
     #return selection_list
 
-def object_to_visuals(object):
-    return {"walls": object.edges_out, "max_sizes": object.max_sizes, "departments": object.departments, "adjacency_score": object.adjacency_score, "id":object.plan_id, "all_adjacency_dict":object.all_adjacency_dict}
+def object_to_visuals(object,perfect_test):
+    return {"walls": object.edges_out, "max_sizes": object.max_sizes, "departments": object.departments, "adjacency_score": object.adjacency_score, "id":object.plan_id, "all_adjacency_dict":object.all_adjacency_dict, "perfect_test":perfect_test}
 
 def update_definition(groups):
     definition = json_departments_from_db()
