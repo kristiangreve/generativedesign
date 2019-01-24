@@ -300,7 +300,7 @@ def flack_selection(pop_size,population):
         return sorted_pop[:pop_size]
 
 def dominance(population,selections):
-     for i in range(len(population)):      #Loops through all individuals of population
+     for i in range(len(population)):       #Loops through all individuals of population
         for j in range(i+1,len(population)): #Loops through all the remaining indiduals
             #What if adjacency and interactive score are similar? Then i gets favored while in fact solutions are equally good.
                 #Adjacency score: #of broken adjecencies , the lower the better

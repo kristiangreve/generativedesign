@@ -45,7 +45,7 @@ def index():
     return render_template('index.html', title='Company information', form=form)
 
 
-@app.route('/floor_plan', methods=['GET', 'POST'])
+@app.route('/floor_plan', methods=['GET','POST'])
 @login_required
 def floor_plan():
     return render_template('floor_plan.html')
@@ -54,9 +54,9 @@ def floor_plan():
 @login_required
 def get_floorplans():
     global latest_definition
-    pop_size = 50
-    generations = 100
-    mutation_rate = 0.05
+    pop_size = 20
+    generations = 10
+    mutation_rate = 0.2
 
     mode = request.form['mode']
     user_groups = json.loads(request.form['user_groups'])
@@ -73,7 +73,7 @@ def get_floorplans():
     if mode == 'restart':
         print("restarting")
         #Pt = initial_generate_flack(pop_size, generations, mutation_rate, definition)
-        Pt = initial_generate_weighted(pop_size, 50, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
+        Pt = initial_generate_weighted(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
 
     else:
         if latest_definition == definition:
@@ -86,10 +86,11 @@ def get_floorplans():
             Pt = initial_generate_weighted(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
 
     # updating the most recent definition
-
     latest_definition = definition
 
     return jsonify(select_objects_for_render(Pt, []))
+
+
 
 @app.route('/change_transit_of_department', methods = ['GET','POST'])
 @login_required
@@ -107,14 +108,11 @@ def change_transit_of_department():
     db.session.commit()
     return jsonify(transit)
 
-
-
-
 @app.route('/departments', methods=['GET', 'POST'])
 @login_required
 def departments():
-    number_of_employees = current_user.number_of_employees
 
+    number_of_employees = current_user.number_of_employees
     number_of_bathrooms = 0
 
     # add one bathroom per 10 employees, if 11, 2 is added.
@@ -322,11 +320,11 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
+        user = User(username=form.username.data)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Congratulations, you are now a registered user!')
+        flash('Congratulations, your company is now registred')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 

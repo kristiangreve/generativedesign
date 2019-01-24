@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, \
     TextAreaField, IntegerField, RadioField
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, \
+from wtforms.validators import ValidationError, NumberRange, DataRequired, Email, EqualTo, \
     Length
 from app.models import User
 
@@ -15,10 +15,7 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
-    password2 = PasswordField(
-        'Repeat Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Register')
 
     def validate_username(self, username):
@@ -26,10 +23,10 @@ class RegistrationForm(FlaskForm):
         if user is not None:
             raise ValidationError('Please use a different username.')
 
-    def validate_email(self, email):
-        user = User.query.filter_by(email=email.data).first()
-        if user is not None:
-            raise ValidationError('Please use a different email address.')
+#    def validate_email(self, email):
+#        user = User.query.filter_by(email=email.data).first()
+#        if user is not None:
+#            raise ValidationError('Please use a different email address.')
 
 
 class ResetPasswordRequestForm(FlaskForm):
@@ -58,8 +55,8 @@ class EditProfileForm(FlaskForm):
                 raise ValidationError('Please use a different username.')
 
 class CompanyForm(FlaskForm):
-    company_name = TextAreaField('Name', validators=[Length(min=0, max=140)], render_kw={"placeholder": "Name of your company"})
-    number_of_employees = IntegerField('Employees', validators=[DataRequired()],render_kw={"placeholder": "Number of employees"})
-    space_length = IntegerField('Length', validators=[DataRequired()],render_kw={"placeholder": "Length of the space"})
-    space_width = IntegerField('Width', validators=[DataRequired()],render_kw={"placeholder": "Width of the space"})
+    company_name = TextAreaField('Name', validators=[Length(min=0, max=60)], render_kw={"placeholder": "Name of your company"})
+    number_of_employees = IntegerField('Employees', validators=[NumberRange(min=0, max=100)],render_kw={"placeholder": "Number of employees"})
+    space_length = IntegerField('Length (m)', validators=[NumberRange(min=0, max=1000)],render_kw={"placeholder": "Length of the space (m)"})
+    space_width = IntegerField('Width (m)', validators=[NumberRange(min=0, max=1000)],render_kw={"placeholder": "Width of the space (m)"})
     submit = SubmitField('Save')
