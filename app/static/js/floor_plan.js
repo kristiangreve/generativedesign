@@ -11,6 +11,7 @@ var render_array = [];
 var group_id = 0;
 var groups = [];
 var edges_of_groups = [];
+var mode = 'none';
 
 var favourite_id = 0;
 var favourites = [];
@@ -44,6 +45,14 @@ function get_floorplans(mode, user_groups, edges_of_user_groups){
 	}).done(function(response) {
 		render_array = response;
 		console.log(render_array);
+		console.log(render_array.perfect_test);
+		console.log(render_array[0].perfect_test);
+
+		if (render_array[0].perfect_test == 'false'){
+			$('.alert-danger').hide();
+			$('.alert-danger').html("Not all constraints have been met. Try to remove constraints or click generate to try again.");
+			$('.alert-danger').fadeIn();
+		}
 		$('.loader').hide();
 		render_floorplans(render_array);
 	});
@@ -51,7 +60,12 @@ function get_floorplans(mode, user_groups, edges_of_user_groups){
 
 // button onclick handlers
 $("#generate_button").click(function(){
-	var mode = 'new';
+	if (render_array[0].perfect_test=='true'){
+		mode = 'perfect'
+	} else {
+		mode = 'new'
+	};
+
 	$('.alert-primary').hide();
 	$('.loader').show();
 	get_floorplans(mode, groups, edges_of_groups);

@@ -80,12 +80,15 @@ def get_floorplans():
         #    Pt = temp_Pt
         #Pt = initial_generate(pop_size, generations, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
 
-
     else:
         if latest_definition == definition:
             print("defintion did not change")
+            if mode == 'perfect':
+                print("perfect floor plan")
+                Pt = initial_generate_weighted(pop_size, max_time, mutation_rate, definition,user_groups, edges_of_user_groups,weights)
+            else:
             #Pt = generate_flack(pop_size, generations, mutation_rate, definition, user_groups, edges_of_user_groups)
-            Pt = generate_weighted(pop_size, max_time, mutation_rate, definition, user_groups, edges_of_user_groups,weights)
+                Pt = generate_weighted(pop_size, max_time, mutation_rate, definition, user_groups, edges_of_user_groups,weights)
             #Pt = generate(pop_size, generations, mutation_rate, definition, user_groups, edges_of_user_groups,weights)
         else:
             print("defintion changed")

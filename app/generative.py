@@ -1082,9 +1082,9 @@ def select_objects_for_render(population):
     sorted_rank = sorted(population, key=lambda x: (x.weighted_sum_score))
     best_individual = sorted_rank[0]
 
-    perfect_test = False
-    if  (best_individual.adjacency_score != 0 or best_individual.dims_score != 0 or best_individual.access_score != 0 or best_individual.transit_connections_score != 0 or best_individual.group_adj_score != 0):
-        perfect_test = True
+    perfect_test = 'false'
+    if  (best_individual.adjacency_score == 0 and best_individual.dims_score == 0 and best_individual.access_score == 0 and best_individual.transit_connections_score == 0 and best_individual.group_adj_score == 0):
+        perfect_test = 'true'
 
     #sorted_rank = sorted(population, key=lambda x: (x.flack_rank_sum))
     #dir_pop = list(sorted_rank[0].dir_list)
